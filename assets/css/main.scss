@@ -24,38 +24,38 @@
 @use "typograms";
 
 :root {
-  --global-bg-color: #f6f1e8;
-  --global-text-color: #1a1814;
-  --global-text-color-light: #6d6458;
-  --global-theme-color: #8c6a32;
-  --global-hover-color: #8c6a32;
-  --global-hover-text-color: #f6f1e8;
-  --global-divider-color: rgba(26, 24, 20, 0.12);
-  --global-card-bg-color: #fbf7f1;
-  --global-footer-bg-color: #f6f1e8;
-  --global-footer-text-color: #6d6458;
-  --global-footer-link-color: #8c6a32;
+  --global-bg-color: #ffffff;
+  --global-text-color: #1b2430;
+  --global-text-color-light: #526070;
+  --global-theme-color: #1f4e79;
+  --global-hover-color: #1f4e79;
+  --global-hover-text-color: #ffffff;
+  --global-divider-color: #e4e8ee;
+  --global-card-bg-color: #f7f9fb;
+  --global-footer-bg-color: #ffffff;
+  --global-footer-text-color: #526070;
+  --global-footer-link-color: #1f4e79;
 }
 
 html[data-theme="dark"] {
-  --global-bg-color: #0c0d10;
-  --global-text-color: #f3efe6;
-  --global-text-color-light: #b7ad9d;
-  --global-theme-color: #d4bc8a;
-  --global-hover-color: #d4bc8a;
-  --global-hover-text-color: #0c0d10;
-  --global-divider-color: rgba(212, 188, 138, 0.22);
-  --global-card-bg-color: #14161b;
-  --global-footer-bg-color: #0c0d10;
-  --global-footer-text-color: #b7ad9d;
-  --global-footer-link-color: #d4bc8a;
+  --global-bg-color: #12161c;
+  --global-text-color: #e8eef4;
+  --global-text-color-light: #a8b4c2;
+  --global-theme-color: #8eb4dc;
+  --global-hover-color: #8eb4dc;
+  --global-hover-text-color: #12161c;
+  --global-divider-color: #2a3340;
+  --global-card-bg-color: #1a212b;
+  --global-footer-bg-color: #12161c;
+  --global-footer-text-color: #a8b4c2;
+  --global-footer-link-color: #8eb4dc;
 }
 
 body {
-  font-family: Outfit, "Segoe UI", sans-serif;
-  font-weight: 300;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-weight: 400;
   font-size: 1.05rem;
-  line-height: 1.75;
+  line-height: 1.65;
   background: var(--global-bg-color);
 }
 
@@ -65,63 +65,57 @@ h3,
 .post-title,
 .publications .title,
 .publications h2.bibliography {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-weight: 500;
-  letter-spacing: 0;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 
 .post-header {
-  display: flex;
-  flex-direction: column;
-  margin: 3.5rem 0 2.5rem;
-  padding-bottom: 2rem;
+  display: block;
+  margin: 2.25rem 0 1.5rem;
+  padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--global-divider-color);
 }
 
 .post-title {
-  order: 2;
-  margin: 0.35rem 0 0;
-  font-size: clamp(3.4rem, 8vw, 5.4rem);
-  line-height: 0.9;
-  letter-spacing: -0.03em;
+  margin: 0;
+  font-size: 2.45rem;
+  line-height: 1.15;
 }
 
-.desc {
-  order: 1;
-  margin: 0;
-  max-width: none;
-  color: var(--global-theme-color);
-  font-family: Outfit, sans-serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
+.desc,
+.post-description {
+  margin: 0.45rem 0 0;
+  max-width: 40rem;
+  color: var(--global-text-color-light);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .focus {
-  margin: 0 0 1.1rem;
-  max-width: none;
+  margin: 1.15rem 0 0.4rem;
+  max-width: 40rem;
   color: var(--global-text-color);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(1.7rem, 3vw, 2.15rem);
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.25;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 1.2rem;
+  font-style: normal;
+  font-weight: 650;
+  line-height: 1.4;
 }
 
 article p {
-  max-width: 38rem;
-  color: var(--global-text-color-light);
+  max-width: 42rem;
+  color: var(--global-text-color);
 }
 
 article > h2,
 .publications > h2 {
-  margin-top: 3.2rem;
-  font-size: 0.78rem;
-  font-family: Outfit, sans-serif;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  margin-top: 2.25rem;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
 }
 
 article > h2 a,
@@ -130,17 +124,17 @@ article > h2 a,
 }
 
 .navbar {
-  background: color-mix(in srgb, var(--global-bg-color) 88%, transparent);
-  backdrop-filter: blur(16px);
+  background: var(--global-bg-color);
   border-bottom: 1px solid var(--global-divider-color);
+  box-shadow: none;
 }
 
 .navbar .nav-link {
-  font-family: Outfit, sans-serif;
-  font-size: 0.72rem;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .navbar .nav-item.active > .nav-link {
@@ -148,10 +142,10 @@ article > h2 a,
 }
 
 .navbar .lang-switch {
-  margin-left: 0.6rem;
-  padding: 0 0.45rem;
+  margin-left: 0.75rem;
+  padding: 0 0.35rem;
   border: 1px solid var(--global-divider-color);
-  border-radius: 999px;
+  border-radius: 6px;
 }
 
 .navbar .lang-switch button[aria-pressed="true"] {
@@ -160,7 +154,7 @@ article > h2 a,
 
 .publications ol.bibliography > li {
   margin: 0;
-  padding: 1.45rem 0;
+  padding: 1.1rem 0;
   border-bottom: 1px solid var(--global-divider-color);
 }
 
@@ -175,30 +169,35 @@ article > h2 a,
 }
 
 .publications ol.bibliography li .abbr {
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.3rem;
+  text-align: left;
 }
 
 .publications ol.bibliography li .title {
-  font-size: 1.55rem;
-  line-height: 1.2;
+  font-size: 1.12rem;
+  line-height: 1.4;
 }
 
 .publications ol.bibliography li .author,
 .publications ol.bibliography li .periodical {
   color: var(--global-text-color-light);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .publications ol.bibliography li .abbr abbr {
-  background: transparent;
+  display: inline-block;
+  width: auto;
+  margin-left: 0;
+  background: color-mix(in srgb, var(--global-theme-color) 12%, transparent);
   color: var(--global-theme-color) !important;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  font-family: Outfit, sans-serif;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
 }
 
 .publications ol.bibliography li .abbr abbr a {
@@ -207,14 +206,14 @@ article > h2 a,
 
 .publications .links a.btn {
   border: 1px solid var(--global-divider-color);
-  border-radius: 0;
-  background: transparent;
-  color: var(--global-text-color-light);
-  padding: 0.2rem 0.65rem;
-  font-family: Outfit, sans-serif;
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  border-radius: 4px;
+  background: var(--global-card-bg-color);
+  color: var(--global-text-color);
+  padding: 0.15rem 0.55rem;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .publications .links a.btn:hover {
@@ -224,23 +223,21 @@ article > h2 a,
 }
 
 .publications h2.bibliography {
-  color: var(--global-theme-color);
+  color: var(--global-text-color);
   border-top: 0;
-  font-size: 2.4rem;
-  letter-spacing: 0;
+  font-size: 1.5rem;
   text-align: left;
 }
 
 .cv .card,
 .card {
   border: 1px solid var(--global-divider-color);
-  border-radius: 0;
-  background: transparent;
+  border-radius: 8px;
+  background: var(--global-card-bg-color);
   box-shadow: none;
 }
 
 footer {
   border-top: 1px solid var(--global-divider-color);
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  font-size: 0.85rem;
 }

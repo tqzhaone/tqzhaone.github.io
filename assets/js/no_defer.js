@@ -47,6 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
     ["Ph.D. Student", "博士研究生"],
     ["Ph.D.", "博士"],
     ["Nanjing Tech University", "南京工业大学"],
+    [
+      "Ph.D. student, School of Chemistry and Molecular Engineering, Nanjing Tech University",
+      "博士研究生，化学与分子工程学院，南京工业大学",
+    ],
     ["Chemistry and Molecular Engineering", "化学与分子工程"],
     ["School of Chemistry and Molecular Engineering", "化学与分子工程学院"],
     ["Nanjing, China", "中国南京"],

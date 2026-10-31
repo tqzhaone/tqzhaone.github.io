@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: Nanjing Tech University
+subtitle: Ph.D. student, School of Chemistry and Molecular Engineering, Nanjing Tech University
 
 selected_papers: true
 social: true
