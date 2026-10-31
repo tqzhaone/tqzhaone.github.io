@@ -15,7 +15,7 @@ footer_text: >
   Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
 keywords: Tianqi Zhao, persistent luminescence, nanomaterials, temperature sensing, Nanjing Tech University
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
-icon: 🧪 # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
+icon: ✦
 apple_touch_icon: # image name in /assets/img/ (or a rooted path / absolute URL) used for iOS home-screen bookmarks; needs a real 180x180 PNG, since Safari ignores the emoji favicon above. Left empty, iOS falls back to a screenshot of the page.
 
 url: https://tqzhaone.github.io # the base hostname and protocol for your site
@@ -536,7 +536,7 @@ third_party_libraries:
     version: "5.5.0"
   google_fonts:
     url:
-      fonts: "https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,480;6..72,560&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap"
+      fonts: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500&display=swap"
   highlightjs:
     integrity:
       css:
