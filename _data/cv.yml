@@ -1,0 +1,119 @@
+cv:
+  name: Tianqi Zhao
+  label: Ph.D. Student
+  location: Nanjing, China
+  image: ""
+  summary: Ph.D. student in the School of Chemistry and Molecular Engineering at Nanjing Tech University. Published work covers persistent luminescence nanoparticles, ratiometric temperature sensing, and related materials applications.
+
+  social_networks:
+    - network: ORCID
+      username: 0000-0002-2230-7690
+
+  sections:
+    Education:
+      - institution: Nanjing Tech University
+        location: Nanjing, China
+        url: https://www.njtech.edu.cn/
+        area: Chemistry and Molecular Engineering
+        studyType: Ph.D.
+        start_date: 2024-07
+        end_date: 2028-07
+        highlights:
+          - School of Chemistry and Molecular Engineering
+
+    Publications:
+      - title: Optical lateral flow immune assay technology for body fluid sensing
+        authors:
+          - Chen Liu
+          - Tianqi Zhao
+          - Jialing Zhou
+          - Xiaoyun Hu
+          - Dinghao Pan
+          - Jinlong Li
+          - Wei Li
+          - Zhihui Dai
+        publisher: Chinese Chemical Letters
+        releaseDate: 2026-01
+        url: https://doi.org/10.1016/j.cclet.2025.110967
+
+      - title: Persistent luminescence nanomaterials with up-/down-conversion modes for power battery temperature measurement
+        authors:
+          - Shiji Liu
+          - Tianqi Zhao
+          - Renagul Abdurahman
+          - Xiuzhen Yang
+          - Yaoxing Han
+          - Yue Zhang
+          - Xue-Bo Yin
+        publisher: Journal of Alloys and Compounds
+        releaseDate: 2025-01
+        url: https://doi.org/10.1016/j.jallcom.2024.177815
+
+      - title: Ratiometric temperature sensing with non-thermally coupled levels from Pr–Al co-doped MgGa2O4
+        authors:
+          - Xiu-Zhen Yang
+          - Tian-Qi Zhao
+          - Renagul Abdurahman
+          - Shi-Ji Liu
+          - Yao-Xing Han
+          - Yue Zhang
+          - Xue-Bo Yin
+          - Jie Gao
+        publisher: Journal of Solid State Chemistry
+        releaseDate: 2025-01
+        url: https://doi.org/10.1016/j.jssc.2024.125043
+
+      - title: Trimodality applications validation of near-infrared persistent luminescence nanoparticles
+        authors:
+          - Tianqi Zhao
+          - Wei Deng
+          - Renagul Abdurahman
+          - Shuqi Wu
+          - Xue-Bo Yin
+          - Mamutjan Tursun
+          - Jie Gao
+        publisher: Inorganic Chemistry Communications
+        releaseDate: 2024-10
+        url: https://doi.org/10.1016/j.inoche.2024.112908
+
+      - title: Cr-Free Bismuth-Based Persistent Luminescence Nanoparticle Composite for Cancer Theranostics
+        authors:
+          - Ruxiangul Aiwaili
+          - Tian-Qi Zhao
+          - Renagul Abdurahman
+          - Shuqi Wu
+          - Xue-Bo Yin
+        publisher: ACS Applied Nano Materials
+        releaseDate: 2024-07
+        url: https://doi.org/10.1021/acsanm.4c03001
+
+      - title: Design of Cr–Ba-doped γ-Ga2O3 persistent luminescence nanoparticles for ratiometric temperature sensing and encryption information transfer
+        authors:
+          - Tianqi Zhao
+          - Renagul Abdurahman
+          - Qianting Yang
+          - Ruxiangul Aiwaili
+          - Xue-Bo Yin
+        publisher: Journal of Materials Chemistry C
+        releaseDate: 2024
+        url: https://doi.org/10.1039/D3TC02776G
+
+      - title: Energy-splitting from persistent luminescence nanoparticles with trivalent Cr ions for ratiometric temperature sensing
+        authors:
+          - Tian-Qi Zhao
+          - Renagul Abdurahman
+          - Xue-Bo Yin
+        publisher: RSC Advances
+        releaseDate: 2024
+        url: https://doi.org/10.1039/D4RA04618H
+
+      - title: "Spinel-type persistent luminescence nanoparticles: From mechanisms, compositions to applications"
+        authors:
+          - Tianqi Zhao
+          - Renagul Abdurahman
+          - Ruxiangul Aiwaili
+          - Shuqi Wu
+          - Xue-Bo Yin
+        publisher: Coordination Chemistry Reviews
+        releaseDate: 2023-08
+        url: https://doi.org/10.1016/j.ccr.2023.215171

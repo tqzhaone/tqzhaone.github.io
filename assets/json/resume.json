@@ -1,0 +1,105 @@
+{
+  "basics": {
+    "name": "Tianqi Zhao",
+    "label": "Ph.D. Student",
+    "image": "",
+    "email": "",
+    "phone": "",
+    "summary": "Ph.D. student in the School of Chemistry and Molecular Engineering at Nanjing Tech University. Published work covers persistent luminescence nanoparticles, ratiometric temperature sensing, and related materials applications.",
+    "location": {
+      "city": "Nanjing",
+      "countryCode": "CN",
+      "region": "Jiangsu"
+    },
+    "profiles": [
+      {
+        "network": "ORCID",
+        "username": "0000-0002-2230-7690",
+        "url": "https://orcid.org/0000-0002-2230-7690"
+      }
+    ]
+  },
+  "work": [],
+  "volunteer": [],
+  "education": [
+    {
+      "institution": "Nanjing Tech University",
+      "location": "Nanjing, China",
+      "url": "https://www.njtech.edu.cn/",
+      "area": "Chemistry and Molecular Engineering",
+      "studyType": "Ph.D.",
+      "startDate": "2024-07-02",
+      "endDate": "2028-07-01",
+      "score": "",
+      "courses": [],
+      "highlights": [
+        "School of Chemistry and Molecular Engineering"
+      ]
+    }
+  ],
+  "awards": [],
+  "certificates": [],
+  "publications": [
+    {
+      "name": "Optical lateral flow immune assay technology for body fluid sensing",
+      "publisher": "Chinese Chemical Letters",
+      "releaseDate": "2026-01",
+      "url": "https://doi.org/10.1016/j.cclet.2025.110967",
+      "summary": "37, 110967."
+    },
+    {
+      "name": "Persistent luminescence nanomaterials with up-/down-conversion modes for power battery temperature measurement",
+      "publisher": "Journal of Alloys and Compounds",
+      "releaseDate": "2025-01",
+      "url": "https://doi.org/10.1016/j.jallcom.2024.177815",
+      "summary": "1010, 177815."
+    },
+    {
+      "name": "Ratiometric temperature sensing with non-thermally coupled levels from Pr–Al co-doped MgGa2O4",
+      "publisher": "Journal of Solid State Chemistry",
+      "releaseDate": "2025-01",
+      "url": "https://doi.org/10.1016/j.jssc.2024.125043",
+      "summary": "341, 125043."
+    },
+    {
+      "name": "Trimodality applications validation of near-infrared persistent luminescence nanoparticles",
+      "publisher": "Inorganic Chemistry Communications",
+      "releaseDate": "2024-10",
+      "url": "https://doi.org/10.1016/j.inoche.2024.112908",
+      "summary": "168, 112908."
+    },
+    {
+      "name": "Cr-Free Bismuth-Based Persistent Luminescence Nanoparticle Composite for Cancer Theranostics",
+      "publisher": "ACS Applied Nano Materials",
+      "releaseDate": "2024-07",
+      "url": "https://doi.org/10.1021/acsanm.4c03001",
+      "summary": "7, 17759–17767."
+    },
+    {
+      "name": "Design of Cr–Ba-doped γ-Ga2O3 persistent luminescence nanoparticles for ratiometric temperature sensing and encryption information transfer",
+      "publisher": "Journal of Materials Chemistry C",
+      "releaseDate": "2024",
+      "url": "https://doi.org/10.1039/D3TC02776G",
+      "summary": "12, 498–507."
+    },
+    {
+      "name": "Energy-splitting from persistent luminescence nanoparticles with trivalent Cr ions for ratiometric temperature sensing",
+      "publisher": "RSC Advances",
+      "releaseDate": "2024",
+      "url": "https://doi.org/10.1039/D4RA04618H",
+      "summary": "14, 27514–27519."
+    },
+    {
+      "name": "Spinel-type persistent luminescence nanoparticles: From mechanisms, compositions to applications",
+      "publisher": "Coordination Chemistry Reviews",
+      "releaseDate": "2023-08",
+      "url": "https://doi.org/10.1016/j.ccr.2023.215171",
+      "summary": "488, 215171."
+    }
+  ],
+  "skills": [],
+  "languages": [],
+  "interests": [],
+  "references": [],
+  "projects": []
+}
