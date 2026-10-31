@@ -1,0 +1,189 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+@charset "utf-8";
+
+@use "sass:math";
+@use "sass:string";
+
+@use "variables" with (
+  $max-content-width: {{ site.max_width | default:  "880px" }}
+);
+
+@use "themes";
+@use "layout";
+@use "typography";
+@use "navbar";
+@use "footer";
+@use "blog";
+@use "publications";
+@use "components";
+@use "utilities";
+@use "tabs";
+@use "teachings";
+@use "typograms";
+
+:root {
+  --global-bg-color: #f3efe8;
+  --global-text-color: #1c2430;
+  --global-text-color-light: #5d6772;
+  --global-theme-color: #0c6b60;
+  --global-hover-color: #0c6b60;
+  --global-hover-text-color: #fffdf9;
+  --global-divider-color: rgba(28, 36, 48, 0.1);
+  --global-card-bg-color: #fffdf9;
+  --global-footer-bg-color: #f3efe8;
+  --global-footer-text-color: #5d6772;
+  --global-footer-link-color: #0c6b60;
+}
+
+html[data-theme="dark"] {
+  --global-bg-color: #101418;
+  --global-text-color: #ebe6dc;
+  --global-text-color-light: #a8b1b8;
+  --global-theme-color: #8ed0c6;
+  --global-hover-color: #8ed0c6;
+  --global-hover-text-color: #101418;
+  --global-divider-color: rgba(235, 230, 220, 0.12);
+  --global-card-bg-color: #171d23;
+  --global-footer-bg-color: #101418;
+  --global-footer-text-color: #a8b1b8;
+  --global-footer-link-color: #8ed0c6;
+}
+
+body {
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, color-mix(in srgb, var(--global-theme-color) 16%, transparent), transparent 60%),
+    var(--global-bg-color);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2000;
+  height: 3px;
+  background: var(--global-theme-color);
+}
+
+h1,
+h2,
+h3,
+.post-title,
+.publications .title {
+  font-family: Newsreader, Georgia, serif;
+  font-weight: 480;
+  letter-spacing: -0.02em;
+}
+
+.post-title {
+  font-size: 3.15rem;
+  line-height: 1.05;
+  margin-bottom: 0.35rem;
+}
+
+.desc,
+.post-description {
+  max-width: 40rem;
+  color: var(--global-text-color-light);
+  font-size: 1.05rem;
+}
+
+article p,
+.cv p {
+  max-width: 42rem;
+}
+
+.navbar {
+  background: color-mix(in srgb, var(--global-bg-color) 84%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--global-divider-color);
+}
+
+.navbar .nav-link {
+  letter-spacing: 0.04em;
+}
+
+.navbar .nav-item.active > .nav-link {
+  color: var(--global-theme-color);
+}
+
+.navbar .lang-switch {
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 999px;
+}
+
+.navbar .lang-switch button {
+  color: var(--global-text-color-light);
+  opacity: 1;
+}
+
+.navbar .lang-switch button[aria-pressed="true"] {
+  color: var(--global-theme-color);
+  font-weight: 600;
+}
+
+.publications ol.bibliography > li {
+  margin-bottom: 0;
+  padding: 1.15rem 0 1.25rem;
+  border-bottom: 1px solid var(--global-divider-color);
+}
+
+.publications ol.bibliography li .title {
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.publications ol.bibliography li .author,
+.publications ol.bibliography li .periodical {
+  color: var(--global-text-color-light);
+}
+
+.publications ol.bibliography li .abbr abbr {
+  background: color-mix(in srgb, var(--global-theme-color) 14%, transparent);
+  color: var(--global-theme-color) !important;
+  border-radius: 999px;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.publications ol.bibliography li .abbr abbr a {
+  color: inherit;
+}
+
+.publications .links a.btn {
+  border: 1px solid var(--global-divider-color);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--global-text-color-light);
+  padding: 0.15rem 0.7rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.publications .links a.btn:hover {
+  border-color: var(--global-theme-color);
+  color: var(--global-theme-color);
+  text-decoration: none;
+}
+
+.cv .card,
+.card {
+  border: 1px solid var(--global-divider-color);
+  border-radius: 16px;
+  background: var(--global-card-bg-color);
+  box-shadow: none;
+}
+
+footer {
+  border-top: 1px solid var(--global-divider-color);
+}

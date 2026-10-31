@@ -112,14 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
       .lang-switch button {
         background: transparent;
         border: 0;
-        color: inherit;
         cursor: pointer;
         font: inherit;
         line-height: inherit;
-        opacity: 0.55;
         padding: 0.4rem 0.15rem;
       }
-      .lang-switch button[aria-pressed="true"] { font-weight: 700; opacity: 1; }
     `;
     document.head.appendChild(style);
   };
