@@ -1159,110 +1159,6 @@ html[data-lang="zh"] .theme__title {
   display: inline;
 }
 
-/* Graphical abstracts: a thumbnail beside the entry, enlarged on click. */
-.pub.has-toc {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(200px, 24vw, 300px);
-  gap: 20px 32px;
-  align-items: start;
-}
-
-.pub__toc {
-  display: block;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 0 0 1px var(--line-strong);
-  cursor: zoom-in;
-  transition: box-shadow 0.25s ease;
-}
-
-.pub__toc img {
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: brightness(0.9);
-  transition: filter 0.25s ease;
-}
-
-.pub__toc:hover,
-.pub__toc:focus-visible {
-  box-shadow:
-    0 0 0 1px rgba(116, 247, 190, 0.6),
-    0 0 30px rgba(116, 247, 190, 0.25);
-}
-
-.pub__toc:hover img,
-.pub__toc:focus-visible img {
-  filter: none;
-}
-
-.lightbox {
-  width: fit-content;
-  max-width: 94vw;
-  max-height: 94vh;
-  padding: 0;
-  overflow: hidden;
-  border: 0;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 30px 90px rgba(0, 0, 0, 0.6);
-}
-
-.lightbox[open] {
-  display: flex;
-  flex-direction: column;
-}
-
-.lightbox::backdrop {
-  background: rgba(3, 4, 11, 0.86);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
-
-.lightbox__img {
-  display: block;
-  width: auto;
-  max-width: min(94vw, 1340px);
-  height: auto;
-  max-height: calc(94vh - 110px);
-  margin: 0 auto;
-  background: #fff;
-}
-
-/* width: 0 keeps the caption from widening the box; min-width makes it span the image. */
-.lightbox__caption {
-  width: 0;
-  min-width: 100%;
-  margin: 0;
-  padding: 14px 20px 16px;
-  background: #0b0e22;
-  color: var(--moon-soft);
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.lightbox__close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 38px;
-  height: 38px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(7, 9, 26, 0.78);
-  color: #fff;
-  cursor: pointer;
-  font-size: 24px;
-  line-height: 1;
-}
-
-.lightbox__close:hover {
-  background: #000;
-}
-
 /* Shown only when the browser blocks the clipboard, so the entry can be copied by hand. */
 .bibtex {
   max-width: 72ch;
@@ -1460,14 +1356,6 @@ html[data-lang="zh"] .theme__title {
   .year {
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
-  }
-
-  .pub.has-toc {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .pub__toc {
-    max-width: 440px;
   }
 
   .year__label {
