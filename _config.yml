@@ -9,11 +9,12 @@ last_name: Zhao
 contact_note: >
   School of Chemistry and Molecular Engineering, Nanjing Tech University, Nanjing, China.
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Ph.D. student at Nanjing Tech University working on persistent luminescence nanomaterials.
+  Ph.D. student at Nanjing Tech University working on afterglow luminescence: persistent luminescence nanomaterials, and organic afterglow materials for tumor imaging and therapy.
 footer_text: >
-  Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
-  Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
-keywords: Tianqi Zhao, persistent luminescence, nanomaterials, temperature sensing, Nanjing Tech University
+  <span class="lang-en">Built with <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> and <a href="https://github.com/alshedivat/al-folio" target="_blank">al-folio</a>,
+  hosted on <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.</span>
+  <span class="lang-zh">基于 <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> 与 <a href="https://github.com/alshedivat/al-folio" target="_blank">al-folio</a> 搭建，托管于 <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>。</span>
+keywords: Tianqi Zhao, afterglow, persistent luminescence, organic afterglow, nanomaterials, temperature sensing, tumor imaging, Nanjing Tech University
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: ✦
 apple_touch_icon: # image name in /assets/img/ (or a rooted path / absolute URL) used for iOS home-screen bookmarks; needs a real 180x180 PNG, since Safari ignores the emoji favicon above. Left empty, iOS falls back to a screenshot of the page.
@@ -238,6 +239,8 @@ exclude:
   - purgecss.config.js
   - README.md
   - readme_preview/
+  - requirements.txt
+  - test/
   - gems/
   - migrations/
   - vendor
@@ -536,7 +539,9 @@ third_party_libraries:
     version: "5.5.0"
   google_fonts:
     url:
-      fonts: "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      # The theme always links this stylesheet. The site uses system font stacks (assets/css/main.scss),
+      # so it points at a local stub instead of Google Fonts, which is slow or blocked in mainland China.
+      fonts: "/assets/css/fonts.css"
   highlightjs:
     integrity:
       css:

@@ -1,0 +1,6 @@
+/*
+ * Intentionally empty.
+ * The theme always links a web-font stylesheet (third_party_libraries.google_fonts in _config.yml).
+ * This site uses system font stacks defined in assets/css/main.scss, so that link points here
+ * instead of Google Fonts, which is slow or blocked in mainland China.
+ */

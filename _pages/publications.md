@@ -1,8 +1,8 @@
 ---
 layout: page
 permalink: /publications/
-title: publications
-description: Journal articles from ORCID 0000-0002-2230-7690, newest first.
+title: Publications
+description: Peer-reviewed journal articles, newest first.
 nav: true
 nav_order: 2
 ---

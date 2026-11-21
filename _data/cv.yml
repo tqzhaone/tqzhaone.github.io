@@ -3,7 +3,7 @@ cv:
   label: Ph.D. Student
   location: Nanjing, China
   image: ""
-  summary: Ph.D. student in the School of Chemistry and Molecular Engineering at Nanjing Tech University. Published work covers persistent luminescence nanoparticles, ratiometric temperature sensing, and related materials applications.
+  summary: Ph.D. student in the School of Chemistry and Molecular Engineering at Nanjing Tech University. Published work covers persistent luminescence nanomaterials for ratiometric temperature sensing, information encryption and near-infrared imaging; Ph.D. research develops organic afterglow materials for tumor imaging and therapy.
 
   social_networks:
     - network: ORCID
@@ -20,6 +20,7 @@ cv:
         end_date: 2028-07
         highlights:
           - School of Chemistry and Molecular Engineering
+          - "Research: organic afterglow materials for tumor imaging and therapy"
 
     Publications:
       - title: Optical lateral flow immune assay technology for body fluid sensing
