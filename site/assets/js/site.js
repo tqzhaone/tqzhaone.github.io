@@ -152,6 +152,28 @@
     });
   });
 
+  // Graphical abstracts open enlarged in a dialog; without script the link opens the image itself.
+  const lightbox = document.querySelector("[data-lightbox-dialog]");
+  if (lightbox && typeof lightbox.showModal === "function") {
+    const big = lightbox.querySelector(".lightbox__img");
+    const caption = lightbox.querySelector(".lightbox__caption");
+    document.querySelectorAll("[data-lightbox]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        const thumb = link.querySelector("img");
+        big.src = link.href;
+        big.alt = thumb ? thumb.alt : "";
+        const title = link.closest(".pub")?.querySelector(".pub__title");
+        caption.textContent = title ? title.textContent.trim() : "";
+        lightbox.showModal();
+      });
+    });
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox || event.target.closest("[data-lightbox-close]")) lightbox.close();
+    });
+    lightbox.addEventListener("close", () => big.removeAttribute("src"));
+  }
+
   const pubs = document.querySelector("[data-pubs]");
   if (pubs) {
     const filterButtons = pubs.querySelectorAll("[data-filter]");
