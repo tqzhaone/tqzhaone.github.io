@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tqzhaone.github.io/sitemap.xml
