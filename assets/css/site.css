@@ -662,11 +662,11 @@ html[data-lang="zh"] .lede {
   user-select: none;
 }
 
-/* About: a Cr³⁺-doped spinel nanocrystal, atom by atom, under the statement. */
+/* About: a Cr³⁺-doped spinel nanocrystal, atom by atom, in the space under the facts. */
 .backdrop--lattice img {
-  bottom: -5%;
-  left: calc(50% - 590px - 150px);
-  width: min(54vw, 760px);
+  bottom: -36px;
+  left: calc(50% + 90px);
+  width: 580px;
   opacity: 0.85;
 }
 
@@ -696,7 +696,10 @@ html[data-lang="zh"] .lede {
 
 @media (max-width: 1240px) {
   .backdrop--lattice img {
-    left: -12vw;
+    right: -120px;
+    bottom: -70px;
+    left: auto;
+    width: 480px;
   }
 
   .backdrop--contours img {
@@ -781,6 +784,54 @@ html[data-lang="zh"] .section-title {
 html[data-lang="zh"] .statement {
   line-height: 1.4;
   letter-spacing: 0.04em;
+}
+
+.about__lead {
+  display: grid;
+  gap: clamp(40px, 4.5vw, 60px);
+  align-content: start;
+}
+
+/* The portrait sits in the dark like everything else: its edges fall away into the navy, warm
+   light from the photo's own backlight spills out below it, and the bottom edge carries the same
+   colour-table line as the opening screen. */
+.portrait {
+  position: relative;
+  width: min(100%, 360px);
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #03040b;
+  box-shadow:
+    0 50px 110px -40px rgba(255, 193, 94, 0.28),
+    0 30px 60px -30px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+}
+
+.portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(125% 95% at 50% 38%, transparent 58%, rgba(7, 9, 26, 0.5));
+  pointer-events: none;
+}
+
+.portrait::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  height: 2px;
+  background: linear-gradient(90deg, var(--lut));
+  opacity: 0.85;
 }
 
 .bio {
@@ -2231,6 +2282,12 @@ a.gb-nick:hover {
 }
 
 @media (max-width: 860px) {
+  .portrait {
+    width: min(70%, 280px);
+  }
+}
+
+@media (max-width: 860px) {
   .gb {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
@@ -2274,6 +2331,49 @@ a.gb-nick:hover {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px 24px;
+}
+
+/* Visit count, next to the copyright line. Its point is one more emitter: it lights up when this
+   visit is added and settles to a faint glow. */
+.footer__visits {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-right: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.footer__visits[hidden] {
+  display: none;
+}
+
+.footer__visits::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--phosphor);
+  box-shadow: 0 0 8px 1px rgba(116, 247, 190, 0.45);
+  opacity: 0.75;
+}
+
+.footer__visits.is-new::before {
+  animation: visit-glow 2.4s cubic-bezier(0.15, 0.75, 0.3, 1) both;
+}
+
+@keyframes visit-glow {
+  from {
+    opacity: 1;
+    box-shadow: 0 0 18px 6px rgba(116, 247, 190, 0.9);
+    scale: 1.8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__visits.is-new::before {
+    animation: none;
+  }
 }
 
 /* Narrow screens ----------------------------------------------------------------------------------- */
