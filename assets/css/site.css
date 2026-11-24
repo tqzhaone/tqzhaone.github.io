@@ -635,6 +635,110 @@ html[data-lang="zh"] .lede {
   background: linear-gradient(90deg, transparent, var(--line-strong) 20%, var(--line-strong) 80%, transparent);
 }
 
+/* Backgrounds: pictures of light from the subject itself, drawn by tools/backdrops.py. They sit in
+   the empty part of a section, above its colour and below its text, and fade out before the text.
+   The pictures are light on black, screen-blended onto the section's own navy, so black adds
+   nothing; that is why every section paints its background colour itself. */
+
+.section {
+  isolation: isolate;
+  background-color: var(--night);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.backdrop img {
+  position: absolute;
+  display: block;
+  max-width: none;
+  height: auto;
+  user-select: none;
+}
+
+/* About: a Cr³⁺-doped spinel nanocrystal, atom by atom, under the statement. */
+.backdrop--lattice img {
+  bottom: -5%;
+  left: calc(50% - 590px - 150px);
+  width: min(54vw, 760px);
+  opacity: 0.85;
+}
+
+/* Research: the emission lines falling from the top edge and breaking up into photons. */
+.backdrop--streak img {
+  top: 0;
+  left: calc(50% - 300px);
+  width: min(78vw, 1100px);
+  opacity: 0.9;
+}
+
+/* Publications: radiance contours down the right-hand margin, brightest beside the newest papers. */
+.backdrop--contours img {
+  top: 400px;
+  left: calc(50% + 590px - 170px);
+  width: 520px;
+  opacity: 0.45;
+}
+
+/* Contact: afterglow trails sweeping in from the lower right. */
+.backdrop--trails img {
+  right: -5%;
+  bottom: -14%;
+  width: min(72vw, 1000px);
+  opacity: 0.8;
+}
+
+@media (max-width: 1240px) {
+  .backdrop--lattice img {
+    left: -12vw;
+  }
+
+  .backdrop--contours img {
+    right: -230px;
+    left: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .backdrop--lattice img {
+    top: -9%;
+    right: -50vw;
+    bottom: auto;
+    left: auto;
+    width: 105vw;
+    opacity: 0.45;
+  }
+
+  .backdrop--streak img {
+    right: -45vw;
+    left: auto;
+    width: 150vw;
+  }
+
+  .backdrop--contours {
+    display: none;
+  }
+
+  .backdrop--trails img {
+    right: -45vw;
+    bottom: -6%;
+    width: 140vw;
+    opacity: 0.7;
+  }
+}
+
+@media print {
+  .backdrop {
+    display: none;
+  }
+}
+
 .wrap {
   max-width: var(--wrap);
   margin: 0 auto;
@@ -1324,6 +1428,836 @@ html[data-lang="zh"] .theme__title {
   color: var(--haze);
   font-style: normal;
   line-height: 1.6;
+}
+
+/* Guestbook */
+
+.guestbook {
+  background:
+    radial-gradient(38% 42% at 88% 12%, rgba(255, 69, 48, 0.06), transparent 70%),
+    radial-gradient(42% 50% at 64% 30%, rgba(0, 200, 255, 0.045), transparent 70%),
+    var(--night);
+}
+
+.gb {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-areas:
+    "head plot"
+    "form list";
+  gap: clamp(40px, 5vw, 64px) clamp(40px, 6vw, 96px);
+  align-items: start;
+}
+
+.gb__head {
+  grid-area: head;
+}
+
+.gb__head .section-title {
+  margin-bottom: 24px;
+}
+
+.gb__lead {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--haze);
+}
+
+html[data-lang="zh"] .gb__lead {
+  max-width: 20em;
+}
+
+.gb__plot {
+  grid-area: plot;
+  margin: 0;
+}
+
+.gb__plot figcaption {
+  max-width: 64ch;
+  margin-top: 12px;
+  color: var(--dim);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.gb-form {
+  grid-area: form;
+}
+
+.gb__list {
+  grid-area: list;
+}
+
+/* The plot: every message on one afterglow decay curve, time on a log axis. */
+
+.gb-plot {
+  position: relative;
+  height: clamp(184px, 17vw, 214px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    radial-gradient(90% 80% at 30% 0%, rgba(255, 255, 255, 0.045), transparent 60%),
+    #03040b;
+}
+
+.gb-plot__box {
+  position: absolute;
+  inset: 18px 22px 36px 42px;
+  border-bottom: 1px solid rgba(236, 239, 247, 0.3);
+  border-left: 1px solid rgba(236, 239, 247, 0.3);
+}
+
+.gb-plot__y {
+  position: absolute;
+  top: calc(50% - 10px);
+  left: 21px;
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.gb-plot__curve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gb-plot__line {
+  fill: none;
+  stroke: url(#gb-lut);
+  stroke-width: 2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.75;
+}
+
+.gb-plot__fill {
+  fill: url(#gb-lut);
+  opacity: 0.08;
+}
+
+.gb-plot.is-waiting .gb-plot__curve {
+  clip-path: inset(0 100% 0 0);
+}
+
+.gb-plot.is-tracing .gb-plot__curve {
+  animation: gb-trace 1.5s cubic-bezier(0.45, 0.05, 0.35, 1) both;
+}
+
+@keyframes gb-trace {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.gb-tick {
+  position: absolute;
+  top: calc(100% + 9px);
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.gb-tick::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  height: 4px;
+  border-left: 1px solid rgba(236, 239, 247, 0.3);
+}
+
+.gb-plot__pts {
+  position: absolute;
+  inset: 0;
+}
+
+/* One emitter: colour from the radiance table (--c), glow and size from its intensity (--i, 0 to 1).
+   Points on the plot carry both inline; a dot in the list takes them from its message. */
+.gb-pt,
+.gb-dot,
+.gb-ring {
+  --d: calc(5px + 7px * var(--i));
+  position: absolute;
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  background: rgb(var(--c));
+  box-shadow:
+    0 0 calc(4px + 16px * var(--i)) calc(0.5px + 2.5px * var(--i)) rgb(var(--c) / calc(0.3 + 0.45 * var(--i))),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  transition:
+    scale 1.8s cubic-bezier(0.05, 0.7, 0.1, 1),
+    filter 1.8s cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+.gb-pt {
+  margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  cursor: pointer;
+}
+
+.gb-pt--reply {
+  --d: calc(4px + 4px * var(--i));
+}
+
+/* A larger, invisible target for the pointer. */
+.gb-pt::before {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+}
+
+.gb-plot.is-waiting .gb-pt {
+  opacity: 0;
+}
+
+/* The lamp is on while the pointer rests on a message; the glow decays slowly after it leaves. */
+.gb-pt.is-lit,
+.gb-msg.is-lit > .gb-dot {
+  z-index: 2;
+  scale: 1.7;
+  filter: brightness(1.55) saturate(1.1);
+  transition-duration: 0.12s;
+}
+
+.gb-ring {
+  --d: 14px;
+  margin: -7px 0 0 -7px;
+  background: transparent;
+  box-shadow:
+    0 0 0 1.5px rgba(143, 107, 255, 0.9),
+    0 0 14px rgba(143, 107, 255, 0.6);
+  pointer-events: none;
+}
+
+.gb-tip {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  gap: 1px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: rgba(7, 9, 26, 0.94);
+  color: var(--haze);
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 14px));
+}
+
+.gb-tip.is-below {
+  transform: translate(-50%, 16px);
+}
+
+.gb-tip[hidden] {
+  display: none;
+}
+
+.gb-tip b {
+  color: var(--moon);
+  font-weight: 500;
+}
+
+/* Writing a message */
+
+.gb-form {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 861px) and (min-height: 760px) {
+  .gb-form {
+    position: sticky;
+    top: calc(var(--topbar) + 28px);
+  }
+}
+
+.gb-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.gb-label {
+  color: var(--haze);
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.gb-input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 11px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: #03040b;
+  color: var(--moon);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: normal;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.gb-input::placeholder {
+  color: #6a7393;
+  opacity: 1;
+}
+
+.gb-input:hover {
+  border-color: rgba(236, 239, 247, 0.32);
+}
+
+.gb-input:focus {
+  border-color: rgba(116, 247, 190, 0.65);
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(116, 247, 190, 0.12),
+    0 0 26px rgba(116, 247, 190, 0.08);
+}
+
+.gb-input[aria-invalid="true"] {
+  border-color: rgba(255, 90, 118, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 90, 118, 0.14);
+}
+
+.gb-text {
+  position: relative;
+}
+
+textarea.gb-input {
+  display: block;
+  min-height: 152px;
+  resize: vertical;
+}
+
+/* Runs along the bottom edge of the box and fills along the colour table as the message grows;
+   the far end is the length limit. */
+.gb-meter {
+  --fill: 0%;
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  left: 16px;
+  height: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gb-meter i {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--lut));
+  clip-path: inset(0 calc(100% - var(--fill)) 0 0);
+  transition: clip-path 0.25s ease;
+}
+
+.gb-meter.is-over i {
+  background: var(--nir);
+}
+
+.gb-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.gb-field--wide {
+  grid-column: 1 / -1;
+}
+
+/* A field for bots only; people never see it. */
+.gb-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.gb-help {
+  margin: -6px 0 0;
+  color: var(--dim);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.gb-submit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.gb-chars {
+  color: var(--dim);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gb-chars.is-over {
+  color: var(--nir);
+}
+
+.gb-post {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--moon);
+  color: #05060c;
+  cursor: pointer;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+/* The violet point is the excitation lamp, as on the opening screen. */
+.gb-post::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--uv);
+  box-shadow: 0 0 9px 1px rgba(143, 107, 255, 0.75);
+}
+
+.gb-post:hover {
+  background: #fff;
+  box-shadow: 0 0 30px rgba(143, 107, 255, 0.35);
+}
+
+.gb-post:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.gb-status {
+  min-height: 1.55em;
+  margin: -6px 0 0;
+  color: var(--haze);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.gb-status:empty {
+  display: none;
+}
+
+.gb-status.is-error {
+  color: #ff8fa2;
+}
+
+.gb-status.is-ok {
+  color: var(--phosphor);
+}
+
+.gb-replying {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 10px 9px 16px;
+  border: 1px solid rgba(143, 107, 255, 0.45);
+  border-radius: 12px;
+  background: rgba(143, 107, 255, 0.08);
+  color: var(--moon-soft);
+  font-size: 14.5px;
+  scroll-margin-top: 24px;
+}
+
+.gb-replying[hidden],
+.gb-owner[hidden] {
+  display: none;
+}
+
+.gb-replying b {
+  color: var(--moon);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.gb-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: var(--phosphor);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.gb-owner::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--phosphor);
+  box-shadow: 0 0 12px var(--phosphor);
+}
+
+/* Reading */
+
+.gb-total {
+  margin: 0 0 4px;
+  color: var(--haze);
+  font-size: 15px;
+}
+
+.gb-total:empty {
+  display: none;
+}
+
+.gb-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gb-list:focus {
+  outline: none;
+}
+
+.gb-msg {
+  --c: 116 247 190;
+  --i: 0.5;
+  position: relative;
+  isolation: isolate;
+  padding: 22px 0 22px 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.gb-msg--reply {
+  padding: 16px 0 6px 24px;
+  border-bottom: 0;
+}
+
+.gb-dot {
+  --d: 9px;
+  top: calc(22px + 0.78em);
+  left: 0;
+  margin-top: -4.5px;
+}
+
+.gb-msg--reply > .gb-dot {
+  --d: 7px;
+  top: calc(16px + 0.78em);
+  margin-top: -3.5px;
+}
+
+/* A new or linked message: the light it gives off washes over its row and fades. */
+.gb-msg.is-fresh::after {
+  content: "";
+  position: absolute;
+  inset: 6px -14px;
+  z-index: -1;
+  border-radius: 16px;
+  background: radial-gradient(70% 90% at 0 26px, rgb(var(--c) / 0.16), transparent 70%);
+  animation: gb-wash 2.8s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
+.gb-msg--reply.is-fresh::after {
+  inset: 4px -14px 0;
+}
+
+@keyframes gb-wash {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* The message being replied to. */
+.gb-msg.is-target > .gb-msg__body {
+  color: var(--moon);
+}
+
+.gb-msg.is-target > .gb-dot {
+  outline: 1.5px solid rgba(143, 107, 255, 0.9);
+  outline-offset: 3px;
+}
+
+.gb-msg__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0 0 6px;
+  line-height: 1.5;
+}
+
+.gb-nick {
+  color: var(--moon);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+a.gb-nick:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.badge--owner {
+  border-color: rgba(116, 247, 190, 0.4);
+  color: var(--phosphor);
+}
+
+.gb-time {
+  margin-left: auto;
+  color: var(--dim);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.gb-time:hover {
+  color: var(--moon-soft);
+}
+
+.gb-to {
+  margin: 0 0 4px;
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.gb-to__nick {
+  color: var(--haze);
+}
+
+.gb-msg__body {
+  max-width: 64ch;
+  color: var(--moon-soft);
+  font-size: 16.5px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  transition: color 0.3s ease;
+}
+
+.gb-msg__body > :first-child {
+  margin-top: 0;
+}
+
+.gb-msg__body > :last-child {
+  margin-bottom: 0;
+}
+
+.gb-msg__body p,
+.gb-msg__body ul,
+.gb-msg__body ol,
+.gb-msg__body blockquote,
+.gb-msg__body pre {
+  margin: 0 0 10px;
+}
+
+.gb-msg__body blockquote {
+  padding-left: 14px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--haze);
+}
+
+.gb-msg__body code,
+.gb-msg__body pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.gb-msg__body pre {
+  overflow-x: auto;
+}
+
+.gb-note {
+  margin: 8px 0 0;
+  color: var(--warm);
+  font-size: 14px;
+}
+
+.gb-oops {
+  margin: 6px 0 0;
+  color: #ff8fa2;
+  font-size: 14px;
+}
+
+.gb-actions,
+.gb-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 20px;
+  margin-top: 8px;
+}
+
+.gb-actions[hidden] {
+  display: none;
+}
+
+.gb-confirm {
+  color: var(--moon-soft);
+  font-size: 14px;
+}
+
+.gb-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 5px 0;
+  border: 0;
+  background: none;
+  color: var(--dim);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+.gb-act:hover {
+  color: var(--moon);
+}
+
+.gb-act svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+  transition: filter 0.3s ease;
+}
+
+.gb-like[aria-pressed="true"] {
+  color: var(--phosphor);
+}
+
+.gb-like[aria-pressed="true"] svg {
+  filter: drop-shadow(0 0 4px rgba(116, 247, 190, 0.9));
+}
+
+.gb-n {
+  font-variant-numeric: tabular-nums;
+}
+
+.gb-confirm .gb-del {
+  color: #ff8fa2;
+}
+
+.gb-confirm .gb-del:hover {
+  color: #ffc2cc;
+}
+
+.gb-replies {
+  margin: 10px 0 0;
+  padding: 0;
+  border-left: 1px solid var(--line);
+  list-style: none;
+}
+
+.gb-replies .gb-msg--reply {
+  margin-left: -4px;
+}
+
+.gb-state {
+  margin: 22px 0 0;
+  color: var(--haze);
+}
+
+.gb-state:empty {
+  display: none;
+}
+
+.gb-state.is-error {
+  color: #ff8fa2;
+}
+
+.gb-state.is-loading::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: var(--uv);
+  box-shadow: 0 0 12px 2px rgba(143, 107, 255, 0.7);
+  vertical-align: 0.08em;
+  animation: gb-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes gb-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.gb-retry {
+  margin-left: 10px;
+  vertical-align: 0.06em;
+}
+
+.gb-more {
+  margin-top: 26px;
+}
+
+.gb-more[hidden] {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .gb {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "plot"
+      "form"
+      "list";
+  }
+
+  .gb__lead {
+    max-width: 52ch;
+  }
+}
+
+@media (max-width: 480px) {
+  .gb-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gb-plot__box {
+    right: 18px;
+    left: 38px;
+  }
+
+  .gb-msg {
+    padding-left: 24px;
+  }
 }
 
 /* Footer */
