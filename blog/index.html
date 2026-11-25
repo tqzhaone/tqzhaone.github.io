@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" data-lang="en" data-title-en="Blog | Tianqi Zhao" data-title-zh="博客 | Tianqi Zhao">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Blog | Tianqi Zhao</title>
+    <meta name="description" content="Long reads and notes by Tianqi Zhao: afterglow materials, the lab, and life outside it.">
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
+    <link rel="canonical" href="https://tqzhaone.github.io/blog/">
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+    <link rel="alternate" type="application/rss+xml" title="Tianqi Zhao · Blog" href="/blog/feed.xml">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tqzhaone.github.io/blog/">
+    <meta property="og:title" content="Tianqi Zhao · Blog">
+    <meta property="og:description" content="Long reads and notes by Tianqi Zhao: afterglow materials, the lab, and life outside it.">
+    <meta property="og:image" content="https://tqzhaone.github.io/assets/img/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="content-version" content="da39a3ee5e6b4b0d3255bfef95601890afd80709">
+    <link rel="preload" href="/assets/fonts/cardo-400.woff" as="font" type="font/woff" crossorigin>
+    <link rel="preload" href="/assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
+    <link rel="stylesheet" href="/assets/css/site.css">
+    <link rel="stylesheet" href="/assets/css/pages.css">
+    <script>
+      (function () {
+        var lang = "en";
+        try {
+          var asked = new URLSearchParams(location.search).get("lang");
+          if (asked === "zh" || asked === "en") {
+            lang = asked;
+            localStorage.setItem("site-lang", asked);
+          } else if (localStorage.getItem("site-lang") === "zh") {
+            lang = "zh";
+          }
+        } catch (e) {}
+        document.documentElement.setAttribute("data-lang", lang);
+        document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+        var t = document.documentElement.getAttribute("data-title-" + lang);
+        if (t) document.title = t;
+      })();
+    </script>
+  </head>
+  <body class="content-page list-page">
+    <a class="skip" href="#main"><span data-l="en">Skip to content</span><span data-l="zh" lang="zh-CN">跳到正文</span></a>
+    <header class="topbar is-solid" data-topbar>
+      <a class="brand" href="/">Tianqi Zhao</a>
+      <nav class="nav" id="site-nav" aria-label="Sections">
+        <a href="/#research"><span data-l="en">Research</span><span data-l="zh" lang="zh-CN">研究</span></a>
+        <a href="/#publications"><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></a>
+        <a href="/#cv"><span data-l="en">CV</span><span data-l="zh" lang="zh-CN">简历</span></a>
+        <div class="nav__group is-current" data-navgroup>
+          <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-updates"><span data-l="en">Updates</span><span data-l="zh" lang="zh-CN">动态</span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
+          <div class="nav__menu" id="nav-updates">
+            <a href="/news/"><span class="nav__item"><span data-l="en">News</span><span data-l="zh" lang="zh-CN">新闻</span></span><span class="nav__hint"><span data-l="en">Papers, talks, awards</span><span data-l="zh" lang="zh-CN">论文、会议、获奖</span></span></a>
+            <a href="/blog/" class="is-active" aria-current="page"><span class="nav__item"><span data-l="en">Blog</span><span data-l="zh" lang="zh-CN">博客</span></span><span class="nav__hint"><span data-l="en">Long reads and notes</span><span data-l="zh" lang="zh-CN">长文与随笔</span></span></a>
+            <a href="/photos/"><span class="nav__item"><span data-l="en">Photos</span><span data-l="zh" lang="zh-CN">照片</span></span><span class="nav__hint"><span data-l="en">The lab, travel, life</span><span data-l="zh" lang="zh-CN">实验室、旅行与生活</span></span></a>
+          </div>
+        </div>
+        <a href="/#contact"><span data-l="en">Contact</span><span data-l="zh" lang="zh-CN">联系</span></a>
+        <a href="/#playground"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></a>
+        <a href="/#guestbook"><span data-l="en">Guestbook</span><span data-l="zh" lang="zh-CN">留言板</span></a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-set-lang="zh" lang="zh-CN" aria-pressed="false">中文</button>
+      </div>
+      <button class="menu" type="button" aria-expanded="false" aria-controls="site-nav" data-menu>
+        <span class="menu__bars" aria-hidden="true"></span>
+        <span class="sr-only"><span data-l="en">Menu</span><span data-l="zh" lang="zh-CN">菜单</span></span>
+      </button>
+    </header>
+
+    <main id="main">
+      <section class="section page blogpage" aria-labelledby="page-title">
+        <div class="wrap">
+          <header class="page-head">
+            <h1 class="section-title page-head__title" id="page-title"><span data-l="en">Blog</span><span data-l="zh" lang="zh-CN">博客</span></h1>
+            <p class="page-head__lead" data-l="en">Long reads, notes from the lab, and things outside it.</p>
+            <p class="page-head__lead" data-l="zh" lang="zh-CN">长文、实验笔记，以及实验室之外的事。</p>
+          </header>
+          <div class="page-tools">
+            <div class="filterbar" role="group" aria-label="Tags" data-filterbar="tag" hidden>
+              <button class="chip" type="button" data-filter="" aria-pressed="true"><span data-l="en">All</span><span data-l="zh" lang="zh-CN">全部</span> <span class="chip__n">0</span></button>
+              
+            </div>
+            <div class="page-tools__actions">
+              <a class="chip chip--owner" href="/admin/#blog/new" data-owner hidden><span data-l="en">Write a post</span><span data-l="zh" lang="zh-CN">写文章</span></a>
+              <a class="chip" href="/blog/feed.xml">RSS</a>
+            </div>
+          </div>
+          <div class="page-empty">
+            <p class="page-empty__title"><span data-l="en">No posts yet.</span><span data-l="zh" lang="zh-CN">还没有文章。</span></p>
+            <p><span data-l="en">The first one is on its way.</span><span data-l="zh" lang="zh-CN">第一篇正在路上。</span></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer__row">
+        <span>© 2026 Tianqi Zhao</span>
+        <span class="footer__visits" data-visits data-api="https://tqzhao-guestbook.netlify.app/.netlify/functions/twikoo" hidden></span>
+        <span class="footer__links"><a href="/news/"><span data-l="en">News</span><span data-l="zh" lang="zh-CN">新闻</span></a><a href="/blog/"><span data-l="en">Blog</span><span data-l="zh" lang="zh-CN">博客</span></a><a href="/photos/"><span data-l="en">Photos</span><span data-l="zh" lang="zh-CN">照片</span></a><a href="/blog/feed.xml">RSS</a></span>
+      </div>
+    </footer>
+
+    <div class="lightbox" data-lightbox hidden>
+      <div class="lightbox__stage" data-lightbox-stage>
+        <img class="lightbox__img" alt="" data-lightbox-img>
+      </div>
+      <div class="lightbox__bar">
+        <p class="lightbox__cap" data-lightbox-cap></p>
+        <p class="lightbox__count" data-lightbox-count></p>
+      </div>
+      <button class="lightbox__btn lightbox__btn--prev" type="button" data-lightbox-prev><span class="sr-only"><span data-l="en">Previous</span><span data-l="zh" lang="zh-CN">上一张</span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <button class="lightbox__btn lightbox__btn--next" type="button" data-lightbox-next><span class="sr-only"><span data-l="en">Next</span><span data-l="zh" lang="zh-CN">下一张</span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+      <button class="lightbox__btn lightbox__btn--close" type="button" data-lightbox-close><span class="sr-only"><span data-l="en">Close</span><span data-l="zh" lang="zh-CN">关闭</span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </div>
+    <p class="sr-only" role="status" data-status></p>
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/pages.js" defer></script>
+    <script src="/assets/js/visits.js" defer></script>
+  </body>
+</html>
