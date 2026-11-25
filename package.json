@@ -1,0 +1,13 @@
+{
+  "name": "tqzhao-guestbook-backend",
+  "private": true,
+  "description": "Guestbook and visit counter backend for https://tqzhaone.github.io: Twikoo on Netlify Functions, with data kept in Netlify Blobs",
+  "dependencies": {
+    "@netlify/blobs": "latest",
+    "@twikoojs/common": "2.0.17",
+    "twikoo-netlify": "2.0.17"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

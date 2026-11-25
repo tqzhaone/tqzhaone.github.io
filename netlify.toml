@@ -1,0 +1,12 @@
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
+# Guestbook backend for https://tqzhaone.github.io.
+# No build command: Netlify installs package.json and bundles the two functions.
+#   /                            -> netlify/functions/console.mjs  (status page + Twikoo admin panel)
+#   /.netlify/functions/twikoo   -> netlify/functions/twikoo.mjs   (the API the website calls)
+
+[build]
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
