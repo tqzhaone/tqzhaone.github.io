@@ -26,17 +26,18 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 
 ## 留言板
 
-留言板和页脚的访问量已经写好，但要等后台接上之后才会出现在网页上（菜单里的“留言板”、留言板本身、页脚访问量和 `/guestbook/` 两个页面会一起出现）。
-
-留言存在 [Twikoo](https://twikoo.js.org)（开源评论系统）里：后端是部署在 Netlify 上的 `twikoo-netlify` 函数，数据在 MongoDB Atlas 的免费数据库。
+留言和页脚的访问量存在 [Twikoo](https://twikoo.js.org)（开源评论系统）里。后台是 Netlify 上的项目 `tqzhao-guestbook`，数据存在 Netlify 自带的存储（Netlify Blobs）里，不需要另外的数据库。后台代码在本仓库的 `guestbook-server` 分支，部署和升级方法见那里的 README。
 网页上的留言板是自己写的（`site/assets/js/guestbook.js`），通过 Twikoo 的接口读写留言，样式和首屏的余辉动画是一套。
+
+- 后台首页：<https://tqzhao-guestbook.netlify.app/>，可以看存储是否正常、留言数和访问量，也能打开管理面板
+- 接口地址：`https://tqzhao-guestbook.netlify.app/.netlify/functions/twikoo`
 
 | 想做什么 | 怎么做 |
 | --- | --- |
-| 删除、隐藏、置顶留言，改设置 | 打开 <https://tqzhaone.github.io/guestbook/admin/>，点评论区上方的齿轮图标，用管理密码登录。这个页面加载的是 Twikoo 官方的管理面板。 |
+| 删除、隐藏、置顶留言，改设置 | 打开 <https://tqzhaone.github.io/guestbook/admin/> 或后台首页，点评论区右上角的齿轮图标，用管理密码登录。两个页面加载的都是 Twikoo 官方的管理面板。 |
 | 以博主身份回复 | 先在上面的管理页登录（同一个浏览器），然后在留言板上用 `BLOGGER_EMAIL` 里的邮箱留言，留言会带“博主”标记。 |
-| 换后端地址 | `site/index.html` 里 `id="guestbook"` 一节的 `data-api`，以及 `site/guestbook/admin/index.html` 里的 `api`。 |
-| 升级管理页用的 Twikoo 版本 | `site/guestbook/admin/index.html` 里两个链接中的版本号。后端在 Netlify 上的那个仓库里按 Twikoo 文档升级。 |
+| 换后端地址 | `site/index.html` 里 `id="guestbook"` 一节和页脚访问量的 `data-api`，以及 `site/guestbook/admin/index.html` 里的 `api`。 |
+| 升级 Twikoo | 后台和管理页的版本要一致（现在是 2.0.17）：后台按 `guestbook-server` 分支的 README 升级，管理页改 `site/guestbook/admin/index.html` 里两个链接中的版本号。 |
 
 页脚的访问量也记在这个后台里（Twikoo 的计数功能）：同一个人一次浏览只算一次，刷新或切换语言不重复计数；本地预览不计数；连不上服务器时页脚就不显示数字。代码在 `site/assets/js/visits.js`。
 

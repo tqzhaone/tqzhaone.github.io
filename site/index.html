@@ -48,6 +48,7 @@
           <a href="#publications" data-nav="publications"><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></a>
           <a href="#cv" data-nav="cv"><span data-l="en">CV</span><span data-l="zh" lang="zh-CN">简历</span></a>
           <a href="#contact" data-nav="contact"><span data-l="en">Contact</span><span data-l="zh" lang="zh-CN">联系</span></a>
+          <a href="#guestbook" data-nav="guestbook"><span data-l="en">Guestbook</span><span data-l="zh" lang="zh-CN">留言板</span></a>
       </nav>
       <div class="lang" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
@@ -367,12 +368,89 @@
         </div>
       </section>
 
+      <section class="section guestbook" id="guestbook" aria-labelledby="guestbook-title" data-guestbook data-api="https://tqzhao-guestbook.netlify.app/.netlify/functions/twikoo">
+        <div class="wrap gb">
+          <div class="gb__head">
+            <h2 class="section-title" id="guestbook-title"><span data-l="en">Guestbook</span><span data-l="zh" lang="zh-CN">留言板</span></h2>
+            <p class="gb__lead" data-l="en">Say hello, ask about the research, or suggest a paper. Messages are public.</p>
+            <p class="gb__lead" data-l="zh" lang="zh-CN">打个招呼、问问研究，或者推荐一篇论文。留言会公开显示。</p>
+          </div>
 
+          <figure class="gb__plot">
+            <div class="gb-plot is-waiting" data-gb-plot aria-hidden="true">
+              <span class="gb-plot__y"><span data-l="en">Glow</span><span data-l="zh" lang="zh-CN">亮度</span></span>
+              <div class="gb-plot__box">
+                <svg class="gb-plot__curve" viewBox="0 0 1000 1000" preserveAspectRatio="none" focusable="false">
+                  <defs><linearGradient id="gb-lut" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="0" data-gb-stops></linearGradient></defs>
+                  <path class="gb-plot__fill" data-gb-fill d=""></path>
+                  <path class="gb-plot__line" data-gb-line d=""></path>
+                </svg>
+                  <span class="gb-tick" data-s="60"><span data-l="en">1 min</span><span data-l="zh" lang="zh-CN">1 分钟</span></span>
+                  <span class="gb-tick" data-s="3600"><span data-l="en">1 h</span><span data-l="zh" lang="zh-CN">1 小时</span></span>
+                  <span class="gb-tick" data-s="86400"><span data-l="en">1 day</span><span data-l="zh" lang="zh-CN">1 天</span></span>
+                  <span class="gb-tick" data-s="2629800"><span data-l="en">1 month</span><span data-l="zh" lang="zh-CN">1 个月</span></span>
+                  <span class="gb-tick" data-s="31557600"><span data-l="en">1 year</span><span data-l="zh" lang="zh-CN">1 年</span></span>
+                <div class="gb-plot__pts" data-gb-points></div>
+                <div class="gb-tip" data-gb-tip hidden></div>
+              </div>
+            </div>
+            <figcaption><span data-l="en">Each point is a message, placed by how long ago it was posted. Like an afterglow, it fades with time; likes make it brighter.</span><span data-l="zh" lang="zh-CN">每个点是一条留言，横轴是留言至今的时间。它会像余辉一样随时间慢慢变暗，被点赞会更亮。</span></figcaption>
+          </figure>
+
+          <form class="gb-form" data-gb-form novalidate>
+            <p class="gb-owner" data-gb-owner hidden><span data-l="en">Signed in as the site owner.</span><span data-l="zh" lang="zh-CN">已用博主身份登录。</span></p>
+            <div class="gb-replying" data-gb-replying hidden>
+              <span><span data-l="en">Replying to</span><span data-l="zh" lang="zh-CN">回复</span> <b data-gb-reply-nick></b></span>
+              <button class="gb-act" type="button" data-gb-cancel><span data-l="en">Cancel</span><span data-l="zh" lang="zh-CN">取消</span></button>
+            </div>
+            <div class="gb-field">
+              <label class="gb-label" for="gb-text"><span data-l="en">Message</span><span data-l="zh" lang="zh-CN">留言</span></label>
+              <div class="gb-text">
+                <textarea class="gb-input" id="gb-text" name="comment" rows="5" required aria-describedby="gb-chars" data-ph-en="Say hello, or ask a question." data-ph-zh="打个招呼，或者问个问题。"></textarea>
+                <span class="gb-meter" aria-hidden="true"><i></i></span>
+              </div>
+            </div>
+            <div class="gb-meta">
+              <div class="gb-field">
+                <label class="gb-label" for="gb-nick"><span data-l="en">Name</span><span data-l="zh" lang="zh-CN">称呼</span></label>
+                <input class="gb-input" id="gb-nick" name="nick" type="text" autocomplete="nickname" maxlength="40" required>
+              </div>
+              <div class="gb-field">
+                <label class="gb-label" for="gb-mail"><span data-l="en">Email (optional)</span><span data-l="zh" lang="zh-CN">邮箱（选填）</span></label>
+                <input class="gb-input" id="gb-mail" name="mail" type="email" autocomplete="email" maxlength="100" aria-describedby="gb-help">
+              </div>
+              <div class="gb-field gb-field--wide">
+                <label class="gb-label" for="gb-link"><span data-l="en">Website (optional)</span><span data-l="zh" lang="zh-CN">个人主页（选填）</span></label>
+                <input class="gb-input" id="gb-link" name="link" type="url" inputmode="url" autocomplete="url" maxlength="200" placeholder="https://">
+              </div>
+              <div class="gb-hp" aria-hidden="true">
+                <label for="gb-company">Company</label>
+                <input id="gb-company" name="company" type="text" tabindex="-1" autocomplete="off">
+              </div>
+            </div>
+            <p class="gb-help" id="gb-help"><span data-l="en">Only the site owner can see your email.</span><span data-l="zh" lang="zh-CN">邮箱只有博主能看到，不会公开。</span></p>
+            <div class="gb-submit">
+              <span class="gb-chars" id="gb-chars" data-gb-chars></span>
+              <button class="gb-post" type="submit" data-gb-post><span data-l="en">Post message</span><span data-l="zh" lang="zh-CN">发布留言</span></button>
+            </div>
+            <p class="gb-status" data-gb-status role="status"></p>
+          </form>
+
+          <div class="gb__list">
+            <p class="gb-total" data-gb-total></p>
+            <ol class="gb-list" data-gb-list aria-labelledby="guestbook-title" tabindex="-1"></ol>
+            <p class="gb-state" data-gb-state role="status"></p>
+            <noscript><p class="gb-state"><span data-l="en">Turn on JavaScript to read and post messages.</span><span data-l="zh" lang="zh-CN">需要开启 JavaScript 才能查看和发布留言。</span></p></noscript>
+            <button class="chip gb-more" type="button" data-gb-more hidden><span data-l="en">Show older messages</span><span data-l="zh" lang="zh-CN">查看更早的留言</span></button>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
       <div class="wrap footer__row">
         <span>© 2026 Tianqi Zhao</span>
+        <span class="footer__visits" data-visits data-api="https://tqzhao-guestbook.netlify.app/.netlify/functions/twikoo" hidden></span>
         <span><span data-l="en">Last updated November 2026</span><span data-l="zh" lang="zh-CN">最后更新：2026 年 11 月</span></span>
       </div>
     </footer>
@@ -388,5 +466,7 @@
   "zhao2023spinel": "@article{zhao2023spinel,\n  title = {Spinel-type persistent luminescence nanoparticles: From mechanisms, compositions to applications},\n  author = {Zhao, Tianqi and Abdurahman, Renagul and Aiwaili, Ruxiangul and Wu, Shuqi and Yin, Xue-Bo},\n  journal = {Coordination Chemistry Reviews},\n  volume = {488},\n  pages = {215171},\n  year = {2023},\n  publisher = {Elsevier},\n  doi = {10.1016/j.ccr.2023.215171},\n  url = {https://doi.org/10.1016/j.ccr.2023.215171},\n}"
 }</script>
     <script src="assets/js/site.js" defer></script>
+    <script src="assets/js/guestbook.js" defer></script>
+    <script src="assets/js/visits.js" defer></script>
   </body>
 </html>
