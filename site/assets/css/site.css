@@ -412,8 +412,19 @@ sup {
   min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
-  background: var(--chamber);
   touch-action: pan-y;
+  /* The owner's photograph of snow mountains under the sky, as the chamber's backdrop. It is
+     darkened at the top for the menu and heavily towards the bottom, where the name sits and
+     the page goes on into the dark; the excitation canvas is screen-blended over it, so the
+     canvas's black adds nothing and only the glow shows. */
+  background-color: var(--chamber);
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 170px),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 34%, rgba(0, 0, 0, 0.6) 58%, rgba(0, 0, 0, 0.9) 82%, #000),
+    url("../img/hero/mountains.webp");
+  background-size: 100% 100%, 100% 100%, cover;
+  background-position: 0 0, 0 0, 50% 50%;
+  background-repeat: no-repeat;
 }
 
 .chamber::after {
@@ -434,6 +445,7 @@ sup {
   display: block;
   width: 100%;
   height: 100%;
+  mix-blend-mode: screen;
 }
 
 .chamber__content {
@@ -522,9 +534,11 @@ html[data-lang="zh"] .lede {
   grid-template-rows: auto 1fr;
   gap: 10px;
   height: min(44vh, 340px);
-  color: var(--haze);
+  color: var(--moon-soft);
   font-size: 12px;
   line-height: 1.2;
+  /* The labels sit on the photograph's sky, so they carry a soft shadow to stay legible. */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), 0 0 14px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   transform: translateY(-50%);
 }

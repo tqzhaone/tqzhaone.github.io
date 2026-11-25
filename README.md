@@ -15,6 +15,7 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 邮箱 | `site/index.html` 里的 `data-user` 和 `data-domain`（共两处）。完整地址由脚本拼出来，HTML 源码里不出现，能挡掉一部分抓邮箱的爬虫。 |
 | 颜色、字体、版式 | `site/assets/css/site.css` 开头的变量。 |
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
+| 首屏的背景照片 | `site/assets/img/hero/mountains.webp`（2172 × 724，雪山全景）。在 `site.css` 的 `.chamber` 里：照片铺满首屏，上沿和下半部分各压了一层渐变暗角，让菜单和名字看得清，也让首屏和下面的深色部分接上；余辉动画的画布用滤色（screen）叠在照片上。换照片时用横版、宽一些的图（宽 2000 像素以上更清楚）。 |
 | 「趣味」栏目的作品 | 每个作品是一张独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”。首页 `id="playground"` 一节里每个作品一张卡片 `<a class="play">…</a>`，缩略图在 `site/assets/img/play/`（1120 × 700，16:10）。加新作品：新建一个文件夹放网页，再复制一张卡片，改链接、缩略图、标题和中英文说明。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
