@@ -17,6 +17,7 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
+| 「实验室之外」的照片 | `site/assets/img/life/g318.webp`（760 × 507）和 `g318@2x.webp`（1520 × 1013），横版 3:2。文字和图注在 `site/index.html` 里 `id="life"` 一节。中文标题和引语用的宋体是按网页用到的字裁出来的（`site/assets/fonts/serif-sc.woff`），改这里的中文时新字可能显示成系统字体，告诉我重新生成字体文件即可。 |
 | 各区块的背景图 | `site/assets/img/bg/ribbon-*.webp`：一条贯穿全页的余辉光带。首屏是激发的那一刻，往下每个区块各画一段，颜色按首屏色标从红、琥珀、绿、蓝走到紫，亮度一段比一段暗，像余辉衰减；每张都有普通和 `@2x` 高清两个版本。图是黑底发光，网页用滤色（screen）叠到底色上，黑色部分不显示，所以换图时也要用黑底。`grain.png` 是铺在深色底上的细颗粒。位置、亮度和每个区块的底色光晕在 `site.css` 的 Backgrounds 一段。 |
 
 中文标题用的是精简过的思源宋体（`site/assets/fonts/serif-sc.woff`），只包含现在页面上用到的字。
