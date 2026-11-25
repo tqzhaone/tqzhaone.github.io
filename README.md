@@ -15,6 +15,7 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 邮箱 | `site/index.html` 里的 `data-user` 和 `data-domain`（共两处）。完整地址由脚本拼出来，HTML 源码里不出现，能挡掉一部分抓邮箱的爬虫。 |
 | 颜色、字体、版式 | `site/assets/css/site.css` 开头的变量。 |
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
+| 「趣味」栏目的作品 | 每个作品是一张独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”。首页 `id="playground"` 一节里每个作品一张卡片 `<a class="play">…</a>`，缩略图在 `site/assets/img/play/`（1120 × 700，16:10）。加新作品：新建一个文件夹放网页，再复制一张卡片，改链接、缩略图、标题和中英文说明。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
 | 「实验室之外」的照片 | `site/assets/img/life/g318.webp`（760 × 507）和 `g318@2x.webp`（1520 × 1013），横版 3:2。文字和图注在 `site/index.html` 里 `id="life"` 一节。中文标题和引语用的宋体是按网页用到的字裁出来的（`site/assets/fonts/serif-sc.woff`），改这里的中文时新字可能显示成系统字体，告诉我重新生成字体文件即可。 |
@@ -51,3 +52,8 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 ## 字体许可
 
 Cardo、Fira Sans 和 Noto Serif CJK（思源宋体）均采用 SIL Open Font License 1.1，许可文本在 `site/assets/fonts/`。
+鹈鹕页标题用的站酷快乐体（ZCOOL KuaiLe）也是 SIL OFL 1.1，只保留了标题那几个字（`zcool-kuaile-subset.woff`），许可文本是 `OFL-ZCOOLKuaiLe.txt`。
+
+## 第三方库
+
+鹈鹕页的 3D 场景用 three.js r128，文件放在仓库里（`site/assets/vendor/three.min.js`），不从外部网站加载。three.js 采用 MIT 许可，许可声明保留在文件开头。
