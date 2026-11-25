@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>留言板管理 | Tianqi Zhao</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+    <style>
+      body { margin: 0; background: #f4f5fa; color: #1d2033; font: 16px/1.7 system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+      main { max-width: 760px; margin: 0 auto; padding: 48px 20px 80px; }
+      h1 { margin: 0 0 12px; font-size: 28px; font-weight: 600; }
+      p { margin: 0 0 12px; }
+      .en { color: #5b6078; }
+      .box { margin-top: 28px; padding: 24px; border-radius: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
+      a { color: #0b7a55; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>留言板管理</h1>
+      <p>点评论区右上角的齿轮图标打开管理面板。第一次打开时先设置管理密码，以后用这个密码登录。登录后可以删除、隐藏或置顶留言，也可以设置邮件提醒。</p>
+      <p class="en" lang="en">Guestbook admin. Click the gear icon above the comments to open the admin panel. Set a password the first time, then sign in with it.</p>
+      <p><a href="/#guestbook">返回留言板</a></p>
+      <div class="box"><div id="tcomment">正在加载管理面板……</div></div>
+    </main>
+    <script>
+      (function () {
+        var api = "https://tqzhao-guestbook.netlify.app/.netlify/functions/twikoo";
+        var sources = ["https://registry.npmmirror.com/twikoo/2.0.17/files/dist/twikoo.min.js", "https://cdn.jsdelivr.net/npm/twikoo@2.0.17/dist/twikoo.min.js"];
+        var box = document.getElementById("tcomment");
+        if (!api) {
+          box.textContent = "留言板还没有接入服务器。";
+          return;
+        }
+        function load(i) {
+          if (i >= sources.length) {
+            box.textContent = "管理面板没能加载出来，请检查网络后刷新页面。";
+            return;
+          }
+          var script = document.createElement("script");
+          script.src = sources[i];
+          script.onload = function () {
+            box.textContent = "";
+            twikoo.init({ envId: api, el: "#tcomment", path: "/guestbook/", href: location.origin + "/", lang: "zh-CN" });
+          };
+          script.onerror = function () {
+            script.remove();
+            load(i + 1);
+          };
+          document.head.appendChild(script);
+        }
+        load(0);
+      })();
+    </script>
+  </body>
+</html>
