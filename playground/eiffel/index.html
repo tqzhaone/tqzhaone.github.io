@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>埃菲尔铁塔之夜</title>
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<style>
+  :root {
+    /* Layout: one full-bleed canvas of Paris seen across the Seine, dusk turning to night.
+       Title top-left; tower centred on phones, right of centre on wide screens; controls bottom-left over the river. */
+    --night: #050a18;
+    --ink: #f4ecdc;
+    --ink-soft: rgba(244, 236, 220, 0.72);
+    --gold: #ffc261;
+    --glass: rgba(6, 12, 28, 0.58);
+    --rule: rgba(255, 206, 140, 0.32);
+    --font-display: "Noto Serif SC", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", "SimSun", serif;
+    --font-latin: "Cormorant Garamond", "Iowan Old Style", "Palatino", "Times New Roman", serif;
+    --font-body: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--night);
+    color: var(--ink);
+    font-family: var(--font-body);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #scene {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .title {
+    position: fixed;
+    top: 0;
+    left: 0;
+    max-width: 64vw;
+    padding: clamp(16px, 4.2vw, 44px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: none;
+  }
+  .eyebrow {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 0.26em;
+    color: var(--gold);
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 5.4vw, 54px);
+    line-height: 1.12;
+    letter-spacing: 0.08em;
+    text-wrap: balance;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  }
+  .fr {
+    margin: 0;
+    font-family: var(--font-latin);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(17px, 2.6vw, 24px);
+    color: var(--ink-soft);
+  }
+  .fact {
+    margin: 8px 0 0;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .dock {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    padding: clamp(14px, 4.2vw, 40px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    pointer-events: none;
+  }
+  .status {
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--ink);
+    border-radius: 999px;
+    background: var(--glass);
+    border: 1px solid var(--rule);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font-variant-numeric: tabular-nums;
+  }
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    pointer-events: auto;
+  }
+  button {
+    font: inherit;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--gold);
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  button:hover { border-color: var(--gold); }
+  button:active { background-color: rgba(255, 194, 97, 0.2); }
+  button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .primary {
+    background-color: rgba(255, 194, 97, 0.14);
+    border-color: rgba(255, 194, 97, 0.55);
+  }
+  @media (min-width: 640px) {
+    .dock { flex-direction: row; align-items: center; gap: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button { transition: none; }
+  }
+  .backhome {
+    position: fixed;
+    z-index: 6;
+    top: calc(clamp(16px, 4.2vw, 44px) + env(safe-area-inset-top));
+    right: calc(clamp(16px, 4.2vw, 44px) + env(safe-area-inset-right));
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--glass);
+    color: var(--ink);
+    text-decoration: none;
+    font: 500 13px/1 var(--font-body);
+    letter-spacing: 0.02em;
+    border: 1px solid var(--rule);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .backhome:hover { color: var(--gold); border-color: var(--gold); }
+  .backhome:active { transform: scale(0.96); }
+</style>
+</head>
+<body>
+<a class="backhome" href="../../" aria-label="返回 Tianqi Zhao 主页"><span aria-hidden="true">←</span>返回主页</a>
+<canvas id="scene" role="img" aria-label="动画：埃菲尔铁塔从地面一层层建起，入夜后亮起金色灯光，塔顶灯塔的光束扫过夜空，整点时全塔闪烁，塞纳河上映着倒影。"></canvas>
+
+<header class="title">
+  <p class="eyebrow">巴黎 · 1889</p>
+  <h1>埃菲尔铁塔</h1>
+  <p class="fr">La Tour Eiffel</p>
+  <p class="fact">高 330 米 · 底边 125 米</p>
+</header>
+
+<div class="dock">
+  <p class="status" id="status">建造中 · 1887–1889</p>
+  <div class="buttons">
+    <button type="button" id="sparkle" class="primary">开始闪烁</button>
+    <button type="button" id="replay">从头播放</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // Web fonts load without holding up the first frame; the canvas redraws every frame anyway.
+  try {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Noto+Serif+SC:wght@700&display=swap';
+    document.head.appendChild(link);
+  } catch (e) { /* system fonts are a fine fallback */ }
+
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d');
+  const titleEl = document.querySelector('.title');
+  const statusEl = document.getElementById('status');
+  const FONT_BODY = '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", system-ui, sans-serif';
+  const mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  let reduced = !!(mq && mq.matches);
+
+  // ---------- helpers ----------
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const smooth = k => { k = clamp(k, 0, 1); return k * k * (3 - 2 * k); };
+  const easeInOut = k => { k = clamp(k, 0, 1); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+  const easeOut = k => 1 - Math.pow(1 - clamp(k, 0, 1), 3);
+  const makeRng = seed => { let v = seed; return () => (v = (v * 16807) % 2147483647) / 2147483647; };
+  const rgbOf = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const mixRgb = (a, b, k) => `rgb(${Math.round(lerp(a[0], b[0], k))},${Math.round(lerp(a[1], b[1], k))},${Math.round(lerp(a[2], b[2], k))})`;
+
+  // Dusk -> night sky. Stops run from the top of the screen (0) to the horizon (1).
+  const SKY = [
+    [0.00, '#10224a', '#030713'],
+    [0.42, '#2b4775', '#071129'],
+    [0.70, '#66708c', '#0c1936'],
+    [0.87, '#d1966d', '#1b2342'],
+    [1.00, '#f4b36d', '#45302a']
+  ].map(([o, a, b]) => [o, rgbOf(a), rgbOf(b)]);
+
+  // ---------- the tower, in metres: x across (0 = axis), h up from the ground ----------
+  const TIP = 330, TOP = 276;
+  const KK = 3.5, EK = Math.exp(-KK);
+  // Outer edge of the legs: an exponential curve through the real half-widths
+  // (62.5 m at the ground, ~33.5 m at the first floor, ~19 m at the second, ~7.6 m at the top).
+  const outer = h => 7.6 + 54.9 * (Math.exp(-KK * clamp(h / TOP, 0, 1)) - EK) / (1 - EK);
+  const legW = h => 25 - 0.125 * h;
+  const inner = h => outer(h) - legW(h);
+  const midL = h => (outer(h) + inner(h)) / 2;
+
+  const P1 = { b: 50, m: 53.6, f: 57, r: 59.4, w: 35.6 };    // first floor, 57 m
+  const P2 = { b: 110, m: 113, f: 116, r: 118.6, w: 20.3 };  // second floor, 116 m
+  const P3 = { b: 272, m: 274, f: 276, r: 278.4, w: 9.6 };   // top floor, 276 m
+
+  const segs = [];   // {x1, h1, x2, h2, w: member size, a: alpha, g: 1 for platforms}
+  const fills = [];  // {p: polygon, b: brightly lit}
+  const seg = (x1, h1, x2, h2, w, a = 1, g = 0) => { segs.push({ x1, h1, x2, h2, w, a, g }); };
+  const mseg = (x1, h1, x2, h2, w, a = 1, g = 0) => { seg(x1, h1, x2, h2, w, a, g); seg(-x1, h1, -x2, h2, w, a, g); };
+  const pts = (fx, h0, h1, n) => { const p = []; for (let i = 0; i <= n; i++) { const h = h0 + (h1 - h0) * i / n; p.push([fx(h), h]); } return p; };
+  const line = (p, w, mirror, a = 1, g = 0) => { for (let i = 1; i < p.length; i++) (mirror ? mseg : seg)(p[i - 1][0], p[i - 1][1], p[i][0], p[i][1], w, a, g); };
+  const orient = p => { let A = 0; for (let i = 0; i < p.length; i++) { const q = p[i], r = p[(i + 1) % p.length]; A += q[0] * r[1] - r[0] * q[1]; } return A < 0 ? p.slice().reverse() : p; };
+  const fill = (p, b = false) => { fills.push({ p: orient(p), b }); };
+  const fillM = (p, b = false) => { fill(p, b); fill(p.map(([x, h]) => [-x, h]), b); };
+  const rectP = (x0, h0, x1, h1) => [[x0, h0], [x1, h0], [x1, h1], [x0, h1]];
+  const box = (x0, h0, x1, h1, w, g = 0) => { seg(x0, h0, x1, h0, w, 1, g); seg(x1, h0, x1, h1, w, 1, g); seg(x1, h1, x0, h1, w, 1, g); seg(x0, h1, x0, h0, w, 1, g); };
+  const scallops = (x0, x1, hb, n, w) => {
+    const d = (x1 - x0) / n, r = d / 2;
+    for (let i = 0; i < n; i++) {
+      const xc = x0 + d * i + r, p = [];
+      for (let j = 0; j <= 6; j++) { const a = Math.PI - Math.PI * j / 6; p.push([xc + r * Math.cos(a), hb + r * 0.9 * Math.sin(a)]); }
+      line(p, w, false, 1, 1);
+    }
+  };
+
+  function buildTower() {
+    segs.length = 0; fills.length = 0;
+
+    // Legs, ground to first floor: outer, middle and inner members with double X lattice
+    line(pts(outer, 0, P1.b, 12), 1, true);
+    line(pts(inner, 0, P1.b, 12), 1, true);
+    line(pts(midL, 0, P1.b, 12), 0.5, true);
+    const A = [0, 5, 11.5, 18, 24.5, 31, 37.5, 44, P1.b];
+    for (let i = 0; i < A.length - 1; i++) {
+      const a = A[i], b = A[i + 1];
+      if (i > 0) mseg(inner(a), a, outer(a), a, 0.55);
+      mseg(outer(a), a, midL(b), b, 0.36); mseg(midL(a), a, outer(b), b, 0.36);
+      mseg(midL(a), a, inner(b), b, 0.36); mseg(inner(a), a, midL(b), b, 0.36);
+    }
+    fillM([...pts(outer, 0, P1.b, 12), ...pts(inner, P1.b, 0, 12)]);
+
+    // The great decorative arch under the first floor
+    const AC = 21.5, R1 = 26.5, R2 = 24.6, a0 = 0.02, a1 = Math.PI - 0.02;
+    const arc = (r, s0, s1, n) => { const p = []; for (let i = 0; i <= n; i++) { const k = s0 + (s1 - s0) * i / n; p.push([r * Math.cos(k), AC + r * Math.sin(k)]); } return p; };
+    line(arc(R1, a0, a1, 40), 0.8, false);
+    line(arc(R2, a0 + 0.07, a1 - 0.07, 40), 0.5, false);
+    for (let i = 0; i <= 28; i++) {
+      const k = a0 + 0.07 + (a1 - a0 - 0.14) * i / 28;
+      seg(R2 * Math.cos(k), AC + R2 * Math.sin(k), R1 * Math.cos(k), AC + R1 * Math.sin(k), 0.28);
+    }
+    for (const x of [3.5, 8, 12.5, 17]) { const hA = AC + Math.sqrt(R1 * R1 - x * x); mseg(x, hA, x, P1.b, 0.3); }
+    fill([...arc(R1, a0, a1, 40), ...arc(R2, a1 - 0.07, a0 + 0.07, 40)]);
+
+    // First floor: frieze of small arches, balcony, railing, pavilions
+    seg(-P1.w, P1.b, P1.w, P1.b, 0.85, 1, 1);
+    seg(-P1.w + 0.3, P1.m, P1.w - 0.3, P1.m, 0.4, 1, 1);
+    seg(-P1.w - 0.6, P1.f, P1.w + 0.6, P1.f, 0.95, 1, 1);
+    seg(-P1.w - 0.6, P1.r, P1.w + 0.6, P1.r, 0.45, 1, 1);
+    mseg(P1.w, P1.b, P1.w + 0.6, P1.f, 0.6, 1, 1);
+    mseg(P1.w + 0.6, P1.f, P1.w + 0.6, P1.r, 0.45, 1, 1);
+    for (let x = -P1.w; x <= P1.w + 0.01; x += 2.4) seg(x, P1.f, x, P1.r, 0.22, 1, 1);
+    scallops(-P1.w, P1.w, P1.b, 22, 0.32);
+    fill([[-P1.w, P1.b], [P1.w, P1.b], [P1.w + 0.6, P1.f], [P1.w + 0.6, P1.r], [-P1.w - 0.6, P1.r], [-P1.w - 0.6, P1.f]]);
+    for (const sg of [-1, 1]) {
+      box(11 * sg, P1.r, 30 * sg, P1.r + 4.2, 0.4, 1);
+      for (let x = 13.4; x < 30; x += 2.4) seg(x * sg, P1.r, x * sg, P1.r + 4.2, 0.2, 1, 1);
+    }
+    fillM(rectP(11, P1.r, 30, P1.r + 4.2), true);
+
+    // Legs, first to second floor, closing in a rounded opening
+    const B0 = P1.r, HI = 100, HC = 108.6, XI = inner(HI);
+    line(pts(outer, B0, P2.b, 10), 1, true);
+    line(pts(inner, B0, HI, 8), 1, true);
+    const topArc = [];
+    for (let i = 0; i <= 10; i++) { const k = i / 10 * Math.PI / 2; topArc.push([XI * Math.cos(k), HI + (HC - HI) * Math.sin(k)]); }
+    line(topArc, 0.9, true);
+    line(pts(midL, B0, HI, 8), 0.5, true);
+    const xIn = h => h <= HI ? inner(h) : h >= HC ? 0 : XI * Math.sqrt(Math.max(0, 1 - Math.pow((h - HI) / (HC - HI), 2)));
+    const Bb = [B0, 66.2, 73, 79.8, 86.6, 93.4, HI, 105, P2.b];
+    for (let i = 0; i < Bb.length - 1; i++) {
+      const a = Bb[i], b = Bb[i + 1];
+      if (i > 0) mseg(xIn(a), a, outer(a), a, 0.55);
+      if (b <= HI) {
+        mseg(outer(a), a, midL(b), b, 0.36); mseg(midL(a), a, outer(b), b, 0.36);
+        mseg(midL(a), a, inner(b), b, 0.36); mseg(inner(a), a, midL(b), b, 0.36);
+      } else {
+        mseg(outer(a), a, xIn(b), b, 0.36); mseg(xIn(a), a, outer(b), b, 0.36);
+      }
+    }
+    fillM([...pts(outer, B0, P2.b, 10), [0, P2.b], ...topArc.slice().reverse(), ...pts(inner, HI, B0, 8)]);
+
+    // Second floor
+    seg(-P2.w, P2.b, P2.w, P2.b, 0.85, 1, 1);
+    seg(-P2.w + 0.3, P2.m, P2.w - 0.3, P2.m, 0.4, 1, 1);
+    seg(-P2.w - 0.5, P2.f, P2.w + 0.5, P2.f, 0.95, 1, 1);
+    seg(-P2.w - 0.5, P2.r, P2.w + 0.5, P2.r, 0.45, 1, 1);
+    mseg(P2.w, P2.b, P2.w + 0.5, P2.f, 0.6, 1, 1);
+    mseg(P2.w + 0.5, P2.f, P2.w + 0.5, P2.r, 0.45, 1, 1);
+    for (let x = -P2.w; x <= P2.w + 0.01; x += 2.03) seg(x, P2.f, x, P2.r, 0.22, 1, 1);
+    scallops(-P2.w, P2.w, P2.b, 12, 0.3);
+    fill([[-P2.w, P2.b], [P2.w, P2.b], [P2.w + 0.5, P2.f], [P2.w + 0.5, P2.r], [-P2.w - 0.5, P2.r], [-P2.w - 0.5, P2.f]]);
+
+    // Upper shaft: four corner columns, big X bracing, a fainter back face
+    const U0 = P2.r, U1 = P3.b;
+    const colW = h => 5.4 - 3.0 * (h - U0) / (U1 - U0);
+    const colIn = h => outer(h) - colW(h);
+    line(pts(outer, U0, U1, 28), 1, true);
+    line(pts(colIn, U0, U1, 28), 0.55, true);
+    const ub = [U0];
+    { let h = U0; for (;;) { const ph = Math.max(7, outer(h)); if (h + ph > U1 - 4) break; h += ph; ub.push(h); } ub.push(U1); }
+    for (let i = 0; i < ub.length - 1; i++) {
+      const a = ub[i], b = ub[i + 1], m = (a + b) / 2;
+      if (i < ub.length - 2) seg(-outer(b), b, outer(b), b, 0.5);
+      seg(-colIn(a), a, colIn(b), b, 0.42); seg(colIn(a), a, -colIn(b), b, 0.42);
+      mseg(outer(a), a, colIn(m), m, 0.26); mseg(colIn(m), m, outer(b), b, 0.26);
+      mseg(colIn(a), a, outer(m), m, 0.26); mseg(outer(m), m, colIn(b), b, 0.26);
+      if (i < ub.length - 2) {
+        const n = (b + ub[i + 2]) / 2;
+        seg(-colIn(m), m, colIn(n), n, 0.24, 0.45); seg(colIn(m), m, -colIn(n), n, 0.24, 0.45);
+      }
+    }
+    fill([...pts(outer, U0, U1, 28), ...pts(h => -outer(h), U1, U0, 28)]);
+
+    // Top floor, the small rooms above it, the campanile, lantern and antennas
+    seg(-P3.w, P3.b, P3.w, P3.b, 0.85, 1, 1);
+    seg(-P3.w, P3.m, P3.w, P3.m, 0.35, 1, 1);
+    seg(-P3.w - 0.4, P3.f, P3.w + 0.4, P3.f, 0.95, 1, 1);
+    seg(-P3.w - 0.4, P3.r, P3.w + 0.4, P3.r, 0.42, 1, 1);
+    mseg(P3.w, P3.b, P3.w + 0.4, P3.f, 0.55, 1, 1);
+    mseg(P3.w + 0.4, P3.f, P3.w + 0.4, P3.r, 0.42, 1, 1);
+    for (let x = -P3.w; x <= P3.w + 0.01; x += 1.6) seg(x, P3.f, x, P3.r, 0.2, 1, 1);
+    fill([[-P3.w, P3.b], [P3.w, P3.b], [P3.w + 0.4, P3.f], [P3.w + 0.4, P3.r], [-P3.w - 0.4, P3.r], [-P3.w - 0.4, P3.f]], true);
+    const T0 = P3.r, T1 = 283.6, TW = 6.4;
+    box(-TW, T0, TW, T1, 0.55, 1);
+    for (let x = -TW + 1.6; x < TW - 0.1; x += 1.6) seg(x, T0, x, T1, 0.2, 1, 1);
+    seg(-TW - 0.5, T1, TW + 0.5, T1, 0.5, 1, 1);
+    fill(rectP(-TW, T0, TW, T1), true);
+    const C0 = T1, C1 = 293.2, cw0 = 4.4, cw1 = 2.3, cm = (C0 + C1) / 2, cwm = (cw0 + cw1) / 2;
+    mseg(cw0, C0, cw1, C1, 0.6);
+    seg(-cw0, C0, cwm, cm, 0.26); seg(cw0, C0, -cwm, cm, 0.26);
+    seg(-cwm, cm, cw1, C1, 0.26); seg(cwm, cm, -cw1, C1, 0.26);
+    seg(-cwm, cm, cwm, cm, 0.3); seg(-cw1 - 0.3, C1, cw1 + 0.3, C1, 0.45);
+    fill([[-cw0, C0], [cw0, C0], [cw1, C1], [-cw1, C1]]);
+    const LB = C1, LT = 297.2, LW = 1.9;
+    box(-LW, LB, LW, LT, 0.45, 1);
+    const dome = [];
+    for (let i = 0; i <= 8; i++) { const k = Math.PI * i / 8; dome.push([LW * Math.cos(k), LT + 2.4 * Math.sin(k)]); }
+    line(dome, 0.45, false, 1, 1);
+    fill([[-LW, LB], [LW, LB], ...dome], true);
+    seg(0, LT + 2.4, 0, TIP, 0.7);
+    for (const [hh, ww] of [[304, 2.0], [309.5, 1.5], [315.5, 1.1], [321.5, 0.75]]) seg(-ww, hh, ww, hh, 0.36);
+  }
+
+  // Points for the sparkle, spread along the ironwork by length
+  function sampleSparks(n) {
+    const pool = segs.filter(q => Math.max(q.h1, q.h2) < 299);
+    const cum = [];
+    let acc = 0;
+    for (const q of pool) { acc += Math.hypot(q.x2 - q.x1, q.h2 - q.h1) * (q.a < 1 ? 0.35 : 1); cum.push(acc); }
+    const R = makeRng(20000);
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const r = R() * acc;
+      let lo = 0, hi = cum.length - 1;
+      while (lo < hi) { const md = (lo + hi) >> 1; if (cum[md] < r) lo = md + 1; else hi = md; }
+      const q = pool[lo], u = R();
+      out.push({ x: q.x1 + (q.x2 - q.x1) * u, h: q.h1 + (q.h2 - q.h1) * u, per: 0.24 + R() * 0.6, ph: R(), sp: 1 + R() * 2, r: 0.6 + R() * 0.75, big: R() < 0.12, X: 0, Y: 0 });
+    }
+    return out;
+  }
+
+  // ---------- screen layout ----------
+  let W = 0, H = 0, dpr = 1, cx = 0, gy = 0, s = 1, bankH = 8, waterTop = 0, waterH = 0, portrait = true;
+  let reflH = 1, sparkN = 0, moon = null, flashLevel = 0, boatY = 0, boatL = 64;
+  const X = x => cx + x * s;
+  const Y = h => gy - h * s;
+  const Lr = {};
+  const stars = [], lamps = [], glints = [];
+  const reflC = document.createElement('canvas');
+  const rctx = reflC.getContext('2d');
+
+  function makeLayer(bx, by, bw, bh, scale, draw) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.ceil(bw * scale));
+    c.height = Math.max(1, Math.ceil(bh * scale));
+    const g = c.getContext('2d');
+    g.setTransform(scale, 0, 0, scale, -bx * scale, -by * scale);
+    draw(g);
+    return { c, x: bx, y: by, w: c.width / scale, h: c.height / scale };
+  }
+
+  const ST = {
+    ghost: { stroke: '#c4e0ff', strokeP: '#c4e0ff', fill: '#000000', fillA: 0, fillB: 0, k: 0.55, min: 0.5 },
+    iron: { stroke: '#1d1510', strokeP: '#1d1510', fill: '#1d1510', fillA: 0.42, fillB: 0.42, k: 1.15, min: 0.7 },
+    gold: { stroke: '#ffbb52', strokeP: '#ffe2a2', fill: '#ff9b36', fillA: 0.15, fillBC: '#ffd27e', fillB: 0.42, k: 1.15, min: 0.7 },
+    glow: { stroke: '#ff9f3c', strokeP: '#ffcf78', fill: '#ff9330', fillA: 0.4, fillBC: '#ffc66a', fillB: 0.6, k: 3.2, min: 1.8 }
+  };
+
+  function drawTower(g, st) {
+    g.lineCap = 'round';
+    g.lineJoin = 'round';
+    const pass = (bright, color, alpha) => {
+      if (alpha <= 0) return;
+      g.fillStyle = color;
+      g.globalAlpha = alpha;
+      g.beginPath();
+      for (const f of fills) {
+        if (f.b !== bright) continue;
+        f.p.forEach(([x, h], i) => (i ? g.lineTo(X(x), Y(h)) : g.moveTo(X(x), Y(h))));
+        g.closePath();
+      }
+      g.fill();
+    };
+    pass(false, st.fill, st.fillA);
+    pass(true, st.fillBC || st.fill, st.fillB);
+    g.globalAlpha = 1;
+    const groups = new Map();
+    for (const q of segs) {
+      const key = q.w + '|' + q.a + '|' + q.g;
+      let arr = groups.get(key);
+      if (!arr) groups.set(key, (arr = []));
+      arr.push(q);
+    }
+    for (const [key, arr] of groups) {
+      const [w, a, gg] = key.split('|').map(Number);
+      g.lineWidth = Math.max(st.min, w * s * st.k);
+      g.strokeStyle = gg ? st.strokeP : st.stroke;
+      g.globalAlpha = a;
+      g.beginPath();
+      for (const q of arr) { g.moveTo(X(q.x1), Y(q.h1)); g.lineTo(X(q.x2), Y(q.h2)); }
+      g.stroke();
+    }
+    g.globalAlpha = 1;
+  }
+
+  function buildLayers() {
+    const bx = X(-70) - 8, by = Y(TIP) - 14, bw = 140 * s + 16, bh = TIP * s + 22;
+    Lr.ghost = makeLayer(bx, by, bw, bh, dpr, g => drawTower(g, ST.ghost));
+    Lr.iron = makeLayer(bx, by, bw, bh, dpr, g => drawTower(g, ST.iron));
+    Lr.gold = makeLayer(bx, by, bw, bh, dpr, g => drawTower(g, ST.gold));
+    const m = 44;
+    Lr.glowA = makeLayer(bx - m, by - m, bw + 2 * m, bh + 2 * m, 0.25, g => {
+      if ('filter' in g) g.filter = 'blur(1px)';
+      drawTower(g, ST.glow);
+    });
+    Lr.glowB = makeLayer(bx - m, by - m, bw + 2 * m, bh + 2 * m, 0.08, g => {
+      if ('filter' in g) g.filter = 'blur(1.5px)';
+      g.drawImage(Lr.glowA.c, Lr.glowA.x, Lr.glowA.y, Lr.glowA.w, Lr.glowA.h);
+    });
+  }
+
+  function buildScenery() {
+    const R = makeRng(1889);
+    const k = clamp(s / 1.35, 0.7, 1.5);
+    const top = gy - 64 * k;
+    const far = [], near = [], wins = [];
+    const open = 78 * s; // the open Champ de Mars around the tower keeps the roofs low
+    for (let x = -6; x < W + 6;) {
+      const bw = (14 + R() * 24) * k;
+      let bh = (6 + R() * 9) * k;
+      if (Math.abs(x + bw / 2 - cx) < open) bh *= 0.5;
+      far.push([x, bw, bh]);
+      x += bw + R() * 2 * k;
+    }
+    for (let x = -6; x < W + 6;) {
+      const bw = (18 + R() * 30) * k;
+      let bh = (9 + R() * 13) * k;
+      const dc = Math.abs(x + bw / 2 - cx);
+      if (dc < open) bh *= 0.3 + 0.4 * dc / open;
+      near.push([x, bw, bh, (2.6 + R() * 2.4) * k, 1 + Math.floor(R() * 3), R()]);
+      x += bw + R() * 3 * k;
+    }
+    Lr.city = makeLayer(0, top, W, gy - top + 2, dpr, g => {
+      g.fillStyle = '#17223d';
+      for (const [x, bw, bh] of far) g.fillRect(x, gy - bh - 6 * k, bw, bh + 6 * k);
+      g.fillStyle = '#0b1428';
+      for (const [x, bw, bh, rh, chim, rr] of near) {
+        const yT = gy - bh;
+        g.fillRect(x, yT, bw, bh + 2);
+        // zinc mansard roof with chimney pots
+        g.beginPath();
+        g.moveTo(x + 1.2 * k, yT);
+        g.lineTo(x + 3.4 * k, yT - rh);
+        g.lineTo(x + bw - 3.4 * k, yT - rh);
+        g.lineTo(x + bw - 1.2 * k, yT);
+        g.closePath();
+        g.fill();
+        for (let c = 0; c < chim; c++) {
+          const chx = x + bw * (chim === 1 ? 0.5 : 0.24 + 0.52 * c / (chim - 1));
+          g.fillRect(chx - 0.9 * k, yT - rh - 2.6 * k, 1.8 * k, 2.8 * k);
+        }
+        for (let wy = yT + 2.4 * k; wy < gy - 2.4 * k; wy += 3.4 * k) {
+          for (let wx = x + 2.2 * k; wx < x + bw - 2.6 * k; wx += 3.6 * k) if (R() < 0.17) wins.push([wx, wy]);
+        }
+        if (rr > 0.5) for (let wx = x + 5 * k; wx < x + bw - 6 * k; wx += 6 * k) if (R() < 0.35) wins.push([wx, yT - rh * 0.6]);
+      }
+    });
+    Lr.win = makeLayer(0, top, W, gy - top + 2, dpr, g => {
+      g.fillStyle = '#ffcf87';
+      for (const [wx, wy] of wins) g.fillRect(wx, wy, 1.5 * k, 1.9 * k);
+    });
+
+    // Trees along the far bank, framing the feet of the tower
+    const trees = [];
+    const baseHalf = 62.5 * s;
+    for (const side of [-1, 1]) {
+      let x = cx + side * baseHalf * 0.52;
+      for (let n = 0; n < 400; n++) {
+        if (side < 0 ? x < -30 : x > W + 30) break;
+        const d = Math.abs(x - cx) / baseHalf;
+        const close = d < 1.5;
+        const r = Math.max(3, (close ? 4.4 + R() * 3.4 : 3.4 + R() * 2.8) * s);
+        const hc = Math.max(4, (close ? 9 + R() * 6 : 5.5 + R() * 4) * s);
+        trees.push([x, gy - hc, r], [x + side * r * 0.55, gy - hc * 0.7, r * 0.82], [x, gy - r * 0.6, r * 0.9]);
+        x += side * r * (0.95 + R() * 0.7);
+      }
+    }
+    for (let x = cx - baseHalf * 0.6; x <= cx + baseHalf * 0.6; x += 2.6 * s) trees.push([x, gy - 1.1 * s, Math.max(1.6, 2 * s)]);
+    const tTop = gy - 34 * s;
+    const treePath = g => { g.beginPath(); for (const [x, y, r] of trees) { g.moveTo(x + r, y); g.arc(x, y, r, 0, Math.PI * 2); } };
+    Lr.trees = makeLayer(0, tTop, W, gy - tTop + 3, dpr, g => {
+      const lg = g.createLinearGradient(0, tTop, 0, gy);
+      lg.addColorStop(0, '#0b1716');
+      lg.addColorStop(1, '#03080a');
+      g.fillStyle = lg;
+      treePath(g);
+      g.fill();
+      g.fillRect(0, gy - 1.5, W, 4);
+    });
+    Lr.treesLit = makeLayer(0, tTop, W, gy - tTop + 3, dpr, g => {
+      const rg = g.createRadialGradient(cx, gy - 14 * s, 0, cx, gy - 14 * s, 120 * s);
+      rg.addColorStop(0, 'rgba(255,178,96,0.55)');
+      rg.addColorStop(0.45, 'rgba(255,150,72,0.16)');
+      rg.addColorStop(1, 'rgba(255,140,60,0)');
+      g.fillStyle = rg;
+      treePath(g);
+      g.fill();
+    });
+
+    lamps.length = 0;
+    for (let x = 8 + R() * 20; x < W - 6; x += 36 + R() * 18) lamps.push({ x, len: 10 + R() * 14, ph: R() * 6.28 });
+
+    stars.length = 0;
+    const nStars = Math.round(clamp(W * H / 2400, 90, 320));
+    for (let i = 0; i < nStars; i++) {
+      stars.push({ x: R() * W, y: Math.pow(R(), 1.3) * gy * 0.86, r: 0.35 + Math.pow(R(), 3) * 1.15, a: 0.3 + R() * 0.7, sp: 0.5 + R() * 2.2, ph: R() * 6.28 });
+    }
+
+    glints.length = 0;
+    for (let i = 0; i < 46; i++) {
+      glints.push({ x: cx + (R() - 0.5) * 2 * 48 * s * (0.4 + R()), y: waterTop + 3 + Math.pow(R(), 0.8) * Math.max(1, waterH - 6), w: (4 + R() * 14) * clamp(s, 0.8, 1.6), sp: 0.8 + R() * 2.4, ph: R() * 6.28 });
+    }
+  }
+
+  function makeMoon() {
+    const r = clamp(Math.min(W, H) * 0.02, 8, 17);
+    const S = Math.ceil(r * 7), m = S / 2;
+    const c = document.createElement('canvas');
+    c.width = c.height = Math.ceil(S * dpr);
+    const g = c.getContext('2d');
+    g.scale(dpr, dpr);
+    const halo = g.createRadialGradient(m, m, r * 0.8, m, m, m);
+    halo.addColorStop(0, 'rgba(255,238,205,0.2)');
+    halo.addColorStop(1, 'rgba(255,238,205,0)');
+    g.fillStyle = halo;
+    g.fillRect(0, 0, S, S);
+    const k = document.createElement('canvas');
+    k.width = k.height = Math.ceil(S * dpr);
+    const q = k.getContext('2d');
+    q.scale(dpr, dpr);
+    q.fillStyle = '#fff3d8';
+    q.beginPath(); q.arc(m, m, r, 0, Math.PI * 2); q.fill();
+    q.globalCompositeOperation = 'destination-out';
+    q.beginPath(); q.arc(m - r * 0.46, m - r * 0.24, r * 0.93, 0, Math.PI * 2); q.fill();
+    g.drawImage(k, 0, 0, S, S);
+    return { c, s: S, x: W * (portrait ? 0.84 : 0.87), y: H * (portrait ? 0.09 : 0.15) };
+  }
+
+  const glint = (() => {
+    const S = 48, m = S / 2;
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const g = c.getContext('2d');
+    const rg = g.createRadialGradient(m, m, 0, m, m, m);
+    rg.addColorStop(0, 'rgba(255,255,255,1)');
+    rg.addColorStop(0.1, 'rgba(255,252,240,0.9)');
+    rg.addColorStop(0.3, 'rgba(255,236,200,0.22)');
+    rg.addColorStop(1, 'rgba(255,230,190,0)');
+    g.fillStyle = rg;
+    g.fillRect(0, 0, S, S);
+    for (const horiz of [true, false]) {
+      const lg = horiz ? g.createLinearGradient(0, 0, S, 0) : g.createLinearGradient(0, 0, 0, S);
+      lg.addColorStop(0, 'rgba(255,255,255,0)');
+      lg.addColorStop(0.5, 'rgba(255,255,255,0.95)');
+      lg.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = lg;
+      if (horiz) g.fillRect(0, m - 0.75, S, 1.5); else g.fillRect(m - 0.75, 0, 1.5, S);
+    }
+    return c;
+  })();
+
+  function layout(force) {
+    let nd = Math.min(window.devicePixelRatio || 1, 2);
+    const nW = Math.max(1, canvas.clientWidth), nH = Math.max(1, canvas.clientHeight);
+    if (nW * nH * nd * nd > 3.2e6) nd = Math.max(1, Math.sqrt(3.2e6 / (nW * nH)));
+    if (!force && nW === W && nH === H && nd === dpr && Lr.gold) return;
+    W = nW; H = nH; dpr = nd;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.imageSmoothingEnabled = true;
+    if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
+    portrait = W / H < 0.9;
+    gy = Math.round(H * (portrait ? 0.79 : 0.8));
+    let tipY = H * (portrait ? 0.19 : 0.12);
+    cx = Math.round(W * (portrait ? 0.53 : 0.57));
+    // keep the antenna clear of the title block
+    const tb = titleEl.getBoundingClientRect();
+    if (tb.right > cx - 14) tipY = Math.max(tipY, tb.bottom + 16);
+    s = Math.min((gy - tipY) / TIP, (W * (portrait ? 0.3 : 0.26)) / 62.5);
+    bankH = Math.max(8, Math.round(H * 0.016));
+    waterTop = gy + bankH;
+    waterH = H - waterTop;
+    buildLayers();
+    buildScenery();
+    for (const p of sparks) { p.X = X(p.x); p.Y = Y(p.h); }
+    sparkN = Math.round(clamp(s * 950, 650, sparks.length));
+    reflH = Math.max(1, Math.floor(Math.min(waterTop, waterH * 0.96 + 4)));
+    reflC.width = Math.max(1, Math.ceil(W));
+    reflC.height = reflH;
+    moon = makeMoon();
+    // the tour boat's lane sits between the far bank and the controls
+    boatL = clamp(W * 0.16, 64, 132);
+    const ctrlTop = Math.min(statusEl.getBoundingClientRect().top, document.querySelector('.buttons').getBoundingClientRect().top);
+    const minY = waterTop + 6 + 2.3 * boatL * 0.07;
+    boatY = Math.max(minY, Math.min(waterTop + waterH * 0.3, ctrlTop - 12));
+  }
+
+  // ---------- drawing ----------
+  function clipDraw(Ly, y0, y1, alpha) {
+    if (y1 <= y0 || alpha <= 0.002) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, y0, W, y1 - y0);
+    ctx.clip();
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(Ly.c, Ly.x, Ly.y, Ly.w, Ly.h);
+    ctx.restore();
+  }
+  // a layer drawn in full below an edge, fading out above it
+  function featherDraw(Ly, yEdge, feather, alpha) {
+    clipDraw(Ly, yEdge, H, alpha);
+    const n = 5, bh = feather / n;
+    for (let i = 0; i < n; i++) clipDraw(Ly, yEdge - (i + 1) * bh, yEdge - i * bh, alpha * (1 - (i + 1) / (n + 1)));
+  }
+  // a horizontal band of a layer, strongest on its centre line
+  function bandDraw(Ly, yc, half, alpha) {
+    const n = 4, st = half / n;
+    for (let i = 0; i < n; i++) {
+      const a = alpha * (1 - i / n);
+      clipDraw(Ly, yc - (i + 1) * st, yc - i * st, a);
+      clipDraw(Ly, yc + i * st, yc + (i + 1) * st, a);
+    }
+  }
+
+  function drawBeams(amb, amt) {
+    const ox = X(0), oy = Y(295.5);
+    const ang = reduced ? 0.55 : amb * (Math.PI * 2 / 16);
+    const Lmax = Math.hypot(W, H) * 1.05;
+    flashLevel = 0;
+    ctx.globalCompositeOperation = 'lighter';
+    for (let b = 0; b < 2; b++) {
+      const phi = ang + b * Math.PI;
+      const c = Math.cos(phi), d = Math.sin(phi); // d > 0: turned towards the viewer
+      const tw = Math.max(0, d);
+      const th = 0.035 + 0.11 * d;
+      const dx = (c < 0 ? -1 : 1) * Math.cos(th), dy = -Math.sin(th);
+      const len = Lmax * (0.08 + 0.92 * Math.pow(Math.abs(c), 0.85));
+      const spread = 0.014 + 0.05 * tw * tw;
+      const I = amt * (0.1 + 0.22 * Math.pow(tw, 1.5) + 0.04 * Math.abs(c)) * (d < 0 ? 0.6 + 0.4 * Math.abs(c) : 1);
+      const px = -dy, py = dx, half = len * Math.tan(spread);
+      const ex = ox + dx * len, ey = oy + dy * len;
+      for (const [wMul, iMul] of [[1, 1], [0.32, 1.25]]) {
+        const g = ctx.createLinearGradient(ox, oy, ex, ey);
+        g.addColorStop(0, `rgba(255,240,208,${I * iMul})`);
+        g.addColorStop(0.28, `rgba(255,234,196,${I * iMul * 0.45})`);
+        g.addColorStop(1, 'rgba(255,230,190,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(ox + px * 1.2, oy + py * 1.2);
+        ctx.lineTo(ex + px * half * wMul, ey + py * half * wMul);
+        ctx.lineTo(ex - px * half * wMul, ey - py * half * wMul);
+        ctx.lineTo(ox - px * 1.2, oy - py * 1.2);
+        ctx.closePath();
+        ctx.fill();
+      }
+      flashLevel = Math.max(flashLevel, Math.pow(tw, 12) * amt);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function drawFlare(amt, amb) {
+    if (amt <= 0) return;
+    const ox = X(0), oy = Y(295.5);
+    const f = flashLevel;
+    const r = (10 + 46 * f) * clamp(s, 0.8, 1.8);
+    ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, r);
+    g.addColorStop(0, `rgba(255,252,240,${(0.5 + 0.5 * f) * amt})`);
+    g.addColorStop(0.22, `rgba(255,228,176,${(0.22 + 0.4 * f) * amt})`);
+    g.addColorStop(1, 'rgba(255,214,150,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(ox - r, oy - r, 2 * r, 2 * r);
+    if (f > 0.05) {
+      const lg = ctx.createLinearGradient(ox - r * 3, 0, ox + r * 3, 0);
+      lg.addColorStop(0, 'rgba(255,240,210,0)');
+      lg.addColorStop(0.5, `rgba(255,246,226,${0.8 * f * amt})`);
+      lg.addColorStop(1, 'rgba(255,240,210,0)');
+      ctx.fillStyle = lg;
+      ctx.fillRect(ox - r * 3, oy - 0.8, r * 6, 1.6);
+    }
+    // red obstruction light on the antenna
+    const v = reduced ? 1 : Math.pow(0.5 + 0.5 * Math.sin(amb * 3.4), 4);
+    const tx = X(0), ty = Y(TIP) + 1;
+    const rr = 6 * clamp(s, 0.8, 1.6);
+    const rg = ctx.createRadialGradient(tx, ty, 0, tx, ty, rr);
+    rg.addColorStop(0, `rgba(255,90,70,${(0.35 + 0.6 * v) * amt})`);
+    rg.addColorStop(1, 'rgba(255,60,50,0)');
+    ctx.fillStyle = rg;
+    ctx.fillRect(tx - rr, ty - rr, rr * 2, rr * 2);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  const parts = [];
+  function emitSparks(buildH, dt) {
+    if (reduced) return;
+    const n = Math.min(6, Math.round(dt * 150));
+    const h = Math.min(buildH, TIP);
+    for (let i = 0; i < n; i++) {
+      let x;
+      if (h < P2.b) {
+        const side = Math.random() < 0.5 ? -1 : 1;
+        const xi = (h > P1.b && h < P1.r) || h > 100 ? 0 : Math.max(0, inner(h));
+        x = side * lerp(xi, outer(h), Math.random());
+      } else {
+        x = (Math.random() * 2 - 1) * (h <= TOP ? outer(h) : 2);
+      }
+      parts.push({ x: X(x), y: Y(h), vx: (Math.random() - 0.5) * 70, vy: -20 - Math.random() * 60, life: 0, max: 0.5 + Math.random() * 0.7 });
+    }
+  }
+  function drawParts(dt) {
+    if (!parts.length) return;
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 1.1;
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      p.life += dt;
+      if (p.life > p.max) { parts.splice(i, 1); continue; }
+      p.vy += 260 * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      const a = 1 - p.life / p.max;
+      ctx.strokeStyle = `rgba(255,${Math.round(170 + 70 * a)},${Math.round(90 + 90 * a)},${a})`;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x - p.vx * 0.025, p.y - p.vy * 0.025);
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function drawSparkle(env, clk) {
+    if (env <= 0.001) return;
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.22 * env;
+    ctx.drawImage(Lr.glowB.c, Lr.glowB.x, Lr.glowB.y, Lr.glowB.w, Lr.glowB.h);
+    ctx.fillStyle = '#fffaf0';
+    const gsz = clamp(11 * s, 9, 24);
+    const rs = clamp(s, 0.8, 1.6);
+    const n = Math.min(sparks.length, sparkN);
+    for (let i = 0; i < n; i++) {
+      const p = sparks[i];
+      let v;
+      if (reduced) {
+        v = 0.5 + 0.5 * Math.sin(clk * p.sp * 0.6 + p.ph * 6.283);
+        v = v * v * v;
+      } else {
+        const ph = (clk / p.per + p.ph) % 1;
+        if (ph > 0.22) continue;
+        v = 1 - ph / 0.22;
+        v *= v;
+      }
+      const a = v * env;
+      if (a < 0.03) continue;
+      ctx.globalAlpha = a;
+      if (p.big && v > 0.45) ctx.drawImage(glint, p.X - gsz / 2, p.Y - gsz / 2, gsz, gsz);
+      else { const r = p.r * rs; ctx.fillRect(p.X - r, p.Y - r, 2 * r, 2 * r); }
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function drawWater(amb, nightP, lit) {
+    const wg = ctx.createLinearGradient(0, waterTop, 0, H);
+    wg.addColorStop(0, '#0a1530');
+    wg.addColorStop(1, '#03060e');
+    ctx.fillStyle = wg;
+    ctx.fillRect(0, waterTop, W, waterH + 1);
+    // copy the band above the waterline once, then lay it down mirrored in rippling strips
+    rctx.setTransform(1, 0, 0, 1, 0, 0);
+    rctx.clearRect(0, 0, reflC.width, reflC.height);
+    const srcY = Math.max(0, Math.round((waterTop - reflH) * dpr));
+    const srcH = Math.min(Math.round(reflH * dpr), canvas.height - srcY);
+    if (srcH > 0) rctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, reflC.width, reflC.height);
+    const step = 2;
+    for (let y = waterTop; y < H; y += step) {
+      const d = y - waterTop;
+      const sy = reflH - 1 - d * 0.94;
+      if (sy < 0) break;
+      const sh = Math.min(step, reflH - sy);
+      if (sh <= 0) continue;
+      const wob = reduced ? 0 : Math.sin(d * 0.23 + amb * 1.9) * (0.5 + d * 0.045) + Math.sin(d * 0.061 - amb * 0.8) * 1.4;
+      ctx.globalAlpha = 0.62 * (1 - 0.55 * d / Math.max(1, waterH));
+      ctx.drawImage(reflC, 0, sy, reflC.width, sh, wob, y, W, sh);
+    }
+    ctx.globalAlpha = 1;
+    const tg = ctx.createLinearGradient(0, waterTop, 0, H);
+    tg.addColorStop(0, 'rgba(4,10,24,0.18)');
+    tg.addColorStop(1, 'rgba(2,5,12,0.72)');
+    ctx.fillStyle = tg;
+    ctx.fillRect(0, waterTop, W, waterH + 1);
+
+    ctx.globalCompositeOperation = 'lighter';
+    if (lit > 0.01) {
+      ctx.fillStyle = '#ffcf80';
+      for (const gl of glints) {
+        const v = reduced ? 0.5 : Math.pow(Math.max(0, Math.sin(amb * gl.sp + gl.ph)), 3);
+        const a = v * 0.5 * lit;
+        if (a < 0.02) continue;
+        ctx.globalAlpha = a;
+        ctx.fillRect(gl.x - gl.w / 2, gl.y, gl.w, 1);
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (nightP > 0.05) {
+      for (const lp of lamps) {
+        const fl = reduced ? 0.7 : 0.55 + 0.45 * Math.sin(amb * 2.3 + lp.ph);
+        const g = ctx.createLinearGradient(0, waterTop, 0, waterTop + lp.len);
+        g.addColorStop(0, `rgba(255,214,150,${0.45 * fl * nightP})`);
+        g.addColorStop(1, 'rgba(255,214,150,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(lp.x - 0.8, waterTop + 1, 1.6, lp.len);
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // A glass-roofed tour boat crossing left to right; y is its waterline
+  function drawBoat(t, amb) {
+    if (reduced || t < 5) return;
+    const period = 56, cross = 44;
+    const tt = (t - 5) % period;
+    if (tt > cross) return;
+    const Lb = boatL, hb = Lb * 0.07;
+    const x = -Lb * 1.3 + (tt / cross) * (W + Lb * 2.6);
+    const y = boatY;
+    ctx.globalCompositeOperation = 'lighter';
+    // wake opening out behind the stern
+    ctx.lineWidth = 1;
+    for (const k of [-0.5, 1.2]) {
+      const g = ctx.createLinearGradient(x - Lb * 0.8, 0, x + Lb * 0.1, 0);
+      g.addColorStop(0, 'rgba(190,210,255,0)');
+      g.addColorStop(1, 'rgba(190,210,255,0.3)');
+      ctx.strokeStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(x + Lb * 0.1, y + 0.5);
+      ctx.lineTo(x - Lb * 0.8, y + 0.5 + k * hb * 1.6);
+      ctx.stroke();
+    }
+    // soft warm reflection of the cabin
+    const rg = ctx.createLinearGradient(0, y, 0, y + hb * 3.4);
+    rg.addColorStop(0, 'rgba(255,196,120,0.24)');
+    rg.addColorStop(1, 'rgba(255,196,120,0)');
+    ctx.fillStyle = rg;
+    ctx.fillRect(x + Lb * 0.18 + Math.sin(amb * 2.6) * 0.8, y + 0.5, Lb * 0.62, hb * 3.4);
+    ctx.globalCompositeOperation = 'source-over';
+    // hull with a raked bow
+    ctx.fillStyle = '#04070e';
+    ctx.beginPath();
+    ctx.moveTo(x, y - hb);
+    ctx.lineTo(x + Lb * 0.9, y - hb);
+    ctx.quadraticCurveTo(x + Lb * 0.98, y - hb * 0.95, x + Lb, y - hb * 1.3);
+    ctx.lineTo(x + Lb * 0.93, y);
+    ctx.lineTo(x + Lb * 0.03, y);
+    ctx.closePath();
+    ctx.fill();
+    // glazed cabin
+    const c0 = x + Lb * 0.16, c1 = x + Lb * 0.82, ct = y - hb * 2.15;
+    ctx.fillStyle = '#0c1527';
+    ctx.beginPath();
+    ctx.moveTo(c0, y - hb);
+    ctx.lineTo(c0 + hb * 0.5, ct);
+    ctx.lineTo(c1 - hb * 0.6, ct);
+    ctx.lineTo(c1, y - hb);
+    ctx.closePath();
+    ctx.fill();
+    const wx0 = c0 + hb * 0.55, wx1 = c1 - hb * 0.65, wy = ct + hb * 0.28, wh = hb * 0.62;
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = 'rgba(255,204,128,0.62)';
+    ctx.fillRect(wx0, wy, wx1 - wx0, wh);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#0c1527';
+    for (let mx = wx0 + Lb * 0.045; mx < wx1 - 1; mx += Lb * 0.045) ctx.fillRect(mx, wy, 1, wh);
+    // gunwale catching the light, and the running lights
+    ctx.fillStyle = 'rgba(255,214,160,0.35)';
+    ctx.fillRect(x + Lb * 0.02, y - hb, Lb * 0.88, 0.8);
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [lx, ly, col] of [[x + Lb * 0.86, ct - hb * 0.35, '255,250,235'], [x + Lb * 0.05, y - hb * 1.4, '255,210,150']]) {
+      const g = ctx.createRadialGradient(lx, ly, 0, lx, ly, 5);
+      g.addColorStop(0, `rgba(${col},0.95)`);
+      g.addColorStop(1, `rgba(${col},0)`);
+      ctx.fillStyle = g;
+      ctx.fillRect(lx - 5, ly - 5, 10, 10);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  const MARKS = [[330, '塔尖'], [276, '顶层'], [116, '二层'], [57, '一层']];
+  function drawLabels(buildH, t) {
+    const fs = clamp(s * 8.6, 11, 14);
+    const numFont = `600 ${fs}px ${FONT_BODY}`, nameFont = `400 ${fs - 1}px ${FONT_BODY}`;
+    ctx.textBaseline = 'middle';
+    ctx.font = numFont;
+    const numW = Math.max(...MARKS.map(([h]) => ctx.measureText(`${h} m`).width));
+    ctx.font = nameFont;
+    const nameW = Math.max(...MARKS.map(([, n]) => ctx.measureText(n).width));
+    const lx = Math.min(X(62.5) + 12, W - 14 - (numW + 6 + nameW));
+    ctx.lineWidth = 1;
+    for (const [h, name] of MARKS) {
+      const y = Math.round(Y(h)) + 0.5;
+      const edge = h >= 300 ? 1.4 : h === 276 ? P3.w + 1 : h === 116 ? P2.w + 1 : P1.w + 1.2;
+      const x0 = X(edge) + 4;
+      const a = 0.45 + 0.5 * smooth((buildH - h + 6) / 12);
+      if (lx - 6 > x0) {
+        ctx.strokeStyle = `rgba(255,214,160,${0.34 * a})`;
+        ctx.setLineDash([2, 3]);
+        ctx.beginPath();
+        ctx.moveTo(x0, y);
+        ctx.lineTo(lx - 6, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.font = numFont;
+      ctx.textAlign = 'right';
+      ctx.fillStyle = `rgba(255,236,204,${a})`;
+      ctx.fillText(`${h} m`, lx + numW, y);
+      ctx.font = nameFont;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = `rgba(244,236,220,${0.72 * a})`;
+      ctx.fillText(name, lx + numW + 6, y);
+    }
+    // live height while the tower goes up
+    const ca = 1 - smooth((t - 3.8) / 0.5);
+    if (ca > 0.01 && buildH > 0.5) {
+      const hh = Math.min(buildH, TIP);
+      const edge = hh <= TOP ? outer(hh) : 2.5;
+      ctx.font = numFont;
+      ctx.textAlign = 'right';
+      ctx.fillStyle = `rgba(255,184,110,${0.95 * ca})`;
+      ctx.fillText(`${Math.round(hh)} m`, X(-edge) - 9, Y(hh));
+      ctx.textAlign = 'left';
+    }
+  }
+
+  // ---------- timeline ----------
+  const STATUS = {
+    build: '建造中 · 1887–1889',
+    lights: '入夜 · 金色灯光亮起',
+    sparkle: '整点闪烁 · 两万盏灯',
+    night: '入夜后每逢整点闪烁 5 分钟'
+  };
+  const SPARK_DUR = 7.5;
+  let t = reduced ? 9 : 0, clk = 0, last = 0, sparkleAt = -100, autoNext = 7.2;
+  let needLayout = true, forceLayout = false, phase = '';
+
+  function render(dt) {
+    const amb = reduced ? 0 : clk;
+    const buildP = clamp((t - 0.3) / 3.5, 0, 1);
+    const buildH = easeInOut(buildP) * (TIP + 2);
+    const nightP = smooth((t - 3.5) / 2.4);
+    const lightP = clamp((t - 4.1) / 1.9, 0, 1);
+    const lightH = easeOut(lightP) * (TIP + 24);
+    const lit = smooth((t - 4.1) / 0.6);
+    const beamP = smooth((t - 6.0) / 1.4);
+    const se = t - sparkleAt;
+    const env = se >= 0 && se <= SPARK_DUR ? smooth(se / 0.35) * (1 - smooth((se - (SPARK_DUR - 0.9)) / 0.9)) : 0;
+
+    const ph = env > 0 ? 'sparkle' : t < 3.9 ? 'build' : t < 7.3 ? 'lights' : 'night';
+    if (ph !== phase) { phase = ph; statusEl.textContent = STATUS[ph]; }
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+
+    // sky
+    const sg = ctx.createLinearGradient(0, 0, 0, gy);
+    for (const [o, a, b] of SKY) sg.addColorStop(o, mixRgb(a, b, nightP));
+    ctx.fillStyle = sg;
+    ctx.fillRect(0, 0, W, gy + 2);
+    if (nightP > 0) {
+      const hg = ctx.createLinearGradient(0, gy - 140 * s, 0, gy);
+      hg.addColorStop(0, 'rgba(255,150,80,0)');
+      hg.addColorStop(1, `rgba(255,150,80,${0.14 * nightP})`);
+      ctx.fillStyle = hg;
+      ctx.fillRect(0, gy - 140 * s, W, 140 * s + 2);
+    }
+    if (lit > 0) {
+      const hy = Y(95), hr = 190 * s;
+      const rg = ctx.createRadialGradient(cx, hy, 0, cx, hy, hr);
+      rg.addColorStop(0, `rgba(255,170,80,${0.16 * lit})`);
+      rg.addColorStop(1, 'rgba(255,170,80,0)');
+      ctx.fillStyle = rg;
+      ctx.fillRect(cx - hr, hy - hr, hr * 2, hr * 2);
+    }
+
+    // stars and moon
+    if (nightP > 0.02) {
+      ctx.fillStyle = '#fff4e2';
+      for (const st of stars) {
+        const a = st.a * nightP * (0.62 + 0.38 * Math.sin(amb * st.sp + st.ph));
+        if (a < 0.03) continue;
+        ctx.globalAlpha = a;
+        ctx.fillRect(st.x - st.r, st.y - st.r, st.r * 2, st.r * 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+    ctx.globalAlpha = 0.45 + 0.55 * nightP;
+    ctx.drawImage(moon.c, moon.x - moon.s / 2, moon.y - moon.s / 2, moon.s, moon.s);
+    ctx.globalAlpha = 1;
+
+    if (beamP > 0) drawBeams(amb, beamP); else flashLevel = 0;
+
+    // city
+    ctx.drawImage(Lr.city.c, Lr.city.x, Lr.city.y, Lr.city.w, Lr.city.h);
+    const winA = smooth((t - 4.0) / 2.0);
+    if (winA > 0) {
+      ctx.globalAlpha = winA;
+      ctx.drawImage(Lr.win.c, Lr.win.x, Lr.win.y, Lr.win.w, Lr.win.h);
+      ctx.globalAlpha = 1;
+    }
+
+    // tower: blueprint above the rising iron, iron below it, gold light climbing after dusk
+    const buildY = Y(buildH);
+    const ghostA = 0.34 * (1 - smooth((t - 3.4) / 0.9));
+    if (buildP < 1) clipDraw(Lr.ghost, 0, buildY, ghostA);
+    clipDraw(Lr.iron, buildY, H, 1);
+    if (buildP > 0 && buildP < 1) {
+      ctx.globalCompositeOperation = 'lighter';
+      bandDraw(Lr.gold, buildY + 1, 3, 1);
+      bandDraw(Lr.glowA, buildY + 1, 10, 0.8);
+      ctx.globalCompositeOperation = 'source-over';
+      emitSparks(buildH, dt);
+    }
+    if (lightP > 0) {
+      const lightY = Y(lightH);
+      clipDraw(Lr.gold, lightY, H, 1);
+      ctx.globalCompositeOperation = 'lighter';
+      featherDraw(Lr.glowA, lightY, 26, 0.55);
+      featherDraw(Lr.glowB, lightY, 52, 0.5);
+      if (lightP < 1) bandDraw(Lr.gold, lightY + 4, 7 * Math.max(1, s), 0.9);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    drawParts(dt);
+    drawSparkle(env, clk);
+    drawFlare(beamP, amb);
+
+    // far bank: trees, quay wall, lamps
+    ctx.drawImage(Lr.trees.c, Lr.trees.x, Lr.trees.y, Lr.trees.w, Lr.trees.h);
+    if (lit > 0) {
+      ctx.globalAlpha = lit;
+      ctx.drawImage(Lr.treesLit.c, Lr.treesLit.x, Lr.treesLit.y, Lr.treesLit.w, Lr.treesLit.h);
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = '#080d19';
+    ctx.fillRect(0, gy, W, bankH + 1);
+    ctx.fillStyle = `rgba(255,205,150,${0.05 + 0.1 * nightP})`;
+    ctx.fillRect(0, gy, W, 1);
+    if (nightP > 0.02) {
+      ctx.globalCompositeOperation = 'lighter';
+      for (const lp of lamps) {
+        const ly = gy + 1.5;
+        const g = ctx.createRadialGradient(lp.x, ly, 0, lp.x, ly, 7);
+        g.addColorStop(0, `rgba(255,222,160,${0.6 * nightP})`);
+        g.addColorStop(1, 'rgba(255,200,130,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(lp.x - 7, ly - 7, 14, 14);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    // the Seine
+    drawWater(amb, nightP, lit);
+    drawBoat(t, amb);
+
+    drawLabels(buildH, t);
+
+    const vg = ctx.createRadialGradient(W * 0.5, H * 0.45, Math.min(W, H) * 0.35, W * 0.5, H * 0.5, Math.max(W, H) * 0.8);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,8,0.38)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function frame(now) {
+    if (needLayout) { needLayout = false; layout(forceLayout); forceLayout = false; }
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
+    last = now;
+    t += dt;
+    clk += dt;
+    if (!reduced && t >= autoNext) { sparkleAt = t; autoNext = t + 32; }
+    render(dt);
+    requestAnimationFrame(frame);
+  }
+
+  function sparkleNow() {
+    if (t < 6.2) t = 6.2; // skip ahead so the lights are already on
+    sparkleAt = t;
+    autoNext = t + 32;
+  }
+
+  buildTower();
+  const sparks = sampleSparks(1700);
+
+  document.getElementById('sparkle').addEventListener('click', sparkleNow);
+  document.getElementById('replay').addEventListener('click', () => {
+    t = 0;
+    parts.length = 0;
+    sparkleAt = -100;
+    autoNext = 7.2;
+  });
+  canvas.addEventListener('pointerdown', sparkleNow);
+
+  let rz = 0;
+  const onResize = () => { clearTimeout(rz); rz = setTimeout(() => { needLayout = true; }, 80); };
+  window.addEventListener('resize', onResize);
+  if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { needLayout = true; forceLayout = true; });
+  if (mq) {
+    const onMq = e => { reduced = e.matches; };
+    if (mq.addEventListener) mq.addEventListener('change', onMq); else if (mq.addListener) mq.addListener(onMq);
+  }
+
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
