@@ -2,9 +2,9 @@
 
 Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 
-纯手写的静态网页（HTML / CSS / JavaScript），不依赖模板或框架，字体也是自托管的，国内打开不受影响。
-唯一会访问外部网站的是留言板（见下文），而且只在访客滚动到留言板附近时才发请求。
-改动推送到 `main` 分支后，GitHub Actions 会把 `site/` 目录发布到 `gh-pages` 分支，一两分钟后上线。
+纯手写的静态网页（HTML / CSS / JavaScript），不依赖模板或框架，字体和脚本库也都是自托管的，国内打开不受影响。
+会访问外部网站的只有：留言板和文章评论、访问量（都在 Twikoo 后台，见下文），以及管理后台（它直接和 GitHub 通信）。
+改动推送到 `main` 分支后，GitHub Actions 先用 `tools/build-site.js` 生成新闻、博客和照片页面，再把 `site/` 目录发布到 `gh-pages` 分支，一两分钟后上线。
 
 ## 常改的地方
 
@@ -16,7 +16,7 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 颜色、字体、版式 | `site/assets/css/site.css` 开头的变量。 |
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
 | 首屏的背景照片 | `site/assets/img/hero/mountains.webp`（2172 × 724，雪山全景）。在 `site.css` 的 `.chamber` 里：照片铺满首屏，上沿和下半部分各压了一层渐变暗角，让菜单和名字看得清，也让首屏和下面的深色部分接上；余辉动画的画布用滤色（screen）叠在照片上。换照片时用横版、宽一些的图（宽 2000 像素以上更清楚）。 |
-| 「趣味」栏目的作品 | 每个作品是一张独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”。首页 `id="playground"` 一节里每个作品一张卡片 `<a class="play">…</a>`，缩略图在 `site/assets/img/play/`（1120 × 700，16:10）。加新作品：新建一个文件夹放网页，再复制一张卡片，改链接、缩略图、标题和中英文说明。 |
+| 「趣味」栏目的作品 | 每个作品是一张独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”。首页 `id="playground"` 一节里每个作品一张卡片 `<a class="play">…</a>`，缩略图在 `site/assets/img/play/`（1120 × 700，显示时裁成 16:9）。加新作品：新建一个文件夹放网页，再复制一张卡片，改链接、缩略图、标题和中英文说明。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
 | 「实验室之外」的照片 | `site/assets/img/life/g318.webp`（760 × 507）和 `g318@2x.webp`（1520 × 1013），横版 3:2。文字和图注在 `site/index.html` 里 `id="life"` 一节。中文标题和引语用的宋体是按网页用到的字裁出来的（`site/assets/fonts/serif-sc.woff`），改这里的中文时新字可能显示成系统字体，告诉我重新生成字体文件即可。 |
@@ -26,6 +26,64 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 以后在标题里加了新字，新字会用系统自带的宋体显示，不影响阅读；想让字形完全统一，需要重新生成这个字体文件。
 
 旧地址 `/publications/` 和 `/cv/` 会自动跳到首页对应的位置，`/guestbook/` 会跳到留言板。
+
+## 新闻、博客、照片
+
+导航栏的「动态」一组里是这三个页面：`/news/`、`/blog/`、`/photos/`。
+
+**最方便的是用管理后台：<https://tqzhaone.github.io/admin/>**，手机和电脑都能用。
+在后台可以写博客（贴图、拖图都行，会自动压缩，可以边写边预览）、发新闻、批量上传照片，也能修改和删除。
+每次保存就是仓库里的一次提交，大约一分钟后网站上就能看到，后台会提示什么时候上线。
+写到一半的文章会自动存成本机草稿（图片也存着），换了页面或刷新都不会丢；草稿只在这台设备上。
+
+第一次用后台要一把 GitHub 密钥（只需生成一次）：
+
+1. 打开 <https://github.com/settings/personal-access-tokens/new>。
+2. Token name 随便填（比如「网站后台」），Expiration 选个期限（比如一年）。
+3. Repository access 选 **Only select repositories**，只勾 **tqzhaone.github.io**。
+4. Permissions → Repository permissions → **Contents** 选 **Read and write**，其他不用动。
+5. 点 Generate token，把 `github_pat_` 开头的那串粘贴进后台。
+
+密钥只存在那台设备的浏览器里，只能改这一个仓库。用过的公用电脑上记得点后台右上角的「退出」。密钥过期后再生成一个就行。
+万一怀疑密钥泄露，在 <https://github.com/settings/personal-access-tokens> 把它删掉，再生成一个新的；网站上被改动的内容可以从 GitHub 的提交历史里恢复。
+在登录过后台的浏览器里，新闻、博客、照片页面上会多出「发新闻」「写文章」「编辑这篇」「传照片」这些按钮，别人看不到。
+
+内容都存在 `site/` 里，也可以直接改文件：
+
+| 内容 | 文件 | 说明 |
+| --- | --- | --- |
+| 博客 | `site/blog/<网址名>/index.md`，图片放在同一个文件夹 | 一篇文章一个文件夹，文件夹名就是网址（只能用小写字母、数字和 `-`）。开头是标题、日期等信息，后面是 Markdown 正文，格式见下。 |
+| 新闻 | `site/news/news.json`，配图在 `site/news/img/` | 每条：`id`、`date`（YYYY-MM-DD）、`kind`（`paper` 论文 / `talk` 会议 / `award` 获奖 / `other` 其他）、`text`（中文）、`text_en`（英文，选填）、`link`、`image`（选填）。 |
+| 照片 | `site/photos/photos.json`，图片在 `site/photos/img/` | 每张：`id`、`file`（原图，长边不超过 2000 像素）、`thumb`（缩略图，长边 720）、`caption`、`caption_en`、`place`、`date`、`album`。 |
+
+博客文章开头的格式（`---` 之间），`title` 和 `date` 必填：
+
+```
+---
+title: "文章标题"
+date: 2026-11-26
+tags: ["余辉", "随笔"]
+summary: "一句话摘要，不写就自动取正文开头"
+cover: "cover.webp"
+pinned: true
+lang: "en"
+draft: true
+---
+```
+
+`cover` 不写就用正文第一张图；`pinned` 置顶；`lang: "en"` 表示正文是英文；`draft: true` 表示先不发布。
+
+正文是 Markdown，排版代码是自己写的（`site/assets/js/blog-render.js`，后台预览和网站用的是同一份，所以预览什么样，发出去就什么样）：
+`## 小标题`（会进文章目录），`**粗体**`、`*斜体*`、`==高亮==`、`~~删除线~~`、引用、列表、表格、代码，
+`[文字](链接)`，脚注 `[^1]`，上下标可以直接写 `H<sub>2</sub>O`、`cm<sup>-1</sup>`。
+单独一行的图片 `![图注](图片.webp)` 会显示成带图注的插图，连续几行图片会排成一组，`![图注](图片.webp "wide")` 是加宽的大图。
+正文里的网页链接会自动变成可点的链接；为了安全，脚本和 `javascript:` 链接会被去掉。
+
+每篇文章下面有评论区，和首页留言板用同一个 Twikoo 后台（每篇文章是单独的一串评论，管理面板里能统一管理），还会显示阅读量。
+博客另有 RSS：`/blog/feed.xml`。
+
+生成的页面（`site/blog/index.html`、每篇文章的 `index.html`、`site/news/index.html`、`site/photos/index.html` 等）不放在仓库里，每次部署时现做。
+想在自己电脑上预览：在仓库根目录运行 `node tools/build-site.js`（只需要 Node，不用安装别的），再用任意静态服务器打开 `site/`。
 
 ## 留言板
 
@@ -58,3 +116,4 @@ Cardo、Fira Sans 和 Noto Serif CJK（思源宋体）均采用 SIL Open Font Li
 ## 第三方库
 
 鹈鹕页的 3D 场景用 three.js r128，文件放在仓库里（`site/assets/vendor/three.min.js`），不从外部网站加载。three.js 采用 MIT 许可，许可声明保留在文件开头。
+博客的 Markdown 排版、管理后台和构建脚本都是自己写的，没有用第三方库。

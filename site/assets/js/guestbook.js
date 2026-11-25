@@ -6,6 +6,10 @@
  * been fading ever since, on the same radiance colour table as the opening screen. The plot above
  * the list puts every message on that afterglow decay curve: newer messages sit high and hot,
  * older ones low and violet, and likes push a message back up.
+ *
+ * The same script runs the comments under each blog post: there the section carries
+ * data-thread="/blog/<post>/" (its own thread in Twikoo) and data-kind="comment", which only
+ * changes the wording from "message" to "comment".
  */
 (function () {
   "use strict";
@@ -14,7 +18,9 @@
   if (!section) return;
 
   const API = (section.dataset.api || "").trim();
-  const THREAD = "/guestbook/"; // every guestbook message is filed under this path in Twikoo
+  // Every guestbook message is filed under this path in Twikoo; a blog post files its comments under its own.
+  const THREAD = (section.dataset.thread || "/guestbook/").trim();
+  const COMMENTS = section.dataset.kind === "comment";
   const TOKEN_KEY = "twikoo-access-token"; // same key as the official client, so an admin sign-in carries over
   const VISITOR_KEY = "guestbook-visitor";
   const SAFE_ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -74,13 +80,24 @@
     [/验证码/, ["Posting needs a captcha, which this page doesn't support. Please email me instead.", "发布需要验证码，这个页面不支持。请改用邮件联系我。"]],
   ];
 
+  // Under a blog post the same words talk about comments rather than messages.
+  const reword = (text) =>
+    COMMENTS
+      ? text
+          .replace(/留言/g, "评论")
+          .replace(/Messages/g, "Comments")
+          .replace(/messages/g, "comments")
+          .replace(/Message/g, "Comment")
+          .replace(/message/g, "comment")
+      : text;
+
   const say = (pair, vars) => {
-    let text = pair[lang() === "zh" ? 1 : 0];
+    let text = reword(pair[lang() === "zh" ? 1 : 0]);
     if (vars) Object.keys(vars).forEach((key) => (text = text.split(`{${key}}`).join(String(vars[key]))));
     return text;
   };
 
-  const countText = (n) => (lang() === "zh" ? `${n} 条留言` : n === 1 ? "1 message" : `${n} messages`);
+  const countText = (n) => reword(lang() === "zh" ? `${n} 条留言` : n === 1 ? "1 message" : `${n} messages`);
 
   /* Small helpers ----------------------------------------------------------------------------------- */
 
@@ -94,9 +111,9 @@
   // Both languages at once; the page's language switch shows one of them.
   function bi(pair) {
     const frag = document.createDocumentFragment();
-    const en = el("span", "", pair[0]);
+    const en = el("span", "", reword(pair[0]));
     en.dataset.l = "en";
-    const zh = el("span", "", pair[1]);
+    const zh = el("span", "", reword(pair[1]));
     zh.dataset.l = "zh";
     zh.lang = "zh-CN";
     frag.append(en, zh);
@@ -1138,7 +1155,7 @@
     if (!document.hidden && state.loaded) refreshGlow();
   }, 30000);
 
-  if (linkedId || location.hash === "#guestbook" || !("IntersectionObserver" in window)) {
+  if (linkedId || location.hash === `#${section.id}` || !("IntersectionObserver" in window)) {
     start();
   } else {
     // Messages load only when the guestbook is about to scroll into view.

@@ -1,7 +1,9 @@
 name: Deploy site
 
-# Publishes the static files in site/ to the gh-pages branch, which GitHub Pages serves.
-# There is no build step: what is in site/ is what goes online.
+# Publishes site/ to the gh-pages branch, which GitHub Pages serves.
+# One build step first: tools/build-site.js writes the News, Blog and Photos pages from their content
+# (site/news/news.json, site/blog/<post>/index.md, site/photos/photos.json). It needs only Node, which
+# the runner already has. Everything else in site/ goes online as it is.
 
 on:
   push:
@@ -9,6 +11,7 @@ on:
       - main
     paths:
       - "site/**"
+      - "tools/**"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
@@ -25,6 +28,9 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v7
+
+      - name: Build the News, Blog and Photos pages
+        run: node tools/build-site.js
 
       - name: Publish site/ to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
