@@ -13,13 +13,13 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 页面文字 | `site/index.html`。中英文成对出现：`data-l="en"` 是英文，`data-l="zh"` 是中文，两边都要改。 |
 | 加一篇论文 | 导航栏「动态」里的「论文」是 `/publications/` 页面，部署时由 `tools/build-site.js` 的 `publicationsPage()` 生成，内容来自两个文件：`site/publications/papers.html`（按年份分组的论文列表）和 `site/publications/bibtex.json`（「复制 BibTeX」按钮复制的内容）。加一篇：在 `papers.html` 里复制一篇同类论文的 `<li class="pub">…</li>`（第一作者的就复制一篇第一作者的，带 `data-first="true"`），改期刊、标题、作者和 DOI；新的一年就复制一整个 `<div class="year">…</div>`。再把 BibTeX 加进 `bibtex.json`，键名和按钮上的 `data-bib` 一致。筛选按钮上的篇数会自动更新；首页「简历」一节里的论文总数是手写的，记得一起改。也可以直接把 DOI 发给我来加。 |
 | 邮箱 | `site/index.html` 里的 `data-user` 和 `data-domain`（共两处）。完整地址由脚本拼出来，HTML 源码里不出现，能挡掉一部分抓邮箱的爬虫。 |
+| 「关于」里的那句话 | `site/index.html` 里 `class="motto"` 的一段：318 国道路边标语上的「今日走过了所有的弯路，从此人生尽是坦途。」，英文模式下多一行英译。它用的宋体是按网页上已有的字裁出来的（`site/assets/fonts/serif-sc.woff`），换成别的话时新字会显示成系统宋体，告诉我重新生成字体文件即可。以前的「实验室之外」页面 `/life/` 已经删掉，那张照片在「照片」页面里。 |
 | 颜色、字体、版式 | `site/assets/css/site.css` 开头的变量。 |
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
 | 首屏的背景照片 | `site/assets/img/hero/mountains.webp`（2172 × 724，雪山全景）。在 `site.css` 的 `.chamber` 里：照片铺满首屏，上沿和下半部分各压了一层渐变暗角，让菜单和名字看得清，也让首屏和下面的深色部分接上；余辉动画的画布用滤色（screen）叠在照片上。换照片时用横版、宽一些的图（宽 2000 像素以上更清楚）。 |
-| 「趣味」页面和作品 | 导航栏「更多」里的「趣味」是 `/playground/` 页面，由 `tools/build-site.js` 的 `playgroundPage()` 在部署时生成，每个作品一张卡片。作品本身是独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”；缩略图在 `site/assets/img/play/<名字>.webp`（1120 × 700，显示时裁成 16:9）。加新作品：新建一个文件夹放网页，放一张同名缩略图，再在 `playgroundPage()` 的 `cards` 里加一项（标题和中英文说明）。 |
+| 「趣味」页面和作品 | 导航栏最右边的「趣味」是 `/playground/` 页面，由 `tools/build-site.js` 的 `playgroundPage()` 在部署时生成，每个作品一张卡片。作品本身是独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”；缩略图在 `site/assets/img/play/<名字>.webp`（1120 × 700，显示时裁成 16:9）。加新作品：新建一个文件夹放网页，放一张同名缩略图，再在 `playgroundPage()` 的 `cards` 里加一项（标题和中英文说明）。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
-| 「实验室之外」页面 | 导航栏「更多」里的「实验室之外」是 `/life/` 页面，由 `tools/build-site.js` 的 `lifePage()` 在部署时生成：路牌上的那句话、照片和图注都在那里。照片是 `site/assets/img/life/g318.webp`（760 × 507）和 `g318@2x.webp`（1520 × 1013），横版 3:2。中文标题和引语用的宋体是按网页用到的字裁出来的（`site/assets/fonts/serif-sc.woff`），改这里的中文时新字可能显示成系统字体，告诉我重新生成字体文件即可。以前指向首页 `#playground`、`#life` 的链接会自动跳到这两个页面。 |
 | 各区块的背景图 | `site/assets/img/bg/ribbon-*.webp`：一条贯穿全页的余辉光带。首屏是激发的那一刻，往下每个区块各画一段，颜色按首屏色标从红、琥珀、绿、蓝走到紫，亮度一段比一段暗，像余辉衰减；每张都有普通和 `@2x` 高清两个版本。图是黑底发光，网页用滤色（screen）叠到底色上，黑色部分不显示，所以换图时也要用黑底。`grain.png` 是铺在深色底上的细颗粒。位置、亮度和每个区块的底色光晕在 `site.css` 的 Backgrounds 一段。 |
 
 中文标题用的是精简过的思源宋体（`site/assets/fonts/serif-sc.woff`），只包含现在页面上用到的字。
@@ -29,7 +29,7 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 
 ## 新闻、博客、照片
 
-导航栏的「动态」一组里是论文 `/publications/`（见上面「加一篇论文」）和这三个页面：`/news/`、`/blog/`、`/photos/`；最右边的「更多」一组里是「趣味」`/playground/` 和「实验室之外」`/life/`。
+导航栏的「动态」一组里是论文 `/publications/`（见上面「加一篇论文」）和这三个页面：`/news/`、`/blog/`、`/photos/`；最右边是「趣味」`/playground/`。
 
 **最方便的是用管理后台：<https://tqzhaone.github.io/admin/>**，手机和电脑都能用。
 在后台可以写博客（贴图、拖图都行，会自动压缩，可以边写边预览）、发新闻、批量上传照片，也能修改和删除。

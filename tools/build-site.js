@@ -12,7 +12,7 @@
  *   news/index.html
  *   photos/index.html
  *   publications/index.html (from papers.html and bibtex.json, which tools/build.py writes)
- *   playground/index.html, life/index.html (the two pages in the top bar's "More" menu)
+ *   playground/index.html (the Playground page, last in the top bar)
  *   sitemap.xml (the new pages are added)
  *
  * The deploy workflow runs it before publishing site/, so the generated pages are never kept in the
@@ -158,11 +158,6 @@ const UPDATES = [
   ["photos", "/photos/", "Photos", "照片", "The lab, travel, life", "实验室、旅行与生活"],
 ];
 
-const MORE = [
-  ["playground", "/playground/", "Playground", "趣味", "A pelican on a bicycle, the Eiffel Tower at night", "鹈鹕骑车、埃菲尔铁塔之夜"],
-  ["life", "/life/", "Beyond the lab", "实验室之外", "A photo from the road", "318 国道上的一张照片"],
-];
-
 // A drop-down in the top bar (assets/js/nav.js); in the phone menu its links are listed.
 function navGroup(id, en, zh, list, current, extraClass = "") {
   const items = list
@@ -181,7 +176,8 @@ ${items}
 }
 
 function topbar(current) {
-  const link = (href, en, zh) => `        <a href="${href}">${bi(en, zh)}</a>`;
+  const link = (href, en, zh, key) =>
+    `        <a href="${href}"${key && key === current ? ' class="is-active" aria-current="page"' : ""}>${bi(en, zh)}</a>`;
   return `    <header class="topbar is-solid" data-topbar>
       <a class="brand" href="/">Tianqi Zhao</a>
       <nav class="nav" id="site-nav" aria-label="Sections">
@@ -190,7 +186,7 @@ ${link("/#cv", "CV", "简历")}
 ${navGroup("nav-updates", "Updates", "动态", UPDATES, current, " nav__menu--two")}
 ${link("/#contact", "Contact", "联系")}
 ${link("/#guestbook", "Guestbook", "留言板")}
-${navGroup("nav-more", "More", "更多", MORE, current, " nav__menu--two")}
+${link("/playground/", "Playground", "趣味", "playground")}
       </nav>
       <div class="lang" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
@@ -813,7 +809,7 @@ ${list.replace(/\s+$/, "")}
   });
 }
 
-/* Playground and Beyond the lab -------------------------------------------------------------------- */
+/* Playground ------------------------------------------------------------------------------------- */
 
 const playCard = (o) => `            <a class="play play--${o.key}" href="/playground/${o.key}/">
               <span class="play__shot"><img src="/assets/img/play/${o.key}.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
@@ -872,45 +868,6 @@ ${cards.map(playCard).join("\n")}
   });
 }
 
-function lifePage() {
-  const main = `      <section class="section page lifepage" aria-labelledby="page-title">
-        <div class="wrap">
-${pageHead({
-  id: "page-title",
-  en: "Beyond the lab",
-  zh: "实验室之外",
-  leadEn: "A photo from the road, and the line on the sign beside it.",
-  leadZh: "路上的一张照片，和路边标语上的一句话。",
-})}
-          <div class="life__grid">
-            <div class="life__text">
-              <blockquote class="life__quote">
-                <p lang="zh-CN">今日走过了所有的弯路，<br>从此人生尽是坦途。</p>
-                <p class="life__gloss" data-l="en">Today I walked every winding road; from here on, life&#8217;s road runs smooth.</p>
-              </blockquote>
-              <p class="life__source">${bi("A roadside sign on G318", "318 国道路边的标语")}</p>
-              <a class="textlink life__more" href="/photos/">${bi("More photos", "更多照片")}</a>
-            </div>
-            <figure class="life__photo">
-              <img src="/assets/img/life/g318.webp" srcset="/assets/img/life/g318.webp 1x, /assets/img/life/g318@2x.webp 2x" width="760" height="507" alt="Tianqi Zhao on the Sichuan–Tibet Highway (G318) at Litang, beside a roadside sign, with snow-capped mountains behind" decoding="async">
-              <figcaption>${bi("On the Sichuan–Tibet Highway (G318), Litang", "川藏公路 318 国道，理塘")}</figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>`;
-  return page({
-    titleEn: `Beyond the lab | ${AUTHOR}`,
-    titleZh: `实验室之外 | ${AUTHOR}`,
-    ogTitle: `${AUTHOR} · Beyond the lab`,
-    description: "Tianqi Zhao away from the lab: a photo from the Sichuan–Tibet Highway (G318).",
-    url: `${ORIGIN}/life/`,
-    image: `${ORIGIN}/assets/img/life/g318@2x.webp`,
-    current: "life",
-    bodyClass: "list-page",
-    main,
-  });
-}
-
 /* Sitemap ----------------------------------------------------------------------------------------- */
 
 function updateSitemap(posts, news, photos) {
@@ -958,8 +915,6 @@ function build() {
 
   fs.writeFileSync(path.join(SITE, "publications", "index.html"), publicationsPage());
   fs.writeFileSync(path.join(SITE, "playground", "index.html"), playgroundPage());
-  fs.mkdirSync(path.join(SITE, "life"), { recursive: true });
-  fs.writeFileSync(path.join(SITE, "life", "index.html"), lifePage());
 
   updateSitemap(posts, news, photos);
   console.log(`built: ${posts.length} blog post(s), ${news.items.length} news item(s), ${photos.items.length} photo(s)`);

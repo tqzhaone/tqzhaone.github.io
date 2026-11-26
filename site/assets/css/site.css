@@ -1147,6 +1147,52 @@ html[data-lang="zh"] .statement {
   color: var(--moon);
 }
 
+/* The line from a roadside sign on G318 closes the facts, like the signature on a card. The short
+   colour-table line above it is the one along the bottom of the portrait. */
+.motto {
+  margin: clamp(36px, 4vw, 52px) 0 0;
+  /* On wide screens the About ribbon runs behind it; a soft dark halo keeps the text crisp. */
+  text-shadow: 0 1px 16px rgba(7, 9, 26, 0.9);
+}
+
+.motto::before {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 2px;
+  margin-bottom: 22px;
+  background: linear-gradient(90deg, var(--lut));
+  opacity: 0.85;
+}
+
+.motto__quote {
+  margin: 0;
+}
+
+.motto__quote p[lang="zh-CN"] {
+  margin: 0;
+  color: var(--moon);
+  font-family: var(--serif);
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+}
+
+.motto__gloss {
+  max-width: 40ch;
+  margin: 12px 0 0;
+  color: var(--haze);
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.65;
+}
+
+.motto__source {
+  margin-top: 14px;
+  color: var(--dim);
+  font-size: 13px;
+}
+
 /* Research */
 
 .research {
@@ -1723,63 +1769,6 @@ html[data-lang="zh"] .theme__title {
   margin: 0;
 }
 
-/* Beyond the lab: a photo from the road, and the line on the sign beside it. The photo keeps
-   its daylight; a frame, a cool shadow and a soft edge let it sit in the dark like the portrait. */
-
-.life {
-  --wash-a: radial-gradient(45% 55% at 84% 42%, rgba(96, 160, 255, 0.07), transparent 70%);
-}
-
-.life__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: clamp(32px, 6vw, 96px);
-  align-items: center;
-}
-
-.life__grid .section-title {
-  margin: 0 0 clamp(28px, 3vw, 44px);
-  text-wrap: balance;
-}
-
-html[data-lang="zh"] .life__grid .section-title {
-  word-break: keep-all;
-}
-
-.life__quote {
-  margin: 0;
-  padding: 0;
-}
-
-.life__quote p[lang="zh-CN"] {
-  margin: 0;
-  color: var(--moon);
-  font-family: var(--serif);
-  font-size: clamp(24px, 2.2vw, 31px);
-  line-height: 1.6;
-  letter-spacing: 0.03em;
-}
-
-.life__gloss {
-  max-width: 30ch;
-  margin: 18px 0 0;
-  color: var(--haze);
-  font-size: 15px;
-  font-style: italic;
-  line-height: 1.65;
-}
-
-.life__source {
-  margin: 22px 0 0;
-  color: var(--dim);
-  font-size: 13px;
-}
-
-.life__more {
-  display: inline-block;
-  margin-top: 26px;
-}
-
 /* The CV's line linking to the Publications page, and that page's filter row. */
 .cv__more {
   display: inline-block;
@@ -1788,49 +1777,6 @@ html[data-lang="zh"] .life__grid .section-title {
 
 .pubs__tools {
   margin: 0 0 clamp(6px, 1.2vw, 14px);
-}
-
-.lifepage .life__grid {
-  margin-top: clamp(4px, 1.6vw, 20px);
-}
-
-.life__photo {
-  position: relative;
-  margin: 0;
-}
-
-.life__photo img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  box-shadow:
-    0 60px 120px -50px rgba(96, 160, 255, 0.32),
-    0 30px 60px -30px rgba(0, 0, 0, 0.85);
-}
-
-.life__photo figcaption {
-  margin-top: 12px;
-  color: var(--dim);
-  font-size: 13px;
-  text-align: right;
-}
-
-@media (max-width: 860px) {
-  .life__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .life__photo figcaption {
-    text-align: left;
-  }
-}
-
-@media print {
-  .life__photo img {
-    box-shadow: none;
-  }
 }
 
 /* Contact */
@@ -3095,8 +3041,7 @@ a.gb-nick:hover {
   gap: 22px;
 }
 
-.cv__grid,
-.life__grid {
+.cv__grid {
   gap: clamp(28px, 4.5vw, 72px);
 }
 
