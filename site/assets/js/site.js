@@ -157,7 +157,6 @@
   const canvas = chamber.querySelector(".chamber__canvas");
   const ctx = canvas.getContext("2d", { alpha: false });
   const nameEl = chamber.querySelector(".name");
-  const scaleMark = chamber.querySelector(".scale__mark");
   const timeOut = chamber.querySelector("[data-t]");
   const plot = chamber.querySelector(".readout__plot");
   const plotCtx = plot.getContext("2d");
@@ -487,7 +486,6 @@
     ctx.globalCompositeOperation = "lighter";
 
     let total = 0;
-    let peak = 0;
     for (let i = 0; i < N; i++) {
       let e = pe[i];
       if (e < 0.003) {
@@ -499,7 +497,6 @@
         pe[i] = e;
       }
       total += e;
-      if (e > peak) peak = e;
       const v = e > 1 ? 1 : e;
       const size = pr[i] * (4 + 18 * v);
       ctx.globalAlpha = v < 0.15 ? (v / 0.15) * 0.7 : 0.7 + 0.3 * v;
@@ -519,7 +516,6 @@
     ctx.globalCompositeOperation = "source-over";
 
     paintLetters(decay ? dt : 0);
-    scaleMark.style.bottom = `${(Math.min(1, peak) * 100).toFixed(1)}%`;
 
     historyClock += dt;
     if (historyClock >= 0.06 || !decay) {

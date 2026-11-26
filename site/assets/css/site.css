@@ -630,18 +630,23 @@ sup {
   overflow: hidden;
   isolation: isolate;
   touch-action: pan-y;
-  /* The owner's photograph of snow mountains under the sky, as the chamber's backdrop. It is
-     darkened at the top for the menu and heavily towards the bottom, where the name sits and
-     the page goes on into the dark; the excitation canvas is screen-blended over it, so the
-     canvas's black adds nothing and only the glow shows. */
+  /* The owner's photograph of snow mountains under the sky fills the top of the chamber at its own
+     3:1 shape: 58% of the screen tall, or the full width of the screen if that is taller. Under the
+     snow (which ends about 62% of the way down the photo) it fades through the plain and the forest
+     into the night, and the name and the lines under it sit there, clear of the snow: see the top
+     padding of .chamber__content. The top is darkened for the menu. The excitation canvas is
+     screen-blended over all of it, so the canvas's black adds nothing and only the glow shows. */
   background-color: var(--chamber);
   background-image:
     linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 170px),
-    linear-gradient(180deg, rgba(0, 0, 0, 0) 34%, rgba(0, 0, 0, 0.6) 58%, rgba(0, 0, 0, 0.9) 82%, #000),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.5) 66%, rgba(0, 0, 0, 0.86) 84%, #000 97%),
     url("../img/hero/mountains.webp");
-  background-size: 100% 100%, 100% 100%, cover;
-  background-position: 0 0, 0 0, 50% 50%;
   background-repeat: no-repeat;
+  background-position: 0 0, 50% 0, 50% 0;
+  /* The fade runs 3px past the photo, so a photo height in fractions of a pixel never leaves a
+     sliver of its bottom row showing under the black. */
+  background-size: 100% 100%, 100% calc(max(58vh, 34vw) + 3px), auto max(58vh, 34vw);
+  background-size: 100% 100%, 100% calc(max(58svh, 34vw) + 3px), auto max(58svh, 34vw);
 }
 
 .chamber::after {
@@ -668,7 +673,10 @@ sup {
 .chamber__content {
   position: relative;
   max-width: 100%;
-  padding: calc(var(--topbar) + 48px) var(--gutter) clamp(40px, 9vh, 96px);
+  /* Starts 70% of the way down the photo (see .chamber), below its snow line, so the name never
+     sits on the snow. On a short screen the chamber grows rather than letting them overlap. */
+  padding: calc(max(58vh, 34vw) * 0.7) var(--gutter) clamp(40px, 9vh, 96px);
+  padding-top: calc(max(58svh, 34vw) * 0.7);
   pointer-events: none;
 }
 
@@ -742,67 +750,6 @@ html[data-lang="zh"] .lede {
   }
 }
 
-.scale {
-  position: absolute;
-  top: 50%;
-  right: var(--gutter);
-  display: grid;
-  grid-template-columns: 12px auto;
-  grid-template-rows: auto 1fr;
-  gap: 10px;
-  height: min(44vh, 340px);
-  color: var(--moon-soft);
-  font-size: 12px;
-  line-height: 1.2;
-  /* The labels sit on the photograph's sky, so they carry a soft shadow to stay legible. */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), 0 0 14px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
-.scale__title {
-  grid-column: 1 / 3;
-}
-
-.scale__bar {
-  position: relative;
-  grid-row: 2;
-  grid-column: 1;
-  width: 12px;
-  border-radius: 6px;
-  background: linear-gradient(to top, var(--lut));
-  box-shadow:
-    0 0 22px rgba(0, 200, 255, 0.22),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-}
-
-.scale__max,
-.scale__min {
-  grid-row: 2;
-  grid-column: 2;
-}
-
-.scale__max {
-  align-self: start;
-}
-
-.scale__min {
-  align-self: end;
-}
-
-/* Marks the brightest spot on screen right now. */
-.scale__mark {
-  position: absolute;
-  right: -5px;
-  bottom: 0;
-  left: -5px;
-  height: 2px;
-  border-radius: 1px;
-  background: #fff;
-  box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.9);
-  transform: translateY(50%);
-}
-
 .readout {
   position: absolute;
   right: var(--gutter);
@@ -828,18 +775,6 @@ html[data-lang="zh"] .lede {
 }
 
 @media (max-width: 760px) {
-  .scale {
-    top: calc(var(--topbar) + 24px);
-    grid-template-columns: 8px auto;
-    height: 20vh;
-    font-size: 11px;
-    transform: none;
-  }
-
-  .scale__bar {
-    width: 8px;
-  }
-
   .readout {
     display: none;
   }
@@ -1204,38 +1139,12 @@ html[data-lang="zh"] .statement {
   margin-bottom: clamp(24px, 3vw, 40px);
 }
 
-.research-art {
-  margin: 0 0 clamp(32px, 4vw, 56px);
-}
-
-.research-art__image {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--line);
-  border-radius: clamp(12px, 1.6vw, 20px);
-  background: var(--night);
-}
-
-.research-art figcaption {
-  margin-top: 10px;
-  color: var(--dim);
-  font-size: 13px;
-  text-align: right;
-}
-
-.research-art__image--topic {
-  aspect-ratio: 16 / 9;
-  margin-bottom: 24px;
-  object-fit: cover;
-  object-position: center 56%;
-}
-
-@media print {
-  .research-art,
-  .research-art__image--topic {
-    display: none;
-  }
+.research__summary {
+  max-width: 62ch;
+  margin: 0 0 clamp(44px, 5.5vw, 80px);
+  color: var(--moon-soft);
+  font-size: clamp(17px, 1.4vw, 19px);
+  line-height: 1.8;
 }
 
 .themes {
@@ -2998,20 +2907,6 @@ a.gb-nick:hover {
   font-size: clamp(27px, 2.9vw, 40px);
 }
 
-.research-art {
-  margin-bottom: clamp(22px, 3vw, 36px);
-}
-
-.research-art > .research-art__image {
-  aspect-ratio: 16 / 5.4;
-  object-fit: cover;
-}
-
-.research-art__image--topic {
-  aspect-ratio: 2 / 1;
-  margin-bottom: 18px;
-}
-
 .themes {
   gap: clamp(32px, 4vw, 64px);
 }
@@ -3085,9 +2980,5 @@ a.gb-nick:hover {
 
   .section-title {
     font-size: 34px;
-  }
-
-  .research-art > .research-art__image {
-    aspect-ratio: 16 / 7;
   }
 }
