@@ -4,14 +4,14 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 
 纯手写的静态网页（HTML / CSS / JavaScript），不依赖模板或框架，字体和脚本库也都是自托管的，国内打开不受影响。
 会访问外部网站的只有：留言板和文章评论、访问量（都在 Twikoo 后台，见下文），以及管理后台（它直接和 GitHub 通信）。
-改动推送到 `main` 分支后，GitHub Actions 先用 `tools/build-site.js` 生成新闻、博客和照片页面，再把 `site/` 目录发布到 `gh-pages` 分支，一两分钟后上线。
+改动推送到 `main` 分支后，GitHub Actions 先用 `tools/build-site.js` 生成论文、新闻、博客和照片等页面，再把 `site/` 目录发布到 `gh-pages` 分支，一两分钟后上线。
 
 ## 常改的地方
 
 | 想改什么 | 在哪里改 |
 | --- | --- |
 | 页面文字 | `site/index.html`。中英文成对出现：`data-l="en"` 是英文，`data-l="zh"` 是中文，两边都要改。 |
-| 加一篇论文 | `site/index.html` 的 `id="publications"` 一节：复制一篇同类论文的 `<li class="pub">…</li>`（第一作者的就复制一篇第一作者的），改期刊、标题、作者和 DOI。再把 BibTeX 加进页面底部 `id="bibtex"` 的 JSON，键名和按钮上的 `data-bib` 一致。筛选按钮上的篇数会自动更新；“简历”一节里的论文总数是手写的，记得一起改。 |
+| 加一篇论文 | 导航栏「动态」里的「论文」是 `/publications/` 页面，部署时由 `tools/build-site.js` 的 `publicationsPage()` 生成，内容来自两个文件：`site/publications/papers.html`（按年份分组的论文列表）和 `site/publications/bibtex.json`（「复制 BibTeX」按钮复制的内容）。加一篇：在 `papers.html` 里复制一篇同类论文的 `<li class="pub">…</li>`（第一作者的就复制一篇第一作者的，带 `data-first="true"`），改期刊、标题、作者和 DOI；新的一年就复制一整个 `<div class="year">…</div>`。再把 BibTeX 加进 `bibtex.json`，键名和按钮上的 `data-bib` 一致。筛选按钮上的篇数会自动更新；首页「简历」一节里的论文总数是手写的，记得一起改。也可以直接把 DOI 发给我来加。 |
 | 邮箱 | `site/index.html` 里的 `data-user` 和 `data-domain`（共两处）。完整地址由脚本拼出来，HTML 源码里不出现，能挡掉一部分抓邮箱的爬虫。 |
 | 颜色、字体、版式 | `site/assets/css/site.css` 开头的变量。 |
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
@@ -25,11 +25,11 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 中文标题用的是精简过的思源宋体（`site/assets/fonts/serif-sc.woff`），只包含现在页面上用到的字。
 以后在标题里加了新字，新字会用系统自带的宋体显示，不影响阅读；想让字形完全统一，需要重新生成这个字体文件。
 
-旧地址 `/publications/` 和 `/cv/` 会自动跳到首页对应的位置，`/guestbook/` 会跳到留言板。
+旧地址 `/cv/` 会自动跳到首页的简历，`/guestbook/` 会跳到留言板；以前指向首页 `#publications` 的链接会跳到论文页面。
 
 ## 新闻、博客、照片
 
-导航栏的「动态」一组里是这三个页面：`/news/`、`/blog/`、`/photos/`；最右边的「更多」一组里是「趣味」`/playground/` 和「实验室之外」`/life/`。
+导航栏的「动态」一组里是论文 `/publications/`（见上面「加一篇论文」）和这三个页面：`/news/`、`/blog/`、`/photos/`；最右边的「更多」一组里是「趣味」`/playground/` 和「实验室之外」`/life/`。
 
 **最方便的是用管理后台：<https://tqzhaone.github.io/admin/>**，手机和电脑都能用。
 在后台可以写博客（贴图、拖图都行，会自动压缩，可以边写边预览）、发新闻、批量上传照片，也能修改和删除。
@@ -82,7 +82,7 @@ draft: true
 每篇文章下面有评论区，和首页留言板用同一个 Twikoo 后台（每篇文章是单独的一串评论，管理面板里能统一管理），还会显示阅读量。
 博客另有 RSS：`/blog/feed.xml`。
 
-生成的页面（`site/blog/index.html`、每篇文章的 `index.html`、`site/news/index.html`、`site/photos/index.html` 等）不放在仓库里，每次部署时现做。
+生成的页面（`site/publications/index.html`、`site/blog/index.html`、每篇文章的 `index.html`、`site/news/index.html`、`site/photos/index.html` 等）不放在仓库里，每次部署时现做。
 想在自己电脑上预览：在仓库根目录运行 `node tools/build-site.js`（只需要 Node，不用安装别的），再用任意静态服务器打开 `site/`。
 
 ## 留言板

@@ -21,10 +21,9 @@
     <link rel="preload" href="assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
     <link rel="stylesheet" href="assets/css/site.css">
     <script>
-      // Playground and Beyond the lab used to be sections here; old links to them go to their pages.
-      if (location.hash === "#playground" || location.hash === "#life") {
-        location.replace((location.hash === "#life" ? "/life/" : "/playground/") + location.search);
-      }
+      // Playground, Beyond the lab and Publications used to be sections here; old links go to their pages.
+      var moved = { "#playground": "/playground/", "#life": "/life/", "#publications": "/publications/" }[location.hash];
+      if (moved) location.replace(moved + location.search);
       // Pick the language before the first paint: ?lang= wins, then the visitor's last choice, then English.
       (function () {
         var lang = "en";
@@ -50,11 +49,11 @@
       <a class="brand" href="#top">Tianqi Zhao</a>
       <nav class="nav" id="site-nav" aria-label="Sections">
           <a href="#research" data-nav="research"><span data-l="en">Research</span><span data-l="zh" lang="zh-CN">研究</span></a>
-          <a href="#publications" data-nav="publications"><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></a>
           <a href="#cv" data-nav="cv"><span data-l="en">CV</span><span data-l="zh" lang="zh-CN">简历</span></a>
           <div class="nav__group" data-navgroup>
             <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-updates"><span data-l="en">Updates</span><span data-l="zh" lang="zh-CN">动态</span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
-            <div class="nav__menu" id="nav-updates">
+            <div class="nav__menu nav__menu--two" id="nav-updates">
+              <a href="/publications/"><span class="nav__item"><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></span><span class="nav__hint"><span data-l="en">Journal articles, with BibTeX</span><span data-l="zh" lang="zh-CN">期刊论文与引用格式</span></span></a>
               <a href="/news/"><span class="nav__item"><span data-l="en">News</span><span data-l="zh" lang="zh-CN">新闻</span></span><span class="nav__hint"><span data-l="en">Papers, talks, awards</span><span data-l="zh" lang="zh-CN">论文、会议、获奖</span></span></a>
               <a href="/blog/"><span class="nav__item"><span data-l="en">Blog</span><span data-l="zh" lang="zh-CN">博客</span></span><span class="nav__hint"><span data-l="en">Long reads and notes</span><span data-l="zh" lang="zh-CN">长文与随笔</span></span></a>
               <a href="/photos/"><span class="nav__item"><span data-l="en">Photos</span><span data-l="zh" lang="zh-CN">照片</span></span><span class="nav__hint"><span data-l="en">The lab, travel, life</span><span data-l="zh" lang="zh-CN">实验室、旅行与生活</span></span></a>
@@ -152,7 +151,7 @@
               <h3 class="theme__title"><span data-l="en">Persistent luminescence nanomaterials</span><span data-l="zh" lang="zh-CN">长余辉发光纳米材料</span></h3>
               <p class="theme__text" data-l="en">Gallium-based and spinel-type nanoparticles doped with Cr³⁺, Pr³⁺ and other ions store energy under light and release it slowly, much of it in the near infrared. I design these compositions and use their emission for ratiometric temperature sensing, information encryption, and imaging and theranostics.</p>
               <p class="theme__text" data-l="zh" lang="zh-CN">以 Cr³⁺、Pr³⁺ 等离子掺杂的镓基和尖晶石型纳米颗粒，能在光照下储存能量，再缓慢释放出来，其中很大一部分落在近红外区。我设计这些材料的组成，并利用它们的发光做比率型温度传感、信息加密，以及成像与诊疗。</p>
-              <a class="textlink" href="#publications"><span data-l="en">See the publications</span><span data-l="zh" lang="zh-CN">查看论文</span></a>
+              <a class="textlink" href="/publications/"><span data-l="en">See the publications</span><span data-l="zh" lang="zh-CN">查看论文</span></a>
               <figure class="theme__fig">
           <svg class="fig fig--spectrum" viewBox="0 0 480 220" role="img" aria-labelledby="fig1-title">
             <title id="fig1-title">Schematic Cr³⁺ emission spectra at a lower and a higher temperature</title>
@@ -224,121 +223,6 @@
         </div>
       </section>
 
-      <section class="section pubs" id="publications" aria-labelledby="pubs-title" data-pubs>
-        <div class="backdrop backdrop--ribbon-pubs" aria-hidden="true"><img src="assets/img/bg/ribbon-pubs.webp" srcset="assets/img/bg/ribbon-pubs.webp 1x, assets/img/bg/ribbon-pubs@2x.webp 2x" width="420" height="2300" alt="" loading="lazy" decoding="async"></div>
-        <div class="wrap">
-          <div class="pubs__head">
-            <h2 class="section-title" id="pubs-title"><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></h2>
-            <div class="filter" role="group" aria-label="Filter / 筛选">
-              <button type="button" data-filter="all" aria-pressed="true"><span data-l="en">All</span><span data-l="zh" lang="zh-CN">全部</span> <span class="filter__n">8</span></button>
-              <button type="button" data-filter="first" aria-pressed="false"><span data-l="en">First author</span><span data-l="zh" lang="zh-CN">第一作者</span> <span class="filter__n">4</span></button>
-            </div>
-          </div>
-          <p class="pubs__note"><span data-l="en">Journal articles, newest first. The full record is on <a href="https://orcid.org/0000-0002-2230-7690">ORCID</a>.</span><span data-l="zh" lang="zh-CN">期刊论文，按时间从新到旧排列。完整记录见 <a href="https://orcid.org/0000-0002-2230-7690">ORCID</a>。</span></p>
-        <div class="year" style="--age: 0">
-          <h3 class="year__label">2026</h3>
-          <ol class="year__list">
-            <li class="pub" data-first="false">
-              <p class="pub__venue"><abbr title="Chinese Chemical Letters">Chin. Chem. Lett.</abbr></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1016/j.cclet.2025.110967">Optical lateral flow immune assay technology for body fluid sensing</a></h4>
-              <p class="pub__authors"><span class="au">Chen Liu</span>, <span class="au me">Tianqi Zhao</span>, <span class="au">Jialing Zhou</span>, <span class="au">Xiaoyun Hu</span>, <span class="au">Dinghao Pan</span>, <span class="au">Jinlong Li</span>, <span class="au">Wei Li</span>, <span class="au">Zhihui Dai</span></p>
-              <p class="pub__cite"><i>Chinese Chemical Letters</i> 37 (1), 110967 (2026)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1016/j.cclet.2025.110967">DOI</a>
-                <button class="chip" type="button" data-bib="liu2026optical"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-          </ol>
-        </div>
-        <div class="year" style="--age: 1">
-          <h3 class="year__label">2025</h3>
-          <ol class="year__list">
-            <li class="pub" data-first="false">
-              <p class="pub__venue"><abbr title="Journal of Alloys and Compounds">J. Alloys Compd.</abbr></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1016/j.jallcom.2024.177815">Persistent luminescence nanomaterials with <span class="nb">up-/down-conversion</span> modes for power battery temperature measurement</a></h4>
-              <p class="pub__authors"><span class="au">Shiji Liu</span>, <span class="au me">Tianqi Zhao</span>, <span class="au">Renagul Abdurahman</span>, <span class="au">Xiuzhen Yang</span>, <span class="au">Yaoxing Han</span>, <span class="au">Yue Zhang</span>, <span class="au">Xue-Bo Yin</span></p>
-              <p class="pub__cite"><i>Journal of Alloys and Compounds</i> 1010, 177815 (2025)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1016/j.jallcom.2024.177815">DOI</a>
-                <button class="chip" type="button" data-bib="liu2025battery"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-            <li class="pub" data-first="false">
-              <p class="pub__venue"><abbr title="Journal of Solid State Chemistry">J. Solid State Chem.</abbr></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1016/j.jssc.2024.125043">Ratiometric temperature sensing with non-thermally coupled levels from <span class="nb">Pr–Al</span> co-doped <span class="nb">MgGa<sub>2</sub>O<sub>4</sub></span></a></h4>
-              <p class="pub__authors"><span class="au">Xiu-Zhen Yang</span>, <span class="au me">Tian-Qi Zhao</span>, <span class="au">Renagul Abdurahman</span>, <span class="au">Shi-Ji Liu</span>, <span class="au">Yao-Xing Han</span>, <span class="au">Yue Zhang</span>, <span class="au">Xue-Bo Yin</span>, <span class="au">Jie Gao</span></p>
-              <p class="pub__cite"><i>Journal of Solid State Chemistry</i> 341, 125043 (2025)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1016/j.jssc.2024.125043">DOI</a>
-                <button class="chip" type="button" data-bib="yang2025mgga"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-          </ol>
-        </div>
-        <div class="year" style="--age: 2">
-          <h3 class="year__label">2024</h3>
-          <ol class="year__list">
-            <li class="pub" data-first="true">
-              <p class="pub__venue"><abbr title="Inorganic Chemistry Communications">Inorg. Chem. Commun.</abbr><span class="badge badge--first"><span data-l="en">First author</span><span data-l="zh" lang="zh-CN">第一作者</span></span></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1016/j.inoche.2024.112908">Trimodality applications validation of near-infrared persistent luminescence nanoparticles</a></h4>
-              <p class="pub__authors"><span class="au me">Tianqi Zhao</span>, <span class="au">Wei Deng</span>, <span class="au">Renagul Abdurahman</span>, <span class="au">Shuqi Wu</span>, <span class="au">Xue-Bo Yin</span>, <span class="au">Mamutjan Tursun</span>, <span class="au">Jie Gao</span></p>
-              <p class="pub__cite"><i>Inorganic Chemistry Communications</i> 168, 112908 (2024)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1016/j.inoche.2024.112908">DOI</a>
-                <button class="chip" type="button" data-bib="zhao2024trimodality"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-            <li class="pub" data-first="false">
-              <p class="pub__venue"><abbr title="ACS Applied Nano Materials">ACS Appl. Nano Mater.</abbr></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1021/acsanm.4c03001">Cr-Free Bismuth-Based Persistent Luminescence Nanoparticle Composite for Cancer Theranostics</a></h4>
-              <p class="pub__authors"><span class="au">Ruxiangul Aiwaili</span>, <span class="au me">Tian-Qi Zhao</span>, <span class="au">Renagul Abdurahman</span>, <span class="au">Shuqi Wu</span>, <span class="au">Xue-Bo Yin</span></p>
-              <p class="pub__cite"><i>ACS Applied Nano Materials</i> 7 (15), 17759–17767 (2024)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1021/acsanm.4c03001">DOI</a>
-                <button class="chip" type="button" data-bib="aiwaili2024theranostics"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-            <li class="pub" data-first="true">
-              <p class="pub__venue"><abbr title="Journal of Materials Chemistry C">J. Mater. Chem. C</abbr><span class="badge badge--first"><span data-l="en">First author</span><span data-l="zh" lang="zh-CN">第一作者</span></span></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1039/D3TC02776G">Design of <span class="nb">Cr–Ba-doped</span> <span class="nb">γ-Ga<sub>2</sub>O<sub>3</sub></span> persistent luminescence nanoparticles for ratiometric temperature sensing and encryption information transfer</a></h4>
-              <p class="pub__authors"><span class="au me">Tianqi Zhao</span>, <span class="au">Renagul Abdurahman</span>, <span class="au">Qianting Yang</span>, <span class="au">Ruxiangul Aiwaili</span>, <span class="au">Xue-Bo Yin</span></p>
-              <p class="pub__cite"><i>Journal of Materials Chemistry C</i> 12 (2), 498–507 (2024)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1039/D3TC02776G">DOI</a>
-                <button class="chip" type="button" data-bib="zhao2024encryption"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-            <li class="pub" data-first="true">
-              <p class="pub__venue"><abbr title="RSC Advances">RSC Adv.</abbr><span class="badge badge--first"><span data-l="en">First author</span><span data-l="zh" lang="zh-CN">第一作者</span></span></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1039/D4RA04618H">Energy-splitting from persistent luminescence nanoparticles with trivalent Cr ions for ratiometric temperature sensing</a></h4>
-              <p class="pub__authors"><span class="au me">Tian-Qi Zhao</span>, <span class="au">Renagul Abdurahman</span>, <span class="au">Xue-Bo Yin</span></p>
-              <p class="pub__cite"><i>RSC Advances</i> 14 (38), 27514–27519 (2024)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1039/D4RA04618H">DOI</a>
-                <button class="chip" type="button" data-bib="zhao2024splitting"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-          </ol>
-        </div>
-        <div class="year" style="--age: 3">
-          <h3 class="year__label">2023</h3>
-          <ol class="year__list">
-            <li class="pub" data-first="true">
-              <p class="pub__venue"><abbr title="Coordination Chemistry Reviews">Coord. Chem. Rev.</abbr><span class="badge badge--first"><span data-l="en">First author</span><span data-l="zh" lang="zh-CN">第一作者</span></span><span class="badge"><span data-l="en">Review</span><span data-l="zh" lang="zh-CN">综述</span></span></p>
-              <h4 class="pub__title"><a href="https://doi.org/10.1016/j.ccr.2023.215171">Spinel-type persistent luminescence nanoparticles: From mechanisms, compositions to applications</a></h4>
-              <p class="pub__authors"><span class="au me">Tianqi Zhao</span>, <span class="au">Renagul Abdurahman</span>, <span class="au">Ruxiangul Aiwaili</span>, <span class="au">Shuqi Wu</span>, <span class="au">Xue-Bo Yin</span></p>
-              <p class="pub__cite"><i>Coordination Chemistry Reviews</i> 488, 215171 (2023)</p>
-              <div class="pub__actions">
-                <a class="chip" href="https://doi.org/10.1016/j.ccr.2023.215171">DOI</a>
-                <button class="chip" type="button" data-bib="zhao2023spinel"><span class="chip__idle"><span data-l="en">Copy BibTeX</span><span data-l="zh" lang="zh-CN">复制 BibTeX</span></span><span class="chip__done"><span data-l="en">Copied</span><span data-l="zh" lang="zh-CN">已复制</span></span></button>
-              </div>
-            </li>
-          </ol>
-        </div>
-          <p class="sr-only" aria-live="polite" data-status></p>
-        </div>
-      </section>
-
       <section class="section cv" id="cv" aria-labelledby="cv-title">
         <div class="backdrop backdrop--ribbon-cv" aria-hidden="true"><img src="assets/img/bg/ribbon-cv.webp" srcset="assets/img/bg/ribbon-cv.webp 1x, assets/img/bg/ribbon-cv@2x.webp 2x" width="720" height="600" alt="" loading="lazy" decoding="async"></div>
         <div class="wrap cv__grid">
@@ -366,6 +250,7 @@
               <h3><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></h3>
               <p class="cv__text" data-l="en">8 journal articles, 4 as first author, including a review in <i>Coordination Chemistry Reviews</i>.</p>
               <p class="cv__text" data-l="zh" lang="zh-CN">期刊论文 8 篇，其中第一作者 4 篇，包括一篇发表于 <i>Coordination Chemistry Reviews</i> 的综述。</p>
+              <a class="textlink cv__more" href="/publications/"><span data-l="en">See all publications</span><span data-l="zh" lang="zh-CN">查看全部论文</span></a>
             </div>
           </div>
         </div>
@@ -467,6 +352,7 @@
           </div>
         </div>
       </section>
+      <p class="sr-only" aria-live="polite" data-status></p>
     </main>
 
     <footer class="footer">
@@ -477,16 +363,6 @@
       </div>
     </footer>
 
-    <script type="application/json" id="bibtex">{
-  "liu2026optical": "@article{liu2026optical,\n  title = {Optical lateral flow immune assay technology for body fluid sensing},\n  author = {Liu, Chen and Zhao, Tianqi and Zhou, Jialing and Hu, Xiaoyun and Pan, Dinghao and Li, Jinlong and Li, Wei and Dai, Zhihui},\n  journal = {Chinese Chemical Letters},\n  volume = {37},\n  number = {1},\n  pages = {110967},\n  year = {2026},\n  publisher = {Elsevier},\n  doi = {10.1016/j.cclet.2025.110967},\n  url = {https://doi.org/10.1016/j.cclet.2025.110967},\n}",
-  "liu2025battery": "@article{liu2025battery,\n  title = {Persistent luminescence nanomaterials with up-/down-conversion modes for power battery temperature measurement},\n  author = {Liu, Shiji and Zhao, Tianqi and Abdurahman, Renagul and Yang, Xiuzhen and Han, Yaoxing and Zhang, Yue and Yin, Xue-Bo},\n  journal = {Journal of Alloys and Compounds},\n  volume = {1010},\n  pages = {177815},\n  year = {2025},\n  publisher = {Elsevier},\n  doi = {10.1016/j.jallcom.2024.177815},\n  url = {https://doi.org/10.1016/j.jallcom.2024.177815},\n}",
-  "yang2025mgga": "@article{yang2025mgga,\n  title = {Ratiometric temperature sensing with non-thermally coupled levels from {Pr}--{Al} co-doped {MgGa2O4}},\n  author = {Yang, Xiu-Zhen and Zhao, Tian-Qi and Abdurahman, Renagul and Liu, Shi-Ji and Han, Yao-Xing and Zhang, Yue and Yin, Xue-Bo and Gao, Jie},\n  journal = {Journal of Solid State Chemistry},\n  volume = {341},\n  pages = {125043},\n  year = {2025},\n  publisher = {Elsevier},\n  doi = {10.1016/j.jssc.2024.125043},\n  url = {https://doi.org/10.1016/j.jssc.2024.125043},\n}",
-  "zhao2024trimodality": "@article{zhao2024trimodality,\n  title = {Trimodality applications validation of near-infrared persistent luminescence nanoparticles},\n  author = {Zhao, Tianqi and Deng, Wei and Abdurahman, Renagul and Wu, Shuqi and Yin, Xue-Bo and Tursun, Mamutjan and Gao, Jie},\n  journal = {Inorganic Chemistry Communications},\n  volume = {168},\n  pages = {112908},\n  year = {2024},\n  publisher = {Elsevier},\n  doi = {10.1016/j.inoche.2024.112908},\n  url = {https://doi.org/10.1016/j.inoche.2024.112908},\n}",
-  "aiwaili2024theranostics": "@article{aiwaili2024theranostics,\n  title = {Cr-Free Bismuth-Based Persistent Luminescence Nanoparticle Composite for Cancer Theranostics},\n  author = {Aiwaili, Ruxiangul and Zhao, Tian-Qi and Abdurahman, Renagul and Wu, Shuqi and Yin, Xue-Bo},\n  journal = {ACS Applied Nano Materials},\n  volume = {7},\n  number = {15},\n  pages = {17759--17767},\n  year = {2024},\n  publisher = {American Chemical Society},\n  doi = {10.1021/acsanm.4c03001},\n  url = {https://doi.org/10.1021/acsanm.4c03001},\n}",
-  "zhao2024encryption": "@article{zhao2024encryption,\n  title = {Design of {Cr}--{Ba}-doped {$\\gamma$-Ga2O3} persistent luminescence nanoparticles for ratiometric temperature sensing and encryption information transfer},\n  author = {Zhao, Tianqi and Abdurahman, Renagul and Yang, Qianting and Aiwaili, Ruxiangul and Yin, Xue-Bo},\n  journal = {Journal of Materials Chemistry C},\n  volume = {12},\n  number = {2},\n  pages = {498--507},\n  year = {2024},\n  publisher = {Royal Society of Chemistry},\n  doi = {10.1039/D3TC02776G},\n  url = {https://doi.org/10.1039/D3TC02776G},\n}",
-  "zhao2024splitting": "@article{zhao2024splitting,\n  title = {Energy-splitting from persistent luminescence nanoparticles with trivalent {Cr} ions for ratiometric temperature sensing},\n  author = {Zhao, Tian-Qi and Abdurahman, Renagul and Yin, Xue-Bo},\n  journal = {RSC Advances},\n  volume = {14},\n  number = {38},\n  pages = {27514--27519},\n  year = {2024},\n  publisher = {Royal Society of Chemistry},\n  doi = {10.1039/D4RA04618H},\n  url = {https://doi.org/10.1039/D4RA04618H},\n}",
-  "zhao2023spinel": "@article{zhao2023spinel,\n  title = {Spinel-type persistent luminescence nanoparticles: From mechanisms, compositions to applications},\n  author = {Zhao, Tianqi and Abdurahman, Renagul and Aiwaili, Ruxiangul and Wu, Shuqi and Yin, Xue-Bo},\n  journal = {Coordination Chemistry Reviews},\n  volume = {488},\n  pages = {215171},\n  year = {2023},\n  publisher = {Elsevier},\n  doi = {10.1016/j.ccr.2023.215171},\n  url = {https://doi.org/10.1016/j.ccr.2023.215171},\n}"
-}</script>
     <script src="assets/js/nav.js" defer></script>
     <script src="assets/js/site.js" defer></script>
     <script src="assets/js/guestbook.js" defer></script>

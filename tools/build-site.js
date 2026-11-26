@@ -11,6 +11,7 @@
  *   blog/index.html, blog/<post>/index.html, blog/posts.json, blog/feed.xml
  *   news/index.html
  *   photos/index.html
+ *   publications/index.html (from papers.html and bibtex.json, which tools/build.py writes)
  *   playground/index.html, life/index.html (the two pages in the top bar's "More" menu)
  *   sitemap.xml (the new pages are added)
  *
@@ -151,6 +152,7 @@ const LANG_BOOT = `(function () {
       })();`;
 
 const UPDATES = [
+  ["publications", "/publications/", "Publications", "论文", "Journal articles, with BibTeX", "期刊论文与引用格式"],
   ["news", "/news/", "News", "新闻", "Papers, talks, awards", "论文、会议、获奖"],
   ["blog", "/blog/", "Blog", "博客", "Long reads and notes", "长文与随笔"],
   ["photos", "/photos/", "Photos", "照片", "The lab, travel, life", "实验室、旅行与生活"],
@@ -184,9 +186,8 @@ function topbar(current) {
       <a class="brand" href="/">Tianqi Zhao</a>
       <nav class="nav" id="site-nav" aria-label="Sections">
 ${link("/#research", "Research", "研究")}
-${link("/#publications", "Publications", "论文")}
 ${link("/#cv", "CV", "简历")}
-${navGroup("nav-updates", "Updates", "动态", UPDATES, current)}
+${navGroup("nav-updates", "Updates", "动态", UPDATES, current, " nav__menu--two")}
 ${link("/#contact", "Contact", "联系")}
 ${link("/#guestbook", "Guestbook", "留言板")}
 ${navGroup("nav-more", "More", "更多", MORE, current, " nav__menu--two")}
@@ -207,7 +208,7 @@ function footer() {
       <div class="wrap footer__row">
         <span>© ${new Date().getFullYear()} ${AUTHOR}</span>
         <span class="footer__visits" data-visits data-api="${esc(API)}" hidden></span>
-        <span class="footer__links"><a href="/news/">${bi("News", "新闻")}</a><a href="/blog/">${bi("Blog", "博客")}</a><a href="/photos/">${bi("Photos", "照片")}</a><a href="/blog/feed.xml">RSS</a></span>
+        <span class="footer__links"><a href="/publications/">${bi("Publications", "论文")}</a><a href="/news/">${bi("News", "新闻")}</a><a href="/blog/">${bi("Blog", "博客")}</a><a href="/photos/">${bi("Photos", "照片")}</a><a href="/blog/feed.xml">RSS</a></span>
       </div>
     </footer>`;
 }
@@ -777,6 +778,41 @@ ${body}
   });
 }
 
+/* Publications ------------------------------------------------------------------------------------ */
+
+// tools/build.py writes the list (from the BibTeX file) and the BibTeX data next to the page.
+function publicationsPage() {
+  const dir = path.join(SITE, "publications");
+  const list = fs.readFileSync(path.join(dir, "papers.html"), "utf8");
+  const bib = fs.readFileSync(path.join(dir, "bibtex.json"), "utf8").trim();
+  const orcid = '<a href="https://orcid.org/0000-0002-2230-7690">ORCID</a>';
+  const main = `      <section class="section page pubspage pubs" aria-labelledby="page-title" data-pubs>
+        <div class="backdrop backdrop--ribbon-pubs" aria-hidden="true"><img src="/assets/img/bg/ribbon-pubs.webp" srcset="/assets/img/bg/ribbon-pubs.webp 1x, /assets/img/bg/ribbon-pubs@2x.webp 2x" width="420" height="2300" alt="" loading="lazy" decoding="async"></div>
+        <div class="wrap">
+${pageHead({
+  id: "page-title",
+  en: "Publications",
+  zh: "论文",
+  leadEn: `Journal articles, newest first. The full record is on ${orcid}.`,
+  leadZh: `期刊论文，按时间从新到旧排列。完整记录见 ${orcid}。`,
+})}
+${list.replace(/\s+$/, "")}
+        </div>
+      </section>
+      <script type="application/json" id="bibtex">${bib.replace(/</g, "\\u003c")}</script>`;
+  return page({
+    titleEn: `Publications | ${AUTHOR}`,
+    titleZh: `论文 | ${AUTHOR}`,
+    ogTitle: `${AUTHOR} · Publications`,
+    description: "Journal articles by Tianqi Zhao on persistent luminescence and afterglow materials, with DOIs and BibTeX.",
+    url: `${ORIGIN}/publications/`,
+    current: "publications",
+    bodyClass: "list-page",
+    scripts: `    <script src="/assets/js/pubs.js" defer></script>\n`,
+    main,
+  });
+}
+
 /* Playground and Beyond the lab -------------------------------------------------------------------- */
 
 const playCard = (o) => `            <a class="play play--${o.key}" href="/playground/${o.key}/">
@@ -920,6 +956,7 @@ function build() {
   const photos = readPhotos();
   fs.writeFileSync(path.join(PHOTOS, "index.html"), photosPage(photos));
 
+  fs.writeFileSync(path.join(SITE, "publications", "index.html"), publicationsPage());
   fs.writeFileSync(path.join(SITE, "playground", "index.html"), playgroundPage());
   fs.mkdirSync(path.join(SITE, "life"), { recursive: true });
   fs.writeFileSync(path.join(SITE, "life", "index.html"), lifePage());

@@ -99,7 +99,7 @@
     if (section) sectionObserver.observe(section);
   });
 
-  /* 3. Email, publications, copy buttons -------------------------------------------------------------- */
+  /* 3. Email and its copy button (the publications have their own page and pubs.js) ---------------- */
 
   const copyText = async (text) => {
     try {
@@ -151,54 +151,6 @@
       }
     });
   });
-
-  const pubs = document.querySelector("[data-pubs]");
-  if (pubs) {
-    const filterButtons = pubs.querySelectorAll("[data-filter]");
-    // Keep the counts on the filter buttons in step with the list.
-    const counts = { all: pubs.querySelectorAll(".pub").length, first: pubs.querySelectorAll('.pub[data-first="true"]').length };
-    filterButtons.forEach((button) => {
-      const n = button.querySelector(".filter__n");
-      if (n) n.textContent = String(counts[button.dataset.filter]);
-    });
-    filterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const firstOnly = button.dataset.filter === "first";
-        filterButtons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
-        pubs.querySelectorAll(".pub").forEach((item) => {
-          item.hidden = firstOnly && item.dataset.first !== "true";
-        });
-        pubs.querySelectorAll(".year").forEach((year) => {
-          year.hidden = !year.querySelector(".pub:not([hidden])");
-        });
-      });
-    });
-
-    const bibtex = JSON.parse(document.getElementById("bibtex").textContent);
-
-    pubs.querySelectorAll("[data-bib]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const text = bibtex[button.dataset.bib];
-        if (await copyText(text)) {
-          showDone(button);
-          announce("BibTeX copied", "已复制 BibTeX");
-          return;
-        }
-        // The browser refused the clipboard: show the entry so it can be copied by hand.
-        const item = button.closest(".pub");
-        let pre = item.querySelector(".bibtex");
-        if (!pre) {
-          pre = document.createElement("pre");
-          pre.className = "bibtex";
-          pre.tabIndex = 0;
-          pre.textContent = text;
-          item.appendChild(pre);
-        }
-        pre.focus();
-        window.getSelection().selectAllChildren(pre);
-      });
-    });
-  }
 
   /* 4. Imaging chamber ----------------------------------------------------------------------------- */
 
