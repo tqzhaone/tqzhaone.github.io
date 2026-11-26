@@ -2815,6 +2815,14 @@ a.gb-nick:hover {
   --accent: var(--uv);
 }
 
+.play--snake {
+  --accent: var(--nir);
+}
+
+.play--2048 {
+  --accent: #00c8ff;
+}
+
 .play__shot {
   position: relative;
   display: block;

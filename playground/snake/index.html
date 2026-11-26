@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>贪吃蛇 · Snake</title>
+<meta name="description" content="Snake, in the colours of an afterglow image: the snake cools from red to blue along its body, and the path behind it glows and fades.">
+<meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tqzhaone.github.io/playground/snake/">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tqzhaone.github.io/playground/snake/">
+<meta property="og:title" content="贪吃蛇 · Snake">
+<meta property="og:description" content="Snake, in the colours of an afterglow image.">
+<meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/snake.webp">
+<link rel="preload" href="/assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
+<style>
+  /*
+   * Snake (贪吃蛇), in the colours of the home page's afterglow images: the snake is hot at the
+   * head and cools along its body through the radiance colour table, the cells it leaves glow for
+   * a moment and fade, and now and then a bonus orb appears that cools and is worth less the
+   * longer you wait.
+   */
+  @font-face {
+    font-family: "Cardo";
+    src: url("/assets/fonts/cardo-400.woff") format("woff");
+    font-weight: 400;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    src: url("/assets/fonts/fira-400.woff") format("woff");
+    font-weight: 400;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    src: url("/assets/fonts/fira-500.woff") format("woff");
+    font-weight: 500;
+    font-display: swap;
+  }
+
+  :root {
+    --night: #05060f;
+    --moon: #eceff7;
+    --moon-soft: #cdd2e4;
+    --haze: #9aa3bf;
+    --dim: #7d86a5;
+    --line: rgba(236, 239, 247, 0.12);
+    --line-strong: rgba(236, 239, 247, 0.24);
+    --glass: rgba(9, 11, 28, 0.66);
+    --phosphor: #74f7be;
+    --nir: #ff5a76;
+    --uv: #8f6bff;
+    --serif: "Cardo", "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "STSong", serif;
+    --sans: "Fira Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", system-ui, sans-serif;
+    --edge: 20px;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    overflow: hidden;
+    background:
+      radial-gradient(70% 60% at 50% 45%, #0d1028, transparent 70%),
+      var(--night);
+    color: var(--moon-soft);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html[data-lang="zh"] [data-l="en"],
+  html[data-lang="en"] [data-l="zh"] {
+    display: none !important;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .backhome {
+    position: fixed;
+    top: calc(var(--edge) + env(safe-area-inset-top));
+    left: calc(var(--edge) + env(safe-area-inset-left));
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px 7px 11px;
+    border-radius: 999px;
+    color: var(--moon-soft);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .backhome:hover,
+  .backhome:focus-visible {
+    border-color: var(--line-strong);
+    color: var(--moon);
+  }
+
+  .title {
+    position: fixed;
+    top: calc(var(--edge) + 50px + env(safe-area-inset-top));
+    left: calc(var(--edge) + 4px + env(safe-area-inset-left));
+    z-index: 2;
+    max-width: 300px;
+    pointer-events: none;
+  }
+
+  .title h1 {
+    margin: 0;
+    color: var(--moon);
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+  }
+
+  .title p {
+    margin: 8px 0 0;
+    color: var(--haze);
+    font-size: 14px;
+    text-wrap: pretty;
+  }
+
+  .hud {
+    position: fixed;
+    top: calc(var(--edge) + env(safe-area-inset-top));
+    right: calc(var(--edge) + env(safe-area-inset-right));
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 7px 8px 7px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  .hud__item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .hud__k {
+    color: var(--dim);
+  }
+
+  .hud__v {
+    min-width: 1.4em;
+    color: var(--moon);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pill {
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--haze);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .pill:hover,
+  .pill:focus-visible {
+    border-color: var(--line-strong);
+    color: var(--moon);
+  }
+
+  /* The board: a square canvas in the middle. Swipes on it steer on a phone. */
+  #board {
+    position: fixed;
+    display: block;
+    touch-action: none;
+    border-radius: 18px;
+  }
+
+  /* Direction pad, for phones. */
+  .pad {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--edge) + env(safe-area-inset-bottom));
+    z-index: 3;
+    display: none;
+    grid-template-columns: repeat(3, 58px);
+    grid-template-rows: repeat(2, 50px);
+    gap: 8px;
+    transform: translateX(-50%);
+  }
+
+  .pad button {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(9, 11, 28, 0.7);
+    color: var(--moon-soft);
+    font-size: 20px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  .pad button:active {
+    border-color: var(--uv);
+    background: rgba(143, 107, 255, 0.25);
+  }
+
+  .pad [data-dir="up"] { grid-column: 2; grid-row: 1; }
+  .pad [data-dir="left"] { grid-column: 1; grid-row: 2; }
+  .pad [data-dir="down"] { grid-column: 2; grid-row: 2; }
+  .pad [data-dir="right"] { grid-column: 3; grid-row: 2; }
+
+  .keys {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--edge) + env(safe-area-inset-bottom));
+    z-index: 2;
+    margin: 0;
+    color: var(--dim);
+    font-size: 13px;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+
+  .keys kbd {
+    display: inline-block;
+    min-width: 22px;
+    margin: 0 2px;
+    padding: 1px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--moon-soft);
+    font: inherit;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(3, 4, 10, 0.55);
+  }
+
+  .overlay[hidden] {
+    display: none;
+  }
+
+  .card {
+    width: min(440px, 100%);
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    padding: 28px 28px 24px;
+    border-radius: 22px;
+    background: rgba(10, 12, 30, 0.88);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  }
+
+  .card h2 {
+    margin: 0 0 12px;
+    color: var(--moon);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .card h2.is-title {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 400;
+  }
+
+  .card p {
+    margin: 0 0 12px;
+    text-wrap: pretty;
+  }
+
+  .card ul {
+    margin: 4px 0 18px;
+    padding-left: 1.2em;
+  }
+
+  .card li {
+    margin: 0 0 6px;
+    text-wrap: pretty;
+  }
+
+  .card li::marker {
+    color: var(--uv);
+  }
+
+  .card__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 26px;
+    margin: 4px 0 20px;
+  }
+
+  .card__stats div {
+    display: grid;
+    gap: 2px;
+  }
+
+  .card__stats span {
+    color: var(--dim);
+    font-size: 12px;
+  }
+
+  .card__stats b {
+    color: var(--moon);
+    font-size: 22px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card__new {
+    color: var(--phosphor);
+  }
+
+  .card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .btn {
+    padding: 11px 22px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--moon);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    border-color: var(--moon-soft);
+  }
+
+  .btn:focus-visible,
+  .pill:focus-visible {
+    outline: 2px solid var(--uv);
+    outline-offset: 3px;
+  }
+
+  .btn--primary {
+    border-color: var(--moon);
+    background: var(--moon);
+    color: #0a0c1e;
+  }
+
+  .btn--primary:hover {
+    background: #fff;
+  }
+
+  /* Below this width the line under the title would run into the board. */
+  @media (max-width: 1180px) {
+    .title p {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    :root {
+      --edge: 12px;
+    }
+
+    .title {
+      top: calc(var(--edge) + 46px + env(safe-area-inset-top));
+    }
+
+    .title h1 {
+      font-size: 28px;
+    }
+
+    .title p {
+      display: none;
+    }
+
+    .hud {
+      gap: 12px;
+      padding: 6px 6px 6px 12px;
+    }
+
+    .card {
+      padding: 24px 20px 20px;
+    }
+
+    .card h2.is-title {
+      font-size: 30px;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .pad {
+      display: grid;
+    }
+
+    .keys {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+<a class="backhome glass" href="/playground/"><span aria-hidden="true">←</span><span data-l="zh">趣味</span><span data-l="en">Playground</span></a>
+
+<header class="title">
+  <h1><span data-l="zh">贪吃蛇</span><span data-l="en">Snake</span></h1>
+  <p data-l="zh">蛇头最热，往后一路冷却；走过的格子会亮一下再暗下去。</p>
+  <p data-l="en">Hot at the head and cooling along the body; the cells it leaves glow for a moment, then fade.</p>
+</header>
+
+<div class="hud glass">
+  <span class="hud__item"><span class="hud__k" data-l="zh">得分</span><span class="hud__k" data-l="en">Score</span><span class="hud__v" id="score">0</span></span>
+  <span class="hud__item"><span class="hud__k" data-l="zh">最高</span><span class="hud__k" data-l="en">Best</span><span class="hud__v" id="best">0</span></span>
+  <button class="pill" type="button" id="pause"><span data-l="zh">暂停</span><span data-l="en">Pause</span></button>
+  <button class="pill" type="button" id="langswitch"><span data-l="zh">EN</span><span data-l="en">中文</span></button>
+</div>
+
+<canvas id="board" aria-label="贪吃蛇 / Snake"></canvas>
+
+<p class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> <span data-l="zh">或</span><span data-l="en">or</span> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span data-l="zh">转向，</span><span data-l="en">to steer,</span> <kbd><span data-l="zh">空格</span><span data-l="en">Space</span></kbd> <span data-l="zh">暂停</span><span data-l="en">to pause</span></p>
+
+<div class="pad" aria-hidden="true">
+  <button type="button" data-dir="up" tabindex="-1">↑</button>
+  <button type="button" data-dir="left" tabindex="-1">←</button>
+  <button type="button" data-dir="down" tabindex="-1">↓</button>
+  <button type="button" data-dir="right" tabindex="-1">→</button>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="card glass" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+    <div id="cardBody"></div>
+  </div>
+</div>
+
+<p class="sr-only" aria-live="polite" id="live"></p>
+<noscript><p style="position:fixed;inset:auto 0 50% 0;text-align:center">这个小游戏需要 JavaScript。 / This game needs JavaScript.</p></noscript>
+
+<script>
+(() => {
+  "use strict";
+
+  /* Language: ?lang=, then the site's remembered choice, then the browser's. ------------------ */
+
+  let lang = "en";
+  try {
+    const asked = new URLSearchParams(location.search).get("lang");
+    const stored = localStorage.getItem("site-lang");
+    if (asked === "zh" || asked === "en") lang = asked;
+    else if (stored === "zh" || stored === "en") lang = stored;
+    else if (/^zh\b/i.test(navigator.language || "")) lang = "zh";
+  } catch (e) {
+    if (/^zh\b/i.test(navigator.language || "")) lang = "zh";
+  }
+
+  const STR = {
+    zh: {
+      doc: "贪吃蛇 · Snake",
+      introTitle: "贪吃蛇",
+      intro: "吃掉绿色的光点，蛇会变长、变快。别撞墙，也别咬到自己。",
+      tips: [
+        "电脑上用方向键或 WASD 转向，空格键暂停；手机上在棋盘上滑动，或者用下面的方向键。",
+        "偶尔会出现一颗红色的光球，它会慢慢冷却变蓝，越早吃到分越高。",
+      ],
+      start: "开始",
+      overTitle: "撞上了",
+      score: "得分",
+      best: "最高",
+      length: "长度",
+      newBest: "新纪录",
+      again: "再来一局",
+      pausedTitle: "暂停中",
+      resume: "继续",
+      ate: (s) => `得分 ${s}`,
+      over: (s) => `游戏结束，得分 ${s}`,
+      board: "贪吃蛇棋盘",
+    },
+    en: {
+      doc: "Snake · 贪吃蛇",
+      introTitle: "Snake",
+      intro: "Eat the green dots of light to grow longer and faster. Don't hit the walls or bite yourself.",
+      tips: [
+        "Steer with the arrow keys or WASD and pause with the space bar; on a phone, swipe on the board or use the pad below it.",
+        "Now and then a red orb appears. It cools to blue as you wait, and the sooner you eat it, the more it is worth.",
+      ],
+      start: "Start",
+      overTitle: "Crashed",
+      score: "Score",
+      best: "Best",
+      length: "Length",
+      newBest: "New best",
+      again: "Play again",
+      pausedTitle: "Paused",
+      resume: "Resume",
+      ate: (s) => `Score ${s}`,
+      over: (s) => `Game over, score ${s}`,
+      board: "Snake board",
+    },
+  };
+  const T = (k) => STR[lang][k];
+
+  /* Colour table: the home page's radiance scale. -------------------------------------------- */
+
+  const LUT = [[0, "#2b0b66"], [0.2, "#2348ff"], [0.42, "#00c8ff"], [0.62, "#36f27a"], [0.82, "#ffe34d"], [1, "#ff4530"]]
+    .map(([p, hex]) => [p, [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))]);
+
+  function lut(v) {
+    v = Math.max(0, Math.min(1, v));
+    for (let i = 1; i < LUT.length; i++) {
+      if (v <= LUT[i][0]) {
+        const [p0, c0] = LUT[i - 1];
+        const [p1, c1] = LUT[i];
+        const f = (v - p0) / (p1 - p0);
+        return c0.map((c, k) => Math.round(c + (c1[k] - c) * f));
+      }
+    }
+    return LUT[LUT.length - 1][1];
+  }
+  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+  /* Elements and state ------------------------------------------------------------------------- */
+
+  const $ = (id) => document.getElementById(id);
+  const cv = $("board");
+  const ctx = cv.getContext("2d");
+  const ui = { score: $("score"), best: $("best"), overlay: $("overlay"), cardBody: $("cardBody"), live: $("live"), pause: $("pause") };
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const N = 20;
+  const BEST_KEY = "tz-snake-best";
+  const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+
+  const S = {
+    phase: "intro", // intro | play | paused | over
+    snake: [],
+    prev: [],
+    dir: "right",
+    queue: [],
+    food: null,
+    bonus: null,
+    eaten: 0,
+    score: 0,
+    best: 0,
+    rate: 6.5, // steps per second
+    acc: 0,
+    trail: new Float32Array(N * N),
+    fx: [],
+    shake: 0,
+    dead: 0,
+  };
+  try {
+    S.best = Number(localStorage.getItem(BEST_KEY)) || 0;
+  } catch (e) {}
+
+  let DPR = 1;
+  let box = { x: 0, y: 0, size: 0, cell: 0 };
+
+  function layout() {
+    const W = innerWidth;
+    const H = innerHeight;
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    const narrow = W <= 760;
+    const coarse = matchMedia("(pointer: coarse)").matches;
+    const top = narrow ? 92 : 130;
+    const edge = narrow ? 12 : 20;
+    const side = narrow ? 12 : 40;
+    // On a touch screen the direction pad sits right under the board, and the two are centred
+    // together in the space below the title.
+    const padH = coarse ? 108 + 22 : 0;
+    const bottom = coarse ? edge : 64;
+    const size = Math.max(200, Math.min(W - 2 * side, H - top - bottom - padH, 720));
+    const cell = Math.floor(size / N);
+    const s = cell * N;
+    const y = Math.round(top + Math.max(0, (H - top - bottom - padH - s) / 2));
+    box = { x: Math.round((W - s) / 2), y, size: s, cell };
+    const pad = document.querySelector(".pad");
+    if (coarse) {
+      pad.style.top = `${y + s + 22}px`;
+      pad.style.bottom = "auto";
+    }
+    cv.style.left = `${box.x}px`;
+    cv.style.top = `${box.y}px`;
+    cv.style.width = `${s}px`;
+    cv.style.height = `${s}px`;
+    cv.width = Math.round(s * DPR);
+    cv.height = Math.round(s * DPR);
+  }
+
+  /* Game ----------------------------------------------------------------------------------------- */
+
+  function reset() {
+    const y = Math.floor(N / 2);
+    S.snake = [[6, y], [5, y], [4, y], [3, y]];
+    S.prev = S.snake.map((p) => p.slice());
+    S.dir = "right";
+    S.queue = [];
+    S.eaten = 0;
+    S.score = 0;
+    S.rate = 6.5;
+    S.acc = 0;
+    S.trail.fill(0);
+    S.fx = [];
+    S.bonus = null;
+    S.dead = 0;
+    S.food = freeCell();
+    hud();
+  }
+
+  function freeCell() {
+    const taken = new Set(S.snake.map(([x, y]) => y * N + x));
+    if (S.food) taken.add(S.food[1] * N + S.food[0]);
+    if (S.bonus) taken.add(S.bonus.y * N + S.bonus.x);
+    const free = [];
+    for (let i = 0; i < N * N; i++) if (!taken.has(i)) free.push(i);
+    if (!free.length) return null;
+    const i = free[Math.floor(Math.random() * free.length)];
+    return [i % N, Math.floor(i / N)];
+  }
+
+  function steer(d) {
+    if (S.phase === "intro" || S.phase === "over") return;
+    if (S.phase === "paused") resume();
+    const last = S.queue.length ? S.queue[S.queue.length - 1] : S.dir;
+    const [ax, ay] = DIRS[last];
+    const [bx, by] = DIRS[d];
+    if (ax + bx === 0 && ay + by === 0) return; // no turning back on yourself
+    if (d === last) return;
+    if (S.queue.length < 3) S.queue.push(d);
+  }
+
+  function step() {
+    if (S.queue.length) S.dir = S.queue.shift();
+    const [dx, dy] = DIRS[S.dir];
+    const head = S.snake[0];
+    const nx = head[0] + dx;
+    const ny = head[1] + dy;
+    S.prev = S.snake.map((p) => p.slice());
+    const grow = S.food && nx === S.food[0] && ny === S.food[1];
+    const hitBonus = S.bonus && nx === S.bonus.x && ny === S.bonus.y;
+    // The tail moves away this step unless the snake grows, so its cell is free to enter.
+    const body = grow ? S.snake : S.snake.slice(0, -1);
+    if (nx < 0 || ny < 0 || nx >= N || ny >= N || body.some(([x, y]) => x === nx && y === ny)) {
+      return die();
+    }
+    S.snake.unshift([nx, ny]);
+    if (!grow) {
+      const [tx, ty] = S.snake.pop();
+      S.trail[ty * N + tx] = 1;
+    } else {
+      S.prev.push(S.prev[S.prev.length - 1].slice());
+    }
+    if (grow) {
+      S.eaten += 1;
+      S.score += 10;
+      S.rate = Math.min(15, 6.5 + S.eaten * 0.18);
+      burst(nx, ny, [116, 247, 190]);
+      S.food = freeCell();
+      if (S.eaten % 5 === 0 && !S.bonus) {
+        const c = freeCell();
+        if (c) S.bonus = { x: c[0], y: c[1], t0: now(), tau: 3.2 };
+      }
+      say(STR[lang].ate(S.score));
+      hud();
+    }
+    if (hitBonus) {
+      const v = bonusValue();
+      const pts = Math.round(10 + 50 * v);
+      S.score += pts;
+      burst(nx, ny, lut(v));
+      text(nx, ny, `+${pts}`, rgba(lut(v), 1));
+      S.bonus = null;
+      hud();
+    }
+  }
+
+  function bonusValue() {
+    return S.bonus ? Math.exp(-(now() - S.bonus.t0) / S.bonus.tau) : 0;
+  }
+
+  function die() {
+    S.phase = "over";
+    S.dead = now();
+    S.shake = reduced ? 0 : 1;
+    const head = S.snake[0];
+    burst(head[0], head[1], [255, 90, 118]);
+    const isBest = S.score > S.best;
+    if (isBest) {
+      S.best = S.score;
+      try {
+        localStorage.setItem(BEST_KEY, String(S.best));
+      } catch (e) {}
+    }
+    hud();
+    say(STR[lang].over(S.score));
+    setTimeout(() => showOverlay("over", { isBest }), 650);
+  }
+
+  function start() {
+    reset();
+    S.phase = "play";
+    hideOverlay();
+    last = now();
+  }
+
+  function pause() {
+    if (S.phase !== "play") return;
+    S.phase = "paused";
+    S.pausedAt = now();
+    showOverlay("paused");
+  }
+
+  function resume() {
+    if (S.phase !== "paused") return;
+    S.phase = "play";
+    if (S.bonus) S.bonus.t0 += now() - S.pausedAt; // the bonus does not cool while paused
+    hideOverlay();
+    last = now();
+  }
+
+  /* Effects ------------------------------------------------------------------------------------- */
+
+  function burst(cx, cy, rgb) {
+    if (reduced) return;
+    const x = (cx + 0.5) * box.cell;
+    const y = (cy + 0.5) * box.cell;
+    for (let i = 0; i < 14; i++) {
+      const a = (i / 14) * Math.PI * 2 + Math.random() * 0.4;
+      const s = (1.5 + Math.random() * 2.5) * box.cell;
+      S.fx.push({ kind: "spark", x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, t0: now(), life: 0.45 + Math.random() * 0.3, rgb });
+    }
+  }
+
+  function text(cx, cy, s, color) {
+    S.fx.push({ kind: "text", x: (cx + 0.5) * box.cell, y: (cy + 0.5) * box.cell, s, color, t0: now(), life: 1 });
+  }
+
+  /* Loop ------------------------------------------------------------------------------------------ */
+
+  const now = () => performance.now() / 1000;
+  let last = now();
+
+  function frame() {
+    const t = now();
+    const dt = Math.min(0.1, t - last);
+    last = t;
+    if (S.phase === "play") {
+      S.acc += dt;
+      const period = 1 / S.rate;
+      let n = 0;
+      while (S.acc >= period && S.phase === "play" && n < 4) {
+        S.acc -= period;
+        step();
+        n++;
+      }
+      if (S.bonus && bonusValue() < 0.12) S.bonus = null;
+    }
+    // The path behind the snake fades like an afterglow.
+    const k = Math.exp(-dt / 0.55);
+    for (let i = 0; i < S.trail.length; i++) if (S.trail[i] > 0.004) S.trail[i] *= k;
+    else S.trail[i] = 0;
+    if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 3);
+    draw(t);
+    requestAnimationFrame(frame);
+  }
+
+  function draw(t) {
+    const c = box.cell;
+    const s = box.size;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    if (S.shake > 0) {
+      const a = S.shake * 6;
+      ctx.translate((Math.random() - 0.5) * a, (Math.random() - 0.5) * a);
+    }
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    // Board.
+    ctx.clearRect(-20, -20, s + 40, s + 40);
+    const bg = ctx.createLinearGradient(0, 0, 0, s);
+    bg.addColorStop(0, "#0c0e24");
+    bg.addColorStop(1, "#080a1b");
+    ctx.fillStyle = bg;
+    roundRect(0, 0, s, s, 18);
+    ctx.fill();
+    ctx.fillStyle = "rgba(236,239,247,0.07)";
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        ctx.beginPath();
+        ctx.arc((x + 0.5) * c, (y + 0.5) * c, Math.max(1, c * 0.06), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    ctx.save();
+    roundRect(0, 0, s, s, 18);
+    ctx.clip();
+
+    // Afterglow of the path.
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < S.trail.length; i++) {
+      const v = S.trail[i];
+      if (v < 0.01) continue;
+      const x = (i % N) * c;
+      const y = Math.floor(i / N) * c;
+      ctx.fillStyle = rgba(lut(0.15 + 0.5 * v), 0.4 * v);
+      roundRect(x + c * 0.12, y + c * 0.12, c * 0.76, c * 0.76, c * 0.22);
+      ctx.fill();
+    }
+
+    // Food: a dot of phosphor green, breathing.
+    if (S.food) {
+      const [fx, fy] = S.food;
+      const pulse = reduced ? 0.5 : 0.5 + 0.5 * Math.sin(t * 5);
+      glowDot((fx + 0.5) * c, (fy + 0.5) * c, c * (0.26 + 0.04 * pulse), [116, 247, 190], 0.9);
+    }
+
+    // Bonus orb: hot when it appears, cooling down the colour table.
+    if (S.bonus) {
+      const v = bonusValue();
+      const col = lut(v);
+      const x = (S.bonus.x + 0.5) * c;
+      const y = (S.bonus.y + 0.5) * c;
+      glowDot(x, y, c * 0.36, col, 1);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = rgba(col, 0.9);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(x, y, c * 0.62, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, (v - 0.12) / 0.88));
+      ctx.stroke();
+      ctx.globalCompositeOperation = "lighter";
+    }
+
+    // The snake, slid smoothly between steps. Hot at the head, cooling along the body.
+    const p = S.phase === "over" ? 1 : Math.min(1, S.acc * S.rate);
+    const pts = S.snake.map((cur, i) => {
+      const from = S.prev[i] || cur;
+      return [(from[0] + (cur[0] - from[0]) * p + 0.5) * c, (from[1] + (cur[1] - from[1]) * p + 0.5) * c];
+    });
+    const len = pts.length;
+    const deadFade = S.phase === "over" ? Math.max(0.35, 1 - (t - S.dead) * 0.8) : 1;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    // Soft glow under the body.
+    ctx.globalAlpha = 0.35 * deadFade;
+    for (let i = len - 1; i > 0; i--) {
+      const v = 1 - 0.85 * (i / Math.max(1, len - 1));
+      ctx.strokeStyle = rgba(lut(v), 1);
+      ctx.lineWidth = c * 1.05;
+      ctx.beginPath();
+      ctx.moveTo(pts[i][0], pts[i][1]);
+      ctx.lineTo(pts[i - 1][0], pts[i - 1][1]);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = deadFade;
+    for (let i = len - 1; i > 0; i--) {
+      const v = 1 - 0.85 * (i / Math.max(1, len - 1));
+      ctx.strokeStyle = rgba(lut(v), 1);
+      ctx.lineWidth = c * 0.7;
+      ctx.beginPath();
+      ctx.moveTo(pts[i][0], pts[i][1]);
+      ctx.lineTo(pts[i - 1][0], pts[i - 1][1]);
+      ctx.stroke();
+    }
+    // Head, with a white-hot core and two eyes looking where it goes.
+    if (len) {
+      const [hx, hy] = pts[0];
+      ctx.globalCompositeOperation = "lighter";
+      glowDot(hx, hy, c * 0.42, lut(1), 0.8 * deadFade);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = rgba(lut(1), deadFade);
+      ctx.beginPath();
+      ctx.arc(hx, hy, c * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      const [dx, dy] = DIRS[S.dir];
+      const ex = -dy;
+      const ey = dx;
+      ctx.fillStyle = `rgba(10,12,30,${0.9 * deadFade})`;
+      for (const sgn of [-1, 1]) {
+        ctx.beginPath();
+        ctx.arc(hx + dx * c * 0.14 + ex * sgn * c * 0.17, hy + dy * c * 0.14 + ey * sgn * c * 0.17, c * 0.075, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Effects.
+    S.fx = S.fx.filter((f) => t - f.t0 < f.life);
+    for (const f of S.fx) {
+      const q = (t - f.t0) / f.life;
+      if (f.kind === "spark") {
+        const age = t - f.t0;
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = (1 - q) * 0.9;
+        ctx.fillStyle = rgba(f.rgb, 1);
+        ctx.beginPath();
+        ctx.arc(f.x + f.vx * age * (1 - q * 0.5), f.y + f.vy * age * (1 - q * 0.5), Math.max(0.8, c * 0.09 * (1 - q)), 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = q < 0.7 ? 1 : (1 - q) / 0.3;
+        ctx.fillStyle = f.color;
+        ctx.font = '500 15px "Fira Sans", "PingFang SC", sans-serif';
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(f.s, f.x, f.y - c * 0.6 - 22 * q);
+      }
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = "rgba(236,239,247,0.12)";
+    ctx.lineWidth = 1;
+    roundRect(0.5, 0.5, s - 1, s - 1, 18);
+    ctx.stroke();
+  }
+
+  function glowDot(x, y, r, rgb, a) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.2);
+    g.addColorStop(0, rgba(rgb, a));
+    g.addColorStop(0.35, rgba(rgb, a * 0.55));
+    g.addColorStop(1, rgba(rgb, 0));
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, r * 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    const core = ctx.createRadialGradient(x, y, 0, x, y, r * 0.7);
+    core.addColorStop(0, `rgba(255,255,255,${a * 0.85})`);
+    core.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(x, y, r * 0.7, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  /* HUD and overlays ------------------------------------------------------------------------------ */
+
+  function hud() {
+    ui.score.textContent = String(S.score);
+    ui.best.textContent = String(Math.max(S.best, S.score));
+  }
+
+  function say(s) {
+    ui.live.textContent = s;
+  }
+
+  let overlayKind = null;
+  let overlayData = null;
+
+  function showOverlay(kind, data) {
+    overlayKind = kind;
+    overlayData = data;
+    const L = STR[lang];
+    let html = "";
+    if (kind === "intro") {
+      html = `<h2 class="is-title" id="cardTitle">${L.introTitle}</h2>
+        <p>${L.intro}</p>
+        <ul>${L.tips.map((s) => `<li>${s}</li>`).join("")}</ul>
+        <div class="card__actions"><button class="btn btn--primary" type="button" data-act="start">${L.start}</button></div>`;
+    } else if (kind === "over") {
+      html = `<h2 id="cardTitle">${L.overTitle}</h2>
+        <div class="card__stats">
+          <div><span>${L.score}</span><b>${S.score}</b></div>
+          <div><span>${L.length}</span><b>${S.snake.length}</b></div>
+          <div><span>${L.best}</span><b class="${data && data.isBest ? "card__new" : ""}">${S.best}</b></div>
+        </div>
+        ${data && data.isBest && S.score > 0 ? `<p class="card__new">${L.newBest}</p>` : ""}
+        <div class="card__actions"><button class="btn btn--primary" type="button" data-act="start">${L.again}</button></div>`;
+    } else if (kind === "paused") {
+      html = `<h2 id="cardTitle">${L.pausedTitle}</h2>
+        <div class="card__actions"><button class="btn btn--primary" type="button" data-act="resume">${L.resume}</button></div>`;
+    }
+    ui.cardBody.innerHTML = html;
+    ui.overlay.hidden = false;
+    const btn = ui.cardBody.querySelector(".btn--primary");
+    if (btn) btn.focus({ preventScroll: true });
+  }
+
+  function hideOverlay() {
+    overlayKind = null;
+    overlayData = null;
+    ui.overlay.hidden = true;
+  }
+
+  ui.cardBody.addEventListener("click", (ev) => {
+    const act = ev.target.closest("[data-act]");
+    if (!act) return;
+    if (act.dataset.act === "start") start();
+    else if (act.dataset.act === "resume") resume();
+  });
+
+  function applyLang() {
+    document.documentElement.dataset.lang = lang;
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    document.title = T("doc");
+    cv.setAttribute("aria-label", T("board"));
+    if (overlayKind) showOverlay(overlayKind, overlayData);
+  }
+
+  /* Input ------------------------------------------------------------------------------------------ */
+
+  const KEYS = {
+    ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
+    KeyW: "up", KeyS: "down", KeyA: "left", KeyD: "right",
+  };
+
+  document.addEventListener("keydown", (ev) => {
+    const d = KEYS[ev.code];
+    if (d) {
+      if (S.phase === "play" || S.phase === "paused") {
+        ev.preventDefault();
+        steer(d);
+      }
+      return;
+    }
+    if ((ev.code === "Space" || ev.code === "KeyP") && !ev.repeat) {
+      if (ev.target.closest && ev.target.closest("a, button")) return;
+      if (S.phase === "play") {
+        ev.preventDefault();
+        pause();
+      } else if (S.phase === "paused") {
+        ev.preventDefault();
+        resume();
+      }
+    }
+  });
+
+  // Swipes on the board.
+  let touch = null;
+  cv.addEventListener("pointerdown", (ev) => {
+    touch = { x: ev.clientX, y: ev.clientY, id: ev.pointerId };
+  });
+  cv.addEventListener("pointermove", (ev) => {
+    if (!touch || ev.pointerId !== touch.id) return;
+    const dx = ev.clientX - touch.x;
+    const dy = ev.clientY - touch.y;
+    if (Math.hypot(dx, dy) < 22) return;
+    steer(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up");
+    touch = { x: ev.clientX, y: ev.clientY, id: ev.pointerId };
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach((type) => cv.addEventListener(type, () => (touch = null)));
+
+  document.querySelectorAll(".pad button").forEach((b) => {
+    b.addEventListener("pointerdown", (ev) => {
+      ev.preventDefault();
+      steer(b.dataset.dir);
+    });
+    b.addEventListener("contextmenu", (ev) => ev.preventDefault());
+  });
+
+  ui.pause.addEventListener("click", (ev) => {
+    if (ev.detail > 0) ev.currentTarget.blur();
+    if (S.phase === "play") pause();
+    else if (S.phase === "paused") resume();
+  });
+
+  $("langswitch").addEventListener("click", (ev) => {
+    if (ev.detail > 0) ev.currentTarget.blur();
+    lang = lang === "zh" ? "en" : "zh";
+    try {
+      localStorage.setItem("site-lang", lang);
+    } catch (e) {}
+    applyLang();
+  });
+
+  window.addEventListener("blur", pause);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pause();
+  });
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layout, 120);
+  });
+
+  /* Go --------------------------------------------------------------------------------------------- */
+
+  applyLang();
+  layout();
+  reset();
+  showOverlay("intro");
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
