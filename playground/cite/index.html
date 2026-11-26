@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-title-en="DOI to reference · Tianqi Zhao" data-title-zh="DOI 转参考文献 · Tianqi Zhao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DOI 转参考文献 · DOI to reference</title>
+<meta name="description" content="Paste DOIs and get references in GB/T 7714-2015, APA, ACS, BibTeX or RIS, from Crossref metadata, in the browser.">
+<meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tqzhaone.github.io/playground/cite/">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tqzhaone.github.io/playground/cite/">
+<meta property="og:title" content="DOI 转参考文献 · DOI to reference">
+<meta property="og:description" content="Paste DOIs, get GB/T 7714, APA, ACS, BibTeX or RIS.">
+<meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/cite.webp">
+<link rel="stylesheet" href="/assets/css/play.css">
+<script src="/assets/js/play.js"></script>
+<style>
+  /*
+   * DOI to reference (DOI 转参考文献). Paste DOIs (or any text with DOIs in it); the page asks
+   * Crossref for each one's metadata and writes the reference in GB/T 7714-2015, APA 7, ACS,
+   * BibTeX or RIS. Everything happens in the visitor's browser.
+   */
+  .input-panel .textarea {
+    min-height: 130px;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .row--top {
+    margin-top: 12px;
+  }
+
+  .out {
+    margin-top: 18px;
+  }
+
+  .out__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .refs {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ref {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(4, 5, 14, 0.5);
+  }
+
+  .ref__text {
+    margin: 0;
+    color: var(--moon);
+    font-size: 14.5px;
+    line-height: 1.65;
+    overflow-wrap: break-word;
+  }
+
+  .ref__text pre {
+    margin: 0;
+    color: var(--moon-soft);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  .ref__doi {
+    display: block;
+    margin-top: 4px;
+    color: var(--dim);
+    font-size: 12px;
+  }
+
+  .ref.is-error .ref__text {
+    color: var(--nir);
+  }
+
+  .ref.is-loading .ref__text {
+    color: var(--dim);
+  }
+
+  .ref.is-loading .ref__text::after {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 8px;
+    border-radius: 50%;
+    background: var(--uv);
+    animation: pulse 0.9s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    from { opacity: 0.2; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .count {
+    color: var(--dim);
+    font-size: 13px;
+  }
+
+  .fine {
+    margin: 16px 0 0;
+  }
+
+  @media (max-width: 760px) {
+    .ref {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body class="is-doc">
+<a class="backhome glass" href="/playground/"><span aria-hidden="true">←</span><span data-l="zh">趣味</span><span data-l="en">Playground</span></a>
+<div class="hud hud--plain glass"><button class="pill" type="button" data-langswitch><span data-l="zh">EN</span><span data-l="en">中文</span></button></div>
+
+<main class="column" style="max-width:980px">
+  <header class="pagetitle">
+    <h1><span data-l="zh">DOI 转参考文献</span><span data-l="en">DOI to reference</span></h1>
+    <p data-l="zh">粘贴 DOI（一行一个，也可以直接贴一大段文字或链接，会自动找出里面的 DOI），生成 GB/T 7714、APA、ACS、BibTeX 或 RIS 格式。文献信息来自 Crossref。</p>
+    <p data-l="en">Paste DOIs (one per line, or any text or links with DOIs in them) and get references in GB/T 7714, APA, ACS, BibTeX or RIS. The metadata comes from Crossref.</p>
+  </header>
+
+  <section class="panel input-panel">
+    <textarea class="textarea" id="input" spellcheck="false" aria-label="DOI" placeholder="10.1016/j.cclet.2025.110967&#10;https://doi.org/10.1039/D3TC02776G"></textarea>
+    <div class="row row--top">
+      <button class="btn btn--primary" type="button" id="go"><span data-l="zh">生成参考文献</span><span data-l="en">Make references</span></button>
+      <button class="pill" type="button" id="sample"><span data-l="zh">用我的论文试试</span><span data-l="en">Try my papers</span></button>
+      <span class="count" id="count"></span>
+    </div>
+  </section>
+
+  <section class="panel out">
+    <div class="out__bar">
+      <div class="segmented" role="group" aria-label="格式 / Style">
+        <button class="pill" type="button" data-style="gbt" aria-pressed="true">GB/T 7714</button>
+        <button class="pill" type="button" data-style="apa" aria-pressed="false">APA</button>
+        <button class="pill" type="button" data-style="acs" aria-pressed="false">ACS</button>
+        <button class="pill" type="button" data-style="bib" aria-pressed="false">BibTeX</button>
+        <button class="pill" type="button" data-style="ris" aria-pressed="false">RIS</button>
+      </div>
+      <div class="row">
+        <button class="pill" type="button" id="number" aria-pressed="true"><span data-l="zh">加序号</span><span data-l="en">Numbered</span></button>
+        <button class="btn btn--small" type="button" id="copyAll" disabled><span data-l="zh">全部复制</span><span data-l="en">Copy all</span></button>
+        <button class="btn btn--small" type="button" id="download" disabled><span data-l="zh">下载</span><span data-l="en">Download</span></button>
+      </div>
+    </div>
+    <ol class="refs" id="refs"></ol>
+    <p class="note fine"><span data-l="zh">GB/T 7714 按 2015 版顺序编码制整理：西文作者姓全大写、名缩写不加点，超过三位作者写前三位加「et al」（中文文献加「等」）。复制时会带上斜体等格式，粘贴到 Word 里也能保留。投稿前请再按期刊要求核对一遍。</span><span data-l="en">GB/T 7714 follows the 2015 numeric style: surnames in capitals, initials without points, the first three authors then “et al”. Copying keeps italics, so they survive a paste into Word. Check against the journal's own rules before you submit.</span></p>
+  </section>
+</main>
+
+<noscript><p style="text-align:center">这个工具需要 JavaScript。 / This tool needs JavaScript.</p></noscript>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const ui = { input: $("input"), go: $("go"), sample: $("sample"), count: $("count"), refs: $("refs"), number: $("number"), copyAll: $("copyAll"), download: $("download") };
+  const MY_DOIS = [
+    "10.1016/j.cclet.2025.110967",
+    "10.1016/j.jallcom.2024.177815",
+    "10.1016/j.jssc.2024.125043",
+    "10.1016/j.inoche.2024.112908",
+    "10.1021/acsanm.4c03001",
+    "10.1039/D3TC02776G",
+    "10.1039/D4RA04618H",
+    "10.1016/j.ccr.2023.215171",
+  ];
+  const S = { style: Play.store.get("tz-cite-style", "gbt"), numbered: Play.store.get("tz-cite-number", "1") === "1", items: [] };
+  const cache = new Map();
+
+  /* Finding DOIs ------------------------------------------------------------------------------- */
+
+  function extract(text) {
+    const out = [];
+    const seen = new Set();
+    for (const m of text.matchAll(/10\.\d{4,9}\/[^\s"'<>，；。、]+/g)) {
+      let d = m[0];
+      for (;;) {
+        const last = d.slice(-1);
+        const count = (ch) => d.split(ch).length - 1;
+        if (".,;:".includes(last)) d = d.slice(0, -1);
+        else if (last === ")" && count(")") > count("(")) d = d.slice(0, -1);
+        else if (last === "]" && count("]") > count("[")) d = d.slice(0, -1);
+        else break;
+      }
+      const key = d.toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        out.push(d);
+      }
+    }
+    return out.slice(0, 100);
+  }
+
+  /* Crossref ------------------------------------------------------------------------------------ */
+
+  async function work(doi) {
+    const key = doi.toLowerCase();
+    if (cache.has(key)) return cache.get(key);
+    const p = fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`, { headers: { Accept: "application/json" } }).then(async (res) => {
+      if (res.status === 404) throw new Error("notfound");
+      if (!res.ok) throw new Error(`http${res.status}`);
+      const json = await res.json();
+      return normalize(json.message);
+    });
+    cache.set(key, p);
+    p.catch(() => cache.delete(key));
+    return p;
+  }
+
+  const CJK = /[\u3400-\u9fff]/;
+
+  // Titles may carry markup (subscripts, italics). Keep a safe rich form, a plain form and a TeX form.
+  function rich(s) {
+    const doc = new DOMParser().parseFromString(`<body>${s || ""}</body>`, "text/html");
+    const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const texEsc = (t) => t.replace(/\\/g, "\\textbackslash{}").replace(/([&%$#_{}])/g, "\\$1").replace(/~/g, "\\textasciitilde{}").replace(/\^/g, "\\textasciicircum{}");
+    const walk = (node) => {
+      let html = "";
+      let text = "";
+      let tex = "";
+      for (const n of node.childNodes) {
+        if (n.nodeType === 3) {
+          const t = n.nodeValue.replace(/\s+/g, " ");
+          html += esc(t);
+          text += t;
+          tex += texEsc(t);
+        } else if (n.nodeType === 1) {
+          const inner = walk(n);
+          const tag = n.localName.replace(/^.*:/, "");
+          if (tag === "sub") {
+            html += `<sub>${inner.html}</sub>`;
+            text += inner.text;
+            tex += `\\textsubscript{${inner.tex}}`;
+          } else if (tag === "sup") {
+            html += `<sup>${inner.html}</sup>`;
+            text += inner.text;
+            tex += `\\textsuperscript{${inner.tex}}`;
+          } else if (tag === "i" || tag === "em") {
+            html += `<i>${inner.html}</i>`;
+            text += inner.text;
+            tex += `\\textit{${inner.tex}}`;
+          } else {
+            html += inner.html;
+            text += inner.text;
+            tex += inner.tex;
+          }
+        }
+      }
+      return { html, text, tex };
+    };
+    const r = walk(doc.body);
+    return { html: r.html.trim(), text: r.text.trim(), tex: r.tex.trim() };
+  }
+
+  const plain = (s) => rich(s).text;
+
+  function year(m) {
+    for (const k of ["published-print", "published-online", "issued", "created"]) {
+      const v = m[k] && m[k]["date-parts"] && m[k]["date-parts"][0] && m[k]["date-parts"][0][0];
+      if (v) return String(v);
+    }
+    const ji = m["journal-issue"] && m["journal-issue"]["published-print"];
+    return ji && ji["date-parts"] ? String(ji["date-parts"][0][0]) : "";
+  }
+
+  function normalize(m) {
+    const authors = (m.author || [])
+      .filter((a) => a.family || a.name)
+      .map((a) => ({ family: plain(a.family || a.name || ""), given: plain(a.given || ""), org: !a.family }));
+    const title = rich([...(m.title || [""]).slice(0, 1), ...(m.subtitle || []).slice(0, 1)].filter(Boolean).join(": "));
+    const page = m.page ? String(m.page) : "";
+    return {
+      doi: m.DOI,
+      type: m.type || "",
+      authors,
+      title,
+      container: plain((m["container-title"] || [""])[0]),
+      short: plain((m["short-container-title"] || [])[0] || (m["container-title"] || [""])[0]),
+      year: year(m),
+      volume: m.volume ? String(m.volume) : "",
+      issue: m.issue ? String(m.issue) : "",
+      page,
+      article: m["article-number"] ? String(m["article-number"]) : "",
+      publisher: plain(m.publisher || ""),
+    };
+  }
+
+  /* Styles --------------------------------------------------------------------------------------- */
+
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const isZh = (r) => CJK.test(r.title.text) || r.authors.some((a) => CJK.test(a.family));
+  const range = (p) => p.replace(/\s*[-–—]+\s*/g, "-");
+  const enRange = (p) => range(p).replace(/-/g, "–");
+  const pages = (r) => (r.page ? r.page : r.article);
+
+  // Initials as groups: "Tian-Qi" → [["T","Q"]], "Jean Paul" → [["J"],["P"]].
+  function initials(given) {
+    return given
+      .split(/[\s.]+/)
+      .filter(Boolean)
+      .map((part) => part.split("-").filter(Boolean).map((p) => Array.from(p)[0].toUpperCase()));
+  }
+
+  function nameGbt(a) {
+    if (a.org) return a.family;
+    if (CJK.test(a.family + a.given)) return a.family + a.given;
+    const ini = initials(a.given).flat().join(" ");
+    return `${a.family.toUpperCase()}${ini ? " " + ini : ""}`;
+  }
+
+  function nameApa(a) {
+    if (a.org) return a.family;
+    if (CJK.test(a.family + a.given)) return a.family + a.given;
+    const ini = initials(a.given).map((g) => g.map((c) => `${c}.`).join("-")).join(" ");
+    return `${a.family}${ini ? ", " + ini : ""}`;
+  }
+
+  const TYPE_GBT = { "journal-article": "J", "proceedings-article": "C", book: "M", monograph: "M", "edited-book": "M", "reference-book": "M", "book-chapter": "M", dissertation: "D", "posted-content": "EB/OL", report: "R", standard: "S", dataset: "DS" };
+
+  function gbt(r) {
+    const zh = isZh(r);
+    const names = r.authors.map(nameGbt);
+    let au = names.slice(0, 3).join(", ");
+    if (names.length > 3) au += zh ? ", 等" : ", et al";
+    const code = TYPE_GBT[r.type] || "Z";
+    const head = (t) => `${au ? au + ". " : ""}${t}[${code}]. `;
+    let tail;
+    const pg = pages(r) ? range(pages(r)) : "";
+    if (r.type === "journal-article" || code === "Z") {
+      tail = `${r.container}${r.year ? ", " + r.year : ""}${r.volume ? ", " + r.volume : ""}${r.issue ? `(${r.issue})` : ""}${pg ? ": " + pg : ""}.`;
+    } else if (r.type === "proceedings-article" || r.type === "book-chapter") {
+      tail = `//${r.container}. ${r.publisher ? r.publisher + ", " : ""}${r.year}${pg ? ": " + pg : ""}.`;
+    } else {
+      tail = `${r.publisher ? r.publisher + ", " : ""}${r.year}.`;
+    }
+    const doi = r.doi ? ` DOI:${r.doi}.` : "";
+    return {
+      text: head(r.title.text) + tail + doi,
+      html: esc(au ? au + ". " : "") + r.title.html + esc(`[${code}]. `) + esc(tail) + esc(doi),
+    };
+  }
+
+  function apa(r) {
+    const names = r.authors.map(nameApa);
+    let au;
+    if (names.length <= 1) au = names[0] || "";
+    else if (names.length <= 20) au = `${names.slice(0, -1).join(", ")}, & ${names[names.length - 1]}`;
+    else au = `${names.slice(0, 19).join(", ")}, . . . ${names[names.length - 1]}`;
+    const end = (t) => (/[.?!]$/.test(t) ? "" : ".");
+    const pg = r.page ? enRange(r.page) : r.article ? `Article ${r.article}` : "";
+    const vol = r.volume;
+    const iss = r.issue ? `(${r.issue})` : "";
+    const yr = r.year ? `(${r.year}). ` : "(n.d.). ";
+    const doi = r.doi ? ` https://doi.org/${r.doi}` : "";
+    const auPart = au ? au + (au.endsWith(".") ? " " : ". ") : "";
+    const text = `${auPart}${yr}${r.title.text}${end(r.title.text)} ${r.container}${vol ? ", " + vol + iss : ""}${pg ? ", " + pg : ""}.${doi}`;
+    const html = `${esc(auPart + yr)}${r.title.html}${end(r.title.text)} <i>${esc(r.container)}</i>${vol ? `, <i>${esc(vol)}</i>${esc(iss)}` : ""}${pg ? ", " + esc(pg) : ""}.${esc(doi)}`;
+    return { text, html, sortKey: (r.authors[0] ? r.authors[0].family : r.title.text).toLowerCase() };
+  }
+
+  function acs(r) {
+    const names = r.authors.map(nameApa);
+    const au = names.length > 10 ? `${names.slice(0, 10).join("; ")}; et al.` : names.join("; ");
+    const pg = r.page ? enRange(r.page) : r.article;
+    const t = r.title.text;
+    const dot = /[.?!]$/.test(t) ? "" : ".";
+    const auPart = au ? au + (au.endsWith(".") ? " " : ". ") : "";
+    const vol = r.volume ? `, ${r.volume}${r.issue ? ` (${r.issue})` : ""}` : "";
+    const doi = r.doi ? ` DOI: ${r.doi}` : "";
+    const text = `${auPart}${t}${dot} ${r.short} ${r.year}${vol}${pg ? ", " + pg : ""}.${doi}`;
+    const html = `${esc(auPart)}${r.title.html}${dot} <i>${esc(r.short)}</i> <b>${esc(r.year)}</b>${r.volume ? `, <i>${esc(r.volume)}</i>${r.issue ? esc(` (${r.issue})`) : ""}` : ""}${pg ? ", " + esc(pg) : ""}.${esc(doi)}`;
+    return { text, html };
+  }
+
+  function bibKey(r) {
+    const fam = (r.authors[0] ? r.authors[0].family : "ref").normalize("NFD").replace(/[^A-Za-z]/g, "").toLowerCase() || "ref";
+    const word = (r.title.text.normalize("NFD").match(/[A-Za-z]{4,}/g) || [""]).find((w) => !/^(the|with|from|into|over|under|using|based|novel|study|towards?)$/i.test(w)) || "";
+    return `${fam}${r.year}${word.toLowerCase()}`;
+  }
+
+  const TYPE_BIB = { "journal-article": "article", "proceedings-article": "inproceedings", book: "book", monograph: "book", "edited-book": "book", "book-chapter": "incollection", dissertation: "phdthesis", report: "techreport" };
+
+  function bib(r, key) {
+    const texEsc = (t) => t.replace(/([&%$#_{}])/g, "\\$1");
+    const f = [];
+    const add = (k, v) => v && f.push(`  ${k} = {${v}}`);
+    add("title", r.title.tex);
+    // Chinese names stay whole ("赵天琦"); others are "Family, Given".
+    add("author", r.authors.map((a) => (a.org ? `{${texEsc(a.family)}}` : CJK.test(a.family + a.given) ? texEsc(a.family + a.given) : `${texEsc(a.family)}${a.given ? ", " + texEsc(a.given) : ""}`)).join(" and "));
+    const type = TYPE_BIB[r.type] || "misc";
+    add(type === "article" ? "journal" : type === "misc" ? "howpublished" : "booktitle", texEsc(r.container));
+    add("year", r.year);
+    add("volume", r.volume);
+    add("number", r.issue);
+    add("pages", pages(r) ? range(pages(r)).replace(/-/g, "--") : "");
+    add("publisher", texEsc(r.publisher));
+    add("doi", r.doi);
+    add("url", r.doi ? `https://doi.org/${r.doi}` : "");
+    const text = `@${type}{${key},\n${f.join(",\n")},\n}`;
+    return { text, html: `<pre>${esc(text)}</pre>` };
+  }
+
+  const TYPE_RIS = { "journal-article": "JOUR", "proceedings-article": "CPAPER", book: "BOOK", monograph: "BOOK", "edited-book": "EDBOOK", "book-chapter": "CHAP", dissertation: "THES", "posted-content": "UNPB", report: "RPRT", dataset: "DATA" };
+
+  function ris(r) {
+    const L = [`TY  - ${TYPE_RIS[r.type] || "GEN"}`];
+    r.authors.forEach((a) => L.push(`AU  - ${a.org || CJK.test(a.family + a.given) ? a.family + (a.org ? "" : a.given) : a.family + (a.given ? ", " + a.given : "")}`));
+    L.push(`TI  - ${r.title.text}`);
+    if (r.container) L.push(`T2  - ${r.container}`);
+    if (r.short && r.short !== r.container) L.push(`J2  - ${r.short}`);
+    if (r.year) L.push(`PY  - ${r.year}`);
+    if (r.volume) L.push(`VL  - ${r.volume}`);
+    if (r.issue) L.push(`IS  - ${r.issue}`);
+    const pg = pages(r) ? range(pages(r)).split("-") : [];
+    if (pg[0]) L.push(`SP  - ${pg[0]}`);
+    if (pg[1]) L.push(`EP  - ${pg[1]}`);
+    if (r.publisher) L.push(`PB  - ${r.publisher}`);
+    if (r.doi) {
+      L.push(`DO  - ${r.doi}`);
+      L.push(`UR  - https://doi.org/${r.doi}`);
+    }
+    L.push("ER  - ");
+    const text = L.join("\n");
+    return { text, html: `<pre>${esc(text)}</pre>` };
+  }
+
+  /* Rendering ------------------------------------------------------------------------------------- */
+
+  function formatted() {
+    const ok = S.items.filter((it) => it.ref);
+    let list = ok.map((it) => ({ it, out: null }));
+    if (S.style === "apa") {
+      list.forEach((x) => (x.out = apa(x.it.ref)));
+      list.sort((a, b) => a.out.sortKey.localeCompare(b.out.sortKey));
+    } else if (S.style === "bib") {
+      const used = new Map();
+      list.forEach((x) => {
+        let k = bibKey(x.it.ref);
+        const n = used.get(k) || 0;
+        used.set(k, n + 1);
+        if (n) k += String.fromCharCode(97 + n);
+        x.out = bib(x.it.ref, k);
+      });
+    } else {
+      const fn = { gbt, acs, ris }[S.style];
+      list.forEach((x) => (x.out = fn(x.it.ref)));
+    }
+    // Numbers, where the style uses them.
+    if (S.numbered && (S.style === "gbt" || S.style === "acs")) {
+      list.forEach((x, i) => {
+        const tag = S.style === "gbt" ? `[${i + 1}] ` : `(${i + 1}) `;
+        x.out = { text: tag + x.out.text, html: esc(tag) + x.out.html };
+      });
+    }
+    return list;
+  }
+
+  function render() {
+    const list = formatted();
+    const byItem = new Map(list.map((x) => [x.it, x.out]));
+    const order = S.style === "apa" ? [...list.map((x) => x.it), ...S.items.filter((it) => !it.ref)] : S.items;
+    ui.refs.innerHTML = "";
+    order.forEach((it) => {
+      const li = document.createElement("li");
+      li.className = "ref";
+      const p = document.createElement("div");
+      p.className = "ref__text";
+      if (it.ref) {
+        p.innerHTML = byItem.get(it).html;
+        const btn = document.createElement("button");
+        btn.className = "pill";
+        btn.type = "button";
+        btn.textContent = Play.t({ zh: "复制", en: "Copy" });
+        btn.addEventListener("click", async () => {
+          const o = byItem.get(it);
+          if (await copyRich(o.text, o.html)) {
+            btn.classList.add("is-on");
+            btn.textContent = Play.t({ zh: "已复制", en: "Copied" });
+            setTimeout(() => {
+              btn.classList.remove("is-on");
+              btn.textContent = Play.t({ zh: "复制", en: "Copy" });
+            }, 1600);
+          }
+        });
+        li.append(p, btn);
+      } else {
+        li.classList.add(it.error ? "is-error" : "is-loading");
+        p.textContent = it.error ? errorText(it.error) : Play.t({ zh: "正在查询……", en: "Looking it up…" });
+        const d = document.createElement("span");
+        d.className = "ref__doi";
+        d.textContent = it.doi;
+        p.appendChild(d);
+        li.append(p);
+      }
+      ui.refs.appendChild(li);
+    });
+    const done = list.length;
+    const failed = S.items.filter((it) => it.error).length;
+    const waiting = S.items.length - done - failed;
+    ui.count.textContent = S.items.length
+      ? Play.t({ zh: `${S.items.length} 个 DOI：${done} 个完成${failed ? `，${failed} 个出错` : ""}${waiting ? `，${waiting} 个查询中` : ""}`, en: `${S.items.length} DOI${S.items.length > 1 ? "s" : ""}: ${done} done${failed ? `, ${failed} failed` : ""}${waiting ? `, ${waiting} pending` : ""}` })
+      : "";
+    ui.copyAll.disabled = !done;
+    ui.download.disabled = !done;
+    ui.number.disabled = !(S.style === "gbt" || S.style === "acs");
+  }
+
+  function errorText(e) {
+    if (e === "notfound") return Play.t({ zh: "Crossref 里查不到这个 DOI。", en: "Crossref has no record of this DOI." });
+    if (String(e).startsWith("http")) return Play.t({ zh: "Crossref 暂时没有正常响应，稍后再试。", en: "Crossref didn't answer properly; try again in a moment." });
+    return Play.t({ zh: "网络出错了，检查一下网络再试。", en: "A network error; check the connection and try again." });
+  }
+
+  async function copyRich(text, html) {
+    try {
+      if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "text/plain": new Blob([text], { type: "text/plain" }),
+            "text/html": new Blob([`<meta charset="utf-8">${html}`], { type: "text/html" }),
+          }),
+        ]);
+        return true;
+      }
+    } catch (e) {}
+    return Play.copy(text);
+  }
+
+  /* Running ---------------------------------------------------------------------------------------- */
+
+  let runId = 0;
+
+  async function go() {
+    const dois = extract(ui.input.value);
+    const id = ++runId;
+    S.items = dois.map((doi) => ({ doi, ref: null, error: null }));
+    render();
+    if (!dois.length) {
+      ui.count.textContent = Play.t({ zh: "没有找到 DOI。DOI 以 10. 开头，比如 10.1016/j.cclet.2025.110967。", en: "No DOIs found. A DOI starts with 10., as in 10.1016/j.cclet.2025.110967." });
+      return;
+    }
+    // Three at a time.
+    let next = 0;
+    const worker = async () => {
+      while (next < S.items.length && id === runId) {
+        const it = S.items[next++];
+        try {
+          it.ref = await work(it.doi);
+        } catch (e) {
+          it.error = e && e.message === "notfound" ? "notfound" : e && /^http/.test(e.message) ? e.message : "network";
+        }
+        if (id === runId) render();
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+  }
+
+  ui.go.addEventListener("click", go);
+  ui.input.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) go();
+  });
+  ui.sample.addEventListener("click", () => {
+    ui.input.value = MY_DOIS.join("\n");
+    go();
+  });
+
+  document.querySelectorAll("[data-style]").forEach((b) =>
+    b.addEventListener("click", () => {
+      S.style = b.dataset.style;
+      Play.store.set("tz-cite-style", S.style);
+      document.querySelectorAll("[data-style]").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+      render();
+    })
+  );
+  document.querySelectorAll("[data-style]").forEach((o) => o.setAttribute("aria-pressed", String(o.dataset.style === S.style)));
+  ui.number.setAttribute("aria-pressed", String(S.numbered));
+  ui.number.addEventListener("click", () => {
+    S.numbered = !S.numbered;
+    Play.store.set("tz-cite-number", S.numbered ? "1" : "0");
+    ui.number.setAttribute("aria-pressed", String(S.numbered));
+    render();
+  });
+
+  ui.copyAll.addEventListener("click", async () => {
+    const list = formatted();
+    const sep = S.style === "bib" || S.style === "ris" ? "\n\n" : "\n";
+    const text = list.map((x) => x.out.text).join(sep);
+    const html = list.map((x) => `<p>${x.out.html}</p>`).join("");
+    if (await copyRich(text, html)) {
+      ui.copyAll.classList.add("is-done");
+      setTimeout(() => ui.copyAll.classList.remove("is-done"), 1600);
+    }
+  });
+
+  ui.download.addEventListener("click", () => {
+    const list = formatted();
+    const sep = S.style === "bib" || S.style === "ris" ? "\n\n" : "\n";
+    const ext = { bib: "bib", ris: "ris" }[S.style] || "txt";
+    const blob = new Blob([list.map((x) => x.out.text).join(sep) + "\n"], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `references-${S.style}.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+
+  Play.onLang(render);
+  render();
+})();
+</script>
+</body>
+</html>

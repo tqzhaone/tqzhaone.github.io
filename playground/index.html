@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Playground | Tianqi Zhao</title>
-    <meta name="description" content="Small things Tianqi Zhao made for fun: an afterglow imaging game, Snake, 2048, a pelican on a bicycle in 3D, and the Eiffel Tower at night.">
+    <meta name="description" content="Small things Tianqi Zhao made: afterglow toys from the lab, classic games in afterglow colours, a decay-fitting tool, a DOI-to-reference tool, and two animations.">
     <meta name="theme-color" content="#000000">
     <meta name="color-scheme" content="dark">
     <link rel="canonical" href="https://tqzhaone.github.io/playground/">
@@ -14,8 +14,8 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tqzhaone.github.io/playground/">
     <meta property="og:title" content="Tianqi Zhao · Playground">
-    <meta property="og:description" content="Small things Tianqi Zhao made for fun: an afterglow imaging game, Snake, 2048, a pelican on a bicycle in 3D, and the Eiffel Tower at night.">
-    <meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/pelican.webp">
+    <meta property="og:description" content="Small things Tianqi Zhao made: afterglow toys from the lab, classic games in afterglow colours, a decay-fitting tool, a DOI-to-reference tool, and two animations.">
+    <meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/lights-off.webp">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="preload" href="/assets/fonts/cardo-400.woff" as="font" type="font/woff" crossorigin>
     <link rel="preload" href="/assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
@@ -76,61 +76,175 @@
         <div class="wrap">
           <header class="page-head">
             <h1 class="section-title page-head__title" id="page-title"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></h1>
-            <p class="page-head__lead" data-l="en">Small things I made for fun. Each one is a single web page that runs in the browser — nothing to install.</p>
-            <p class="page-head__lead" data-l="zh" lang="zh-CN">做着玩的几个小作品。每个都是单独的一张网页，浏览器里直接跑，不用装任何东西。</p>
+            <p class="page-head__lead" data-l="en">Small things I made: toys from my research, classic games and a couple of tools. Each one is a single web page that runs in the browser — nothing to install.</p>
+            <p class="page-head__lead" data-l="zh" lang="zh-CN">做着玩的小作品：和研究有关的小玩意、经典小游戏，还有两个实用工具。每个都是单独的一张网页，浏览器里直接跑，不用装任何东西。</p>
           </header>
-          <div class="plays">
-            <a class="play play--lights-off" href="/playground/lights-off/">
-              <span class="play__shot"><img src="/assets/img/play/lights-off.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker"><span data-l="en">Canvas · Game</span><span data-l="zh" lang="zh-CN">Canvas · 小游戏</span></p>
-                <h2 class="play__title"><span data-l="en">Lights Off</span><span data-l="zh" lang="zh-CN">关灯之后</span></h2>
-                <p class="play__text" data-l="en">A small game about what I work on. Under the lamp the whole tissue glows; switch it off and the background dies away, while the afterglow on the tumors keeps shining. Pick your moment and tap them.</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">和我的研究方向有关的一个小游戏：灯亮时整块组织都在发光，关灯后背景很快熄灭，肿瘤上的余辉还亮着，看准时机点中它们。</p>
-                <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>
-            <a class="play play--snake" href="/playground/snake/">
-              <span class="play__shot"><img src="/assets/img/play/snake.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker"><span data-l="en">Canvas · Game</span><span data-l="zh" lang="zh-CN">Canvas · 小游戏</span></p>
-                <h2 class="play__title"><span data-l="en">Snake</span><span data-l="zh" lang="zh-CN">贪吃蛇</span></h2>
-                <p class="play__text" data-l="en">The classic, in afterglow colours: the snake is hot at the head and cools along its body, the path behind it glows and fades, and a bonus orb cools down the colour table the longer you leave it.</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">经典玩法，换成了余辉的配色：蛇头最热，往后一路冷却；走过的格子亮一下再暗下去；不时出现的奖励光球会慢慢冷却，越早吃到分越高。</p>
-                <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>
-            <a class="play play--2048" href="/playground/2048/">
-              <span class="play__shot"><img src="/assets/img/play/2048.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker"><span data-l="en">HTML · Game</span><span data-l="zh" lang="zh-CN">HTML · 小游戏</span></p>
-                <h2 class="play__title"><span data-l="en">2048</span><span data-l="zh" lang="zh-CN">2048</span></h2>
-                <p class="play__text" data-l="en">Merge equal tiles to reach 2048. The bigger a tile, the brighter it glows, from deep violet up through blue, green and yellow to red. Swipe on a phone; undo one move if you slip.</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">合并相同的方块，凑出 2048。方块越大越亮，颜色从深紫经过蓝、绿、黄一路走到红。手机上滑动操作，手滑了可以撤销一步。</p>
-                <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>
-            <a class="play play--pelican" href="/playground/pelican/">
-              <span class="play__shot"><img src="/assets/img/play/pelican.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker">3D · WebGL</p>
-                <h2 class="play__title"><span data-l="en">Pelican on a bicycle</span><span data-l="zh" lang="zh-CN">鹈鹕骑车</span></h2>
-                <p class="play__text" data-l="en">A pelican in a red helmet and striped scarf pedals down a country road with a basket of fish — the classic “pelican on a bicycle” test for AI, built out in 3D. Ring the bell, or switch to dusk.</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">戴红头盔、围条纹围巾的鹈鹕沿着乡间小路蹬车，车筐里装着鱼 ——「鹈鹕骑自行车」这道考 AI 的老题，做成了 3D。可以按铃，也能切到黄昏。</p>
-                <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>
-            <a class="play play--eiffel" href="/playground/eiffel/">
-              <span class="play__shot"><img src="/assets/img/play/eiffel.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker"><span data-l="en">Canvas · Animation</span><span data-l="zh" lang="zh-CN">Canvas · 动画</span></p>
-                <h2 class="play__title"><span data-l="en">The Eiffel Tower at night</span><span data-l="zh" lang="zh-CN">埃菲尔铁塔之夜</span></h2>
-                <p class="play__text" data-l="en">The tower draws itself from the ground up, the gold lighting comes on over the Seine, and then the whole lattice starts to sparkle.</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">铁塔从地面一层层自己长上去，塞纳河上的金色灯光依次亮起，然后整座铁塔开始闪烁。</p>
-                <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>
-          </div>
+          <section class="playgroup" aria-labelledby="pg-lab">
+            <div class="playgroup__head">
+              <h2 class="playgroup__title" id="pg-lab"><span data-l="en">From the lab</span><span data-l="zh" lang="zh-CN">和研究有关</span></h2>
+              <p class="playgroup__lead" data-l="en">Afterglow, phosphors and luminescence thermometry, made into things to play with.</p>
+              <p class="playgroup__lead" data-l="zh" lang="zh-CN">余辉、发光材料和荧光测温，做成可以动手玩的小东西。</p>
+            </div>
+            <div class="plays">
+              <a class="play play--lights-off" href="/playground/lights-off/">
+                <span class="play__shot"><img src="/assets/img/play/lights-off.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker">Canvas · <span data-l="en">Game</span><span data-l="zh" lang="zh-CN">小游戏</span></p>
+                  <h3 class="play__title"><span data-l="en">Lights Off</span><span data-l="zh" lang="zh-CN">关灯之后</span></h3>
+                  <p class="play__text" data-l="en">Under the lamp the whole tissue glows; switch it off and the background dies away, while the afterglow on the tumors keeps shining. Pick your moment and tap them.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">灯亮时整块组织都在发光，关灯后背景很快熄灭，肿瘤上的余辉还亮着，看准时机点中它们。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--secret" href="/playground/secret/">
+                <span class="play__shot"><img src="/assets/img/play/secret.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker"><span data-l="en">Canvas · Interactive</span><span data-l="zh" lang="zh-CN">Canvas · 互动</span></p>
+                  <h3 class="play__title"><span data-l="en">Afterglow secret</span><span data-l="zh" lang="zh-CN">余辉密信</span></h3>
+                  <p class="play__text" data-l="en">A line printed in two phosphors: under the lamp you read the decoy, after lights-off only the real line glows. Write one and send it as a link.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">一句话用两种材料印在一起：灯亮时读到的是伪装，关灯后只剩真话。写好以后可以生成链接发给别人。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--glow-wall" href="/playground/glow-wall/">
+                <span class="play__shot"><img src="/assets/img/play/glow-wall.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker"><span data-l="en">Canvas · Interactive</span><span data-l="zh" lang="zh-CN">Canvas · 互动</span></p>
+                  <h3 class="play__title"><span data-l="en">Glow wall</span><span data-l="zh" lang="zh-CN">夜光涂鸦墙</span></h3>
+                  <p class="play__text" data-l="en">Draw with ultraviolet light on a phosphor wall: four persistent phosphors, each with its own colour and lifetime. Infrared wipes the stored charge.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">用紫外光在夜光墙上画画，四种长余辉材料各有颜色和余辉时长；红外光能把存着的能量一下子放掉。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--thermometer" href="/playground/thermometer/">
+                <span class="play__shot"><img src="/assets/img/play/thermometer.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker"><span data-l="en">Chart · Game</span><span data-l="zh" lang="zh-CN">图表 · 小游戏</span></p>
+                  <h3 class="play__title"><span data-l="en">Guess the temperature</span><span data-l="zh" lang="zh-CN">猜温度</span></h3>
+                  <p class="play__text" data-l="en">Read a Cr³⁺ emission spectrum: the ratio of the broad band to the sharp line is a thermometer. Five rounds, with a Boltzmann plot.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">看 Cr³⁺ 的发射光谱猜温度：宽带和锐线的比值就是一支温度计。一局五轮，附玻尔兹曼图。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+            </div>
+          </section>
+          <section class="playgroup" aria-labelledby="pg-games">
+            <div class="playgroup__head">
+              <h2 class="playgroup__title" id="pg-games"><span data-l="en">Classic games</span><span data-l="zh" lang="zh-CN">经典小游戏</span></h2>
+              <p class="playgroup__lead" data-l="en">Familiar games in afterglow colours.</p>
+              <p class="playgroup__lead" data-l="zh" lang="zh-CN">熟悉的玩法，换成了余辉的配色。</p>
+            </div>
+            <div class="plays">
+              <a class="play play--snake" href="/playground/snake/">
+                <span class="play__shot"><img src="/assets/img/play/snake.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker">Canvas · <span data-l="en">Game</span><span data-l="zh" lang="zh-CN">小游戏</span></p>
+                  <h3 class="play__title"><span data-l="en">Snake</span><span data-l="zh" lang="zh-CN">贪吃蛇</span></h3>
+                  <p class="play__text" data-l="en">Hot at the head and cooling along the body; the path behind it glows and fades, and a bonus orb cools down the colour table the longer you leave it.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">蛇头最热，往后一路冷却；走过的格子亮一下再暗下去；不时出现的奖励光球会慢慢冷却，越早吃到分越高。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--tetris" href="/playground/tetris/">
+                <span class="play__shot"><img src="/assets/img/play/tetris.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker">Canvas · <span data-l="en">Game</span><span data-l="zh" lang="zh-CN">小游戏</span></p>
+                  <h3 class="play__title"><span data-l="en">Tetris</span><span data-l="zh" lang="zh-CN">俄罗斯方块</span></h3>
+                  <p class="play__text" data-l="en">The falling piece is lit violet; once it lands it glows red-hot and cools towards blue, so the stack shows when each block arrived.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">下落的方块被紫光照亮，落定后开始发余辉，从红色慢慢冷却成蓝色，越早落下的越冷。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--2048" href="/playground/2048/">
+                <span class="play__shot"><img src="/assets/img/play/2048.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker">HTML · <span data-l="en">Game</span><span data-l="zh" lang="zh-CN">小游戏</span></p>
+                  <h3 class="play__title"><span data-l="en">2048</span><span data-l="zh" lang="zh-CN">2048</span></h3>
+                  <p class="play__text" data-l="en">Merge equal tiles to reach 2048. The bigger a tile, the brighter it glows, from deep violet up through blue, green and yellow to red.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">合并相同的方块，凑出 2048。方块越大越亮，颜色从深紫经过蓝、绿、黄一路走到红。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--minesweeper" href="/playground/minesweeper/">
+                <span class="play__shot"><img src="/assets/img/play/minesweeper.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker">HTML · <span data-l="en">Game</span><span data-l="zh" lang="zh-CN">小游戏</span></p>
+                  <h3 class="play__title"><span data-l="en">Minesweeper</span><span data-l="zh" lang="zh-CN">扫雷</span></h3>
+                  <p class="play__text" data-l="en">Three levels, and the first click is always safe. The numbers glow in the radiance colours: the more mines around, the hotter.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">三种难度，第一下不会踩雷。数字按辐射色标上色，周围的雷越多，颜色越热。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+            </div>
+          </section>
+          <section class="playgroup" aria-labelledby="pg-tools">
+            <div class="playgroup__head">
+              <h2 class="playgroup__title" id="pg-tools"><span data-l="en">Tools</span><span data-l="zh" lang="zh-CN">实用工具</span></h2>
+              <p class="playgroup__lead" data-l="en">For writing papers and working with data. Everything runs in your browser.</p>
+              <p class="playgroup__lead" data-l="zh" lang="zh-CN">写论文、处理数据时用得上，全部在浏览器里运行。</p>
+            </div>
+            <div class="plays">
+              <a class="play play--decay-fit" href="/playground/decay-fit/">
+                <span class="play__shot"><img src="/assets/img/play/decay-fit.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker"><span data-l="en">Tool</span><span data-l="zh" lang="zh-CN">工具</span></p>
+                  <h3 class="play__title"><span data-l="en">Afterglow decay fitting</span><span data-l="zh" lang="zh-CN">余辉寿命拟合</span></h3>
+                  <p class="play__text" data-l="en">Paste a decay curve and fit one to three exponentials: lifetimes with errors, the average lifetime and the residuals. Nothing is uploaded.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">粘贴衰减曲线，单、双、三指数拟合，给出各个寿命、误差、平均寿命和残差图。数据不会上传。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--cite" href="/playground/cite/">
+                <span class="play__shot"><img src="/assets/img/play/cite.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker"><span data-l="en">Tool</span><span data-l="zh" lang="zh-CN">工具</span></p>
+                  <h3 class="play__title"><span data-l="en">DOI to reference</span><span data-l="zh" lang="zh-CN">DOI 转参考文献</span></h3>
+                  <p class="play__text" data-l="en">Paste DOIs and get references in GB/T 7714, APA, ACS, BibTeX or RIS, from Crossref.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">粘贴 DOI，一键生成 GB/T 7714、APA、ACS、BibTeX 或 RIS 格式的参考文献。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+            </div>
+          </section>
+          <section class="playgroup" aria-labelledby="pg-art">
+            <div class="playgroup__head">
+              <h2 class="playgroup__title" id="pg-art"><span data-l="en">Simulations and animations</span><span data-l="zh" lang="zh-CN">模拟与动画</span></h2>
+              <p class="playgroup__lead" data-l="en">Things to watch: a simulation and two animations.</p>
+              <p class="playgroup__lead" data-l="zh" lang="zh-CN">看着就好玩的：一个模拟，两个动画。</p>
+            </div>
+            <div class="plays">
+              <a class="play play--life" href="/playground/life/">
+                <span class="play__shot"><img src="/assets/img/play/life.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker"><span data-l="en">Canvas · Simulation</span><span data-l="zh" lang="zh-CN">Canvas · 模拟</span></p>
+                  <h3 class="play__title"><span data-l="en">Game of Life</span><span data-l="zh" lang="zh-CN">生命游戏</span></h3>
+                  <p class="play__text" data-l="en">Conway's Game of Life where dying cells keep glowing, so gliders and spaceships leave trails. Draw your own, or pick a classic pattern.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">康威的生命游戏，死去的格子会留一会儿余辉，滑翔机和飞船走过的路都看得见。可以自己画，也有经典图案。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--pelican" href="/playground/pelican/">
+                <span class="play__shot"><img src="/assets/img/play/pelican.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker">3D · WebGL</p>
+                  <h3 class="play__title"><span data-l="en">Pelican on a bicycle</span><span data-l="zh" lang="zh-CN">鹈鹕骑车</span></h3>
+                  <p class="play__text" data-l="en">A pelican in a red helmet and striped scarf pedals down a country road with a basket of fish — the classic “pelican on a bicycle” test for AI, built out in 3D. Ring the bell, or switch to dusk.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">戴红头盔、围条纹围巾的鹈鹕沿着乡间小路蹬车，车筐里装着鱼 ——「鹈鹕骑自行车」这道考 AI 的老题，做成了 3D。可以按铃，也能切到黄昏。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+              <a class="play play--eiffel" href="/playground/eiffel/">
+                <span class="play__shot"><img src="/assets/img/play/eiffel.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker"><span data-l="en">Canvas · Animation</span><span data-l="zh" lang="zh-CN">Canvas · 动画</span></p>
+                  <h3 class="play__title"><span data-l="en">The Eiffel Tower at night</span><span data-l="zh" lang="zh-CN">埃菲尔铁塔之夜</span></h3>
+                  <p class="play__text" data-l="en">The tower draws itself from the ground up, the gold lighting comes on over the Seine, and then the whole lattice starts to sparkle.</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">铁塔从地面一层层自己长上去，塞纳河上的金色灯光依次亮起，然后整座铁塔开始闪烁。</p>
+                  <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>
+            </div>
+          </section>
         </div>
       </section>
     </main>

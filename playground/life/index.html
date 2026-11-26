@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-title-en="Game of Life · Tianqi Zhao" data-title-zh="生命游戏 · Tianqi Zhao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>生命游戏 · Game of Life</title>
+<meta name="description" content="Conway's Game of Life in afterglow colours: every cell that dies keeps glowing for a moment, so the paths of gliders and spaceships stay visible.">
+<meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tqzhaone.github.io/playground/life/">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tqzhaone.github.io/playground/life/">
+<meta property="og:title" content="生命游戏 · Game of Life">
+<meta property="og:description" content="Conway's Game of Life, where every cell that dies keeps glowing for a moment.">
+<meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/life.webp">
+<link rel="stylesheet" href="/assets/css/play.css">
+<script src="/assets/js/play.js"></script>
+<style>
+  /*
+   * Game of Life (生命游戏), Conway's rules (a dead cell with three live neighbours is born; a live
+   * cell with two or three survives) on a grid that wraps at the edges. Every cell that dies keeps
+   * glowing and cools down the radiance colour table, so moving things leave a trail.
+   */
+  #grid {
+    position: fixed;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+  .dock {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--edge) + env(safe-area-inset-bottom));
+    z-index: 20;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px 14px;
+    width: max-content;
+    max-width: calc(100vw - 2 * var(--edge));
+    padding: 10px 14px;
+    border-radius: 22px;
+    transform: translateX(-50%);
+  }
+
+  .speed {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--dim);
+    font-size: 12.5px;
+  }
+
+  .speed input {
+    width: 110px;
+    accent-color: var(--uv);
+  }
+
+  .speed output {
+    min-width: 4.5em;
+    color: var(--moon-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dock .select {
+    width: auto;
+    padding: 5px 30px 5px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+  }
+
+  .play-btn {
+    min-width: 76px;
+  }
+
+  @media (max-width: 760px) {
+    .dock {
+      gap: 8px;
+      padding: 9px 10px;
+    }
+
+    .speed input {
+      width: 80px;
+    }
+  }
+</style>
+</head>
+<body class="is-stage">
+<canvas id="grid" aria-label="生命游戏的格子 / The Life grid"></canvas>
+
+<a class="backhome glass" href="/playground/"><span aria-hidden="true">←</span><span data-l="zh">趣味</span><span data-l="en">Playground</span></a>
+<header class="pagetitle">
+  <h1><span data-l="zh">生命游戏</span><span data-l="en">Game of Life</span></h1>
+  <p data-l="zh">每个格子只看身边的八个邻居：死格子周围恰好三个活的，就活过来；活格子周围两个或三个活的，就继续活。死去的格子会留一会儿余辉。在格子上点按或拖动可以画。</p>
+  <p data-l="en">Each cell looks only at its eight neighbours: a dead cell with exactly three live ones comes alive; a live cell with two or three stays alive. Cells that die keep glowing for a moment. Click or drag to draw.</p>
+</header>
+<div class="hud glass">
+  <span class="hud__item"><span class="hud__k" data-l="zh">代数</span><span class="hud__k" data-l="en">Generation</span><span class="hud__v" id="gen">0</span></span>
+  <span class="hud__item"><span class="hud__k" data-l="zh">存活</span><span class="hud__k" data-l="en">Alive</span><span class="hud__v" id="pop">0</span></span>
+  <button class="pill" type="button" data-langswitch><span data-l="zh">EN</span><span data-l="en">中文</span></button>
+</div>
+
+<div class="dock glass">
+  <button class="pill play-btn" type="button" id="run"><span data-l="zh" id="runZh">暂停</span><span data-l="en" id="runEn">Pause</span></button>
+  <button class="pill" type="button" id="step"><span data-l="zh">走一步</span><span data-l="en">Step</span></button>
+  <label class="speed"><span data-l="zh">速度</span><span data-l="en">Speed</span><input type="range" id="speed" min="1" max="60" value="12"><output id="speedOut"></output></label>
+  <select class="select" id="pattern" aria-label="图案 / Pattern">
+    <option value="random" data-zh="随机一片" data-en="Random soup"></option>
+    <option value="gun" data-zh="高斯帕滑翔机枪" data-en="Gosper glider gun"></option>
+    <option value="glider" data-zh="滑翔机" data-en="Gliders"></option>
+    <option value="lwss" data-zh="轻量级飞船" data-en="Lightweight spaceships"></option>
+    <option value="pulsar" data-zh="脉冲星" data-en="Pulsar"></option>
+    <option value="penta" data-zh="十五周期振荡器" data-en="Pentadecathlon"></option>
+    <option value="rpent" data-zh="R 五连块" data-en="R-pentomino"></option>
+    <option value="acorn" data-zh="橡子" data-en="Acorn"></option>
+    <option value="diehard" data-zh="长寿者" data-en="Diehard"></option>
+  </select>
+  <button class="pill" type="button" id="clear"><span data-l="zh">清空</span><span data-l="en">Clear</span></button>
+</div>
+
+<noscript><p style="position:fixed;inset:auto 0 50% 0;text-align:center">这个页面需要 JavaScript。 / This page needs JavaScript.</p></noscript>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const cv = $("grid");
+  const ctx = cv.getContext("2d");
+  const ui = { gen: $("gen"), pop: $("pop"), run: $("run"), speed: $("speed"), speedOut: $("speedOut"), pattern: $("pattern") };
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Patterns in run-length encoding (b dead, o alive, $ new row, a number repeats).
+  const RLE = {
+    glider: "bo$2bo$3o!",
+    lwss: "bo2bo$o4b$o3bo$4o!",
+    gun: "24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!",
+    pulsar: "2b3o3b3o2b2$o4bobo4bo$o4bobo4bo$o4bobo4bo$2b3o3b3o2b2$2b3o3b3o2b$o4bobo4bo$o4bobo4bo$o4bobo4bo2$2b3o3b3o!",
+    penta: "2bo4bo2b$2ob4ob2o$2bo4bo!",
+    rpent: "b2o$2o$bo!",
+    acorn: "bo5b$3bo3b$2o2b3o!",
+    diehard: "6bob$2o6b$bo3b3o!",
+  };
+
+  function parse(rle) {
+    const cells = [];
+    let x = 0;
+    let y = 0;
+    let n = "";
+    for (const ch of rle) {
+      if (ch >= "0" && ch <= "9") {
+        n += ch;
+        continue;
+      }
+      const k = n ? Number(n) : 1;
+      n = "";
+      if (ch === "b") x += k;
+      else if (ch === "o") {
+        for (let i = 0; i < k; i++) cells.push([x + i, y]);
+        x += k;
+      } else if (ch === "$") {
+        y += k;
+        x = 0;
+      } else if (ch === "!") break;
+    }
+    return cells;
+  }
+
+  /* Grid ---------------------------------------------------------------------------------------- */
+
+  let CELL = 9;
+  let cols = 0;
+  let rows = 0;
+  let cur = new Uint8Array(0);
+  let nxt = new Uint8Array(0);
+  let glow = new Float32Array(0);
+  let DPR = 1;
+  const small = document.createElement("canvas");
+  const sctx = small.getContext("2d");
+  let img = null;
+  const tiny = document.createElement("canvas");
+  const tctx = tiny.getContext("2d");
+  let lines = null;
+
+  const S = { running: !reduced, rate: Number(Play.store.get("tz-life-speed", 12)) || 12, acc: 0, gen: 0, pop: 0 };
+
+  function layout(keep) {
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    CELL = innerWidth < 760 ? 7 : 9;
+    const nc = Math.max(20, Math.floor(innerWidth / CELL));
+    const nr = Math.max(20, Math.floor(innerHeight / CELL));
+    const old = { cur, glow, cols, rows };
+    cols = nc;
+    rows = nr;
+    cur = new Uint8Array(cols * rows);
+    nxt = new Uint8Array(cols * rows);
+    glow = new Float32Array(cols * rows);
+    if (keep && old.cols) {
+      // Keep the middle of the old grid in the middle of the new one.
+      const ox = Math.floor((cols - old.cols) / 2);
+      const oy = Math.floor((rows - old.rows) / 2);
+      for (let y = 0; y < old.rows; y++) {
+        for (let x = 0; x < old.cols; x++) {
+          const nx = x + ox;
+          const ny = y + oy;
+          if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
+          cur[ny * cols + nx] = old.cur[y * old.cols + x];
+          glow[ny * cols + nx] = old.glow[y * old.cols + x];
+        }
+      }
+    }
+    cv.width = Math.round(innerWidth * DPR);
+    cv.height = Math.round(innerHeight * DPR);
+    small.width = cols;
+    small.height = rows;
+    img = sctx.createImageData(cols, rows);
+    tiny.width = Math.ceil(cols / 3);
+    tiny.height = Math.ceil(rows / 3);
+    // Thin dark lines between the cells.
+    lines = document.createElement("canvas");
+    lines.width = cv.width;
+    lines.height = cv.height;
+    const g = lines.getContext("2d");
+    g.fillStyle = "rgba(5,6,15,0.55)";
+    const step = CELL * DPR;
+    for (let x = 0; x <= cols; x++) g.fillRect(Math.round(x * step), 0, Math.max(1, DPR * 0.8), lines.height);
+    for (let y = 0; y <= rows; y++) g.fillRect(0, Math.round(y * step), lines.width, Math.max(1, DPR * 0.8));
+    count();
+  }
+
+  function clear() {
+    cur.fill(0);
+    glow.fill(0);
+    S.gen = 0;
+    count();
+  }
+
+  function place(name) {
+    clear();
+    if (name === "random") {
+      // A patch in the middle, so it has room to spread and the edges start calm.
+      const x0 = Math.floor(cols * 0.2);
+      const x1 = Math.ceil(cols * 0.8);
+      const y0 = Math.floor(rows * 0.22);
+      const y1 = Math.ceil(rows * 0.78);
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) cur[y * cols + x] = Math.random() < 0.3 ? 1 : 0;
+    } else {
+      const cells = parse(RLE[name]);
+      const w = Math.max(...cells.map((c) => c[0])) + 1;
+      const h = Math.max(...cells.map((c) => c[1])) + 1;
+      const stamp = (ox, oy, flipX) => {
+        for (const [x, y] of cells) {
+          const cx = ((ox + (flipX ? w - 1 - x : x)) % cols + cols) % cols;
+          const cy = ((oy + y) % rows + rows) % rows;
+          cur[cy * cols + cx] = 1;
+        }
+      };
+      const cx = Math.floor((cols - w) / 2);
+      const cy = Math.floor((rows - h) / 2);
+      if (name === "glider") {
+        // A small flock, heading the same way.
+        for (let k = 0; k < 6; k++) stamp(cx - 30 + k * 12, cy - 10 + (k % 3) * 9, false);
+      } else if (name === "lwss") {
+        for (let k = 0; k < 4; k++) stamp(cx - 20, cy - 18 + k * 12, false);
+      } else if (name === "gun") {
+        stamp(Math.max(2, Math.floor(cols * 0.3) - 18), Math.max(2, Math.floor(rows * 0.3)), false);
+      } else {
+        stamp(cx, cy, false);
+      }
+    }
+    for (let i = 0; i < cur.length; i++) if (cur[i]) glow[i] = 1;
+    count();
+  }
+
+  function step() {
+    const c = cols;
+    const r = rows;
+    for (let y = 0; y < r; y++) {
+      const up = ((y - 1 + r) % r) * c;
+      const mid = y * c;
+      const dn = ((y + 1) % r) * c;
+      for (let x = 0; x < c; x++) {
+        const l = (x - 1 + c) % c;
+        const rr = (x + 1) % c;
+        const n = cur[up + l] + cur[up + x] + cur[up + rr] + cur[mid + l] + cur[mid + rr] + cur[dn + l] + cur[dn + x] + cur[dn + rr];
+        const alive = cur[mid + x];
+        nxt[mid + x] = n === 3 || (alive && n === 2) ? 1 : 0;
+      }
+    }
+    [cur, nxt] = [nxt, cur];
+    S.gen += 1;
+    count();
+  }
+
+  function count() {
+    let p = 0;
+    for (let i = 0; i < cur.length; i++) p += cur[i];
+    S.pop = p;
+  }
+
+  /* Drawing ------------------------------------------------------------------------------------- */
+
+  // Colours for the afterglow, precomputed along the table.
+  const LUTN = 64;
+  const LUTC = Array.from({ length: LUTN }, (_, i) => Play.lut(0.08 + 0.84 * (i / (LUTN - 1))));
+
+  function draw(dt) {
+    const k = Math.exp(-dt / 0.75);
+    const d = img.data;
+    for (let i = 0, j = 0; i < cur.length; i++, j += 4) {
+      if (cur[i]) {
+        glow[i] = 1;
+        d[j] = 255;
+        d[j + 1] = 244;
+        d[j + 2] = 214;
+        d[j + 3] = 255;
+        continue;
+      }
+      let g = glow[i];
+      if (g > 0.01) {
+        g *= k;
+        glow[i] = g;
+        const c = LUTC[Math.min(LUTN - 1, Math.floor(g * (LUTN - 1)))];
+        const a = Math.min(1, g * 1.25) * 0.85;
+        d[j] = 7 + (c[0] - 7) * a;
+        d[j + 1] = 9 + (c[1] - 9) * a;
+        d[j + 2] = 24 + (c[2] - 24) * a;
+      } else {
+        glow[i] = 0;
+        d[j] = 7;
+        d[j + 1] = 9;
+        d[j + 2] = 24;
+      }
+      d[j + 3] = 255;
+    }
+    sctx.putImageData(img, 0, 0);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    // The strip past the last whole cell is plain background (the halo below would pile up there).
+    ctx.fillStyle = "#07091a";
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(small, 0, 0, cols * CELL * DPR, rows * CELL * DPR);
+    ctx.drawImage(lines, 0, 0);
+    // A soft halo, from a smaller copy.
+    ctx.imageSmoothingEnabled = true;
+    tctx.drawImage(small, 0, 0, tiny.width, tiny.height);
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.28;
+    ctx.drawImage(tiny, 0, 0, tiny.width * 3 * CELL * DPR, tiny.height * 3 * CELL * DPR);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  /* Loop --------------------------------------------------------------------------------------- */
+
+  let last = performance.now() / 1000;
+  const shown = {};
+
+  function frame() {
+    const t = performance.now() / 1000;
+    const dt = Math.min(0.1, t - last);
+    last = t;
+    if (S.running) {
+      S.acc += dt;
+      const period = 1 / S.rate;
+      let n = 0;
+      while (S.acc >= period && n < 4) {
+        S.acc -= period;
+        step();
+        n++;
+      }
+      if (n === 4) S.acc = 0;
+    }
+    draw(dt);
+    for (const [k, v] of [["gen", S.gen], ["pop", S.pop]]) {
+      if (shown[k] !== v) {
+        shown[k] = v;
+        ui[k].textContent = String(v);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* Controls -------------------------------------------------------------------------------------- */
+
+  function setRunning(on) {
+    S.running = on;
+    $("runZh").textContent = on ? "暂停" : "运行";
+    $("runEn").textContent = on ? "Pause" : "Run";
+  }
+
+  function speedLabel() {
+    ui.speedOut.textContent = Play.t({ zh: `${S.rate} 代/秒`, en: `${S.rate} gen/s` });
+  }
+
+  function patternLabels() {
+    for (const o of ui.pattern.options) o.textContent = o.dataset[Play.lang];
+  }
+
+  ui.run.addEventListener("click", (ev) => {
+    if (ev.detail > 0) ev.currentTarget.blur();
+    setRunning(!S.running);
+  });
+  $("step").addEventListener("click", (ev) => {
+    if (ev.detail > 0) ev.currentTarget.blur();
+    setRunning(false);
+    step();
+  });
+  $("clear").addEventListener("click", (ev) => {
+    if (ev.detail > 0) ev.currentTarget.blur();
+    clear();
+    setRunning(false);
+  });
+  ui.speed.value = String(S.rate);
+  ui.speed.addEventListener("input", () => {
+    S.rate = Number(ui.speed.value);
+    Play.store.set("tz-life-speed", S.rate);
+    speedLabel();
+  });
+  ui.pattern.addEventListener("change", () => {
+    place(ui.pattern.value);
+    setRunning(true);
+    ui.pattern.blur();
+  });
+
+  // Drawing on the grid: the first cell decides whether this stroke paints or erases.
+  let paint = null;
+  function cellAt(ev) {
+    return [Math.floor(ev.clientX / CELL), Math.floor(ev.clientY / CELL)];
+  }
+  function set(x, y, v) {
+    if (x < 0 || y < 0 || x >= cols || y >= rows) return;
+    const i = y * cols + x;
+    cur[i] = v;
+    if (v) glow[i] = 1;
+  }
+  cv.addEventListener("pointerdown", (ev) => {
+    if (ev.button !== undefined && ev.button !== 0) return;
+    try {
+      cv.setPointerCapture(ev.pointerId);
+    } catch (e) {}
+    const [x, y] = cellAt(ev);
+    const v = x >= 0 && y >= 0 && x < cols && y < rows && cur[y * cols + x] ? 0 : 1;
+    paint = { v, x, y, id: ev.pointerId };
+    set(x, y, v);
+    count();
+  });
+  cv.addEventListener("pointermove", (ev) => {
+    if (!paint || ev.pointerId !== paint.id) return;
+    const [x1, y1] = cellAt(ev);
+    // Every cell on the line from the last one.
+    let x0 = paint.x;
+    let y0 = paint.y;
+    const dx = Math.abs(x1 - x0);
+    const dy = -Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1;
+    const sy = y0 < y1 ? 1 : -1;
+    let err = dx + dy;
+    for (;;) {
+      set(x0, y0, paint.v);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy) {
+        err += dy;
+        x0 += sx;
+      }
+      if (e2 <= dx) {
+        err += dx;
+        y0 += sy;
+      }
+    }
+    paint.x = x1;
+    paint.y = y1;
+    count();
+  });
+  const end = () => (paint = null);
+  cv.addEventListener("pointerup", end);
+  cv.addEventListener("pointercancel", end);
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.target.closest && ev.target.closest("input, select, a, button")) return;
+    if (ev.code === "Space") {
+      ev.preventDefault();
+      setRunning(!S.running);
+    } else if (ev.code === "Period" || ev.code === "KeyN") {
+      setRunning(false);
+      step();
+    }
+  });
+
+  Play.onLang(() => {
+    speedLabel();
+    patternLabels();
+    setRunning(S.running);
+  });
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => layout(true), 150);
+  });
+
+  /* Go ---------------------------------------------------------------------------------------------- */
+
+  layout(false);
+  place("random");
+  patternLabels();
+  speedLabel();
+  setRunning(S.running);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

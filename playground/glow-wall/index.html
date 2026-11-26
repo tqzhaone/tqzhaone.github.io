@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-title-en="Glow wall · Tianqi Zhao" data-title-zh="夜光涂鸦墙 · Tianqi Zhao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>夜光涂鸦墙 · Glow wall</title>
+<meta name="description" content="A wall painted with persistent phosphors. Draw on it with ultraviolet light, watch it glow and fade, and wipe it with infrared.">
+<meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tqzhaone.github.io/playground/glow-wall/">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tqzhaone.github.io/playground/glow-wall/">
+<meta property="og:title" content="夜光涂鸦墙 · Glow wall">
+<meta property="og:description" content="Draw with ultraviolet light on a phosphor wall; wipe it with infrared.">
+<meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/glow-wall.webp">
+<link rel="stylesheet" href="/assets/css/play.css">
+<script src="/assets/js/play.js"></script>
+<style>
+  /*
+   * Glow wall (夜光涂鸦墙). The wall is painted with persistent phosphors. Ultraviolet light charges
+   * them (they light up at once and keep glowing after the light has moved on); infrared light
+   * empties the stored charge in one go, a short flash and then dark, as photostimulated
+   * luminescence does. Each phosphor has its own colour and lifetime; the times are scaled down
+   * from hours to seconds.
+   */
+  #wall {
+    position: fixed;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: none;
+  }
+
+  .hint {
+    position: fixed;
+    left: 50%;
+    top: 46%;
+    z-index: 5;
+    margin: 0;
+    color: var(--haze);
+    font-size: 17px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: opacity 0.8s;
+  }
+
+  .hint.is-gone {
+    opacity: 0;
+  }
+
+  .dock {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--edge) + env(safe-area-inset-bottom));
+    z-index: 20;
+    display: grid;
+    gap: 10px;
+    width: min(880px, calc(100vw - 2 * var(--edge)));
+    padding: 12px 16px 12px;
+    border-radius: 22px;
+    transform: translateX(-50%);
+  }
+
+  .dock__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px 18px;
+  }
+
+  .group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .group__k {
+    margin-right: 2px;
+    color: var(--dim);
+    font-size: 12px;
+  }
+
+  .swatch {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .swatch i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 8px var(--c);
+  }
+
+  .tool--ir i {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px #c0394f;
+  }
+
+  .caption {
+    margin: 0;
+    color: var(--haze);
+    font-size: 12.5px;
+    text-align: center;
+  }
+
+  .caption b {
+    color: var(--moon);
+    font-weight: 500;
+  }
+
+  @media (max-width: 760px) {
+    .dock {
+      padding: 10px 10px 10px;
+    }
+
+    .dock__row {
+      gap: 8px 10px;
+    }
+
+    .group__k {
+      display: none;
+    }
+
+    .hint {
+      top: 40%;
+      width: 80vw;
+      font-size: 15px;
+    }
+  }
+</style>
+</head>
+<body class="is-stage">
+<canvas id="wall" aria-label="夜光墙 / Phosphor wall"></canvas>
+
+<a class="backhome glass" href="/playground/"><span aria-hidden="true">←</span><span data-l="zh">趣味</span><span data-l="en">Playground</span></a>
+<header class="pagetitle">
+  <h1><span data-l="zh">夜光涂鸦墙</span><span data-l="en">Glow wall</span></h1>
+  <p data-l="zh">墙上刷了长余辉材料。用紫外光在上面画，光移开以后它还会亮一阵；红外光能把存着的能量一下子放掉。时间按比例缩短了。</p>
+  <p data-l="en">The wall is painted with persistent phosphors. Draw with ultraviolet light and it keeps glowing after the light moves on; infrared empties the stored charge at once. Times are scaled down.</p>
+</header>
+<div class="hud hud--plain glass"><button class="pill" type="button" data-langswitch><span data-l="zh">EN</span><span data-l="en">中文</span></button></div>
+
+<p class="hint" id="hint"><span data-l="zh">按住拖动，用紫外光在墙上画画</span><span data-l="en">Press and drag to draw with ultraviolet light</span></p>
+
+<div class="dock glass">
+  <div class="dock__row">
+    <div class="group" role="group" aria-label="光源 / Light">
+      <span class="group__k" data-l="zh">光源</span><span class="group__k" data-l="en">Light</span>
+      <button class="pill swatch tool--uv" type="button" data-tool="uv" aria-pressed="true" style="--c:#a58bff"><i></i><span data-l="zh">紫外光：画</span><span data-l="en">UV: draw</span></button>
+      <button class="pill swatch tool--ir" type="button" data-tool="ir" aria-pressed="false"><i></i><span data-l="zh">红外光：擦</span><span data-l="en">IR: wipe</span></button>
+    </div>
+    <div class="group" role="group" aria-label="材料 / Phosphor" id="mats"></div>
+  </div>
+  <p class="caption" id="caption"></p>
+  <div class="dock__row">
+    <div class="group" role="group" aria-label="笔刷 / Brush">
+      <span class="group__k" data-l="zh">笔刷</span><span class="group__k" data-l="en">Brush</span>
+      <button class="pill" type="button" data-size="0" aria-pressed="false"><span data-l="zh">细</span><span data-l="en">Fine</span></button>
+      <button class="pill" type="button" data-size="1" aria-pressed="true"><span data-l="zh">中</span><span data-l="en">Medium</span></button>
+      <button class="pill" type="button" data-size="2" aria-pressed="false"><span data-l="zh">粗</span><span data-l="en">Broad</span></button>
+    </div>
+    <div class="group">
+      <button class="pill" type="button" id="flash"><span data-l="zh">整面墙闪一下</span><span data-l="en">Flash the wall</span></button>
+      <button class="pill" type="button" id="clear"><span data-l="zh">清空</span><span data-l="en">Clear</span></button>
+      <button class="pill" type="button" id="save"><span data-l="zh">存图</span><span data-l="en">Save image</span></button>
+    </div>
+  </div>
+</div>
+
+<noscript><p style="position:fixed;inset:auto 0 50% 0;text-align:center">这个页面需要 JavaScript。 / This page needs JavaScript.</p></noscript>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const cv = $("wall");
+  const ctx = cv.getContext("2d");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Each phosphor: colour, and a fast and a slow part of its afterglow (s). Real ones glow for
+  // minutes to hours; here the slow part lasts seconds.
+  const MATS = [
+    { key: "green", css: "#5cff8c", rgb: [92, 255, 140], fast: 1.4, slow: 16, split: 0.5, gain: 1,
+      name: { zh: "绿", en: "Green" }, formula: "SrAl₂O₄:Eu²⁺,Dy³⁺",
+      note: { zh: "最常见的夜光材料，真的能亮好几个小时。", en: "The classic glow-in-the-dark pigment; the real thing glows for hours." } },
+    { key: "blue", css: "#6a86ff", rgb: [96, 132, 255], fast: 1.1, slow: 9, split: 0.55, gain: 1,
+      name: { zh: "蓝紫", en: "Violet-blue" }, formula: "CaAl₂O₄:Eu²⁺,Nd³⁺",
+      note: { zh: "蓝紫色，刚关灯时很亮，持续时间比绿色短一些。", en: "Bright at first, a little shorter-lived than the green." } },
+    { key: "red", css: "#ff5a46", rgb: [255, 90, 70], fast: 0.7, slow: 3.6, split: 0.65, gain: 1,
+      name: { zh: "红", en: "Red" }, formula: "Y₂O₂S:Eu³⁺",
+      note: { zh: "红色长余辉很难做，暗得快得多。", en: "Red afterglow is hard to make; it fades far sooner." } },
+    { key: "nir", css: "#c0394f", rgb: [196, 40, 70], fast: 1.0, slow: 9, split: 0.55, gain: 0.55,
+      name: { zh: "近红外", en: "Near-IR" }, formula: "ZnGa₂O₄:Cr³⁺",
+      note: { zh: "发光在 700 纳米附近，眼睛看着很暗，却最适合在活体里成像。", en: "Emits near 700 nm: dim to the eye, but the one that works for imaging inside the body." } },
+  ];
+  const SIZES = [7, 15, 30]; // brush radius, CSS px
+
+  const state = { tool: "uv", mat: 0, size: 1, drawn: false };
+
+  /* Field ------------------------------------------------------------------------------------- */
+
+  const Q = 4; // CSS px per field cell
+  let W = 0, H = 0, FW = 0, FH = 0, DPR = 1;
+  let fields = []; // per material: { fast, slow, active }
+  let img = null;
+  let small = document.createElement("canvas"); // the field, one pixel per cell
+  let sctx = small.getContext("2d");
+  let tiny = document.createElement("canvas"); // a smaller copy, for the glow around the light
+  let tctx = tiny.getContext("2d");
+  let wallBg = null;
+
+  function layout() {
+    W = innerWidth;
+    H = innerHeight;
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.round(W * DPR);
+    cv.height = Math.round(H * DPR);
+    const nw = Math.ceil(W / Q);
+    const nh = Math.ceil(H / Q);
+    const old = fields;
+    const ow = FW;
+    const oh = FH;
+    FW = nw;
+    FH = nh;
+    fields = MATS.map((m, k) => {
+      const f = { fast: new Float32Array(FW * FH), slow: new Float32Array(FW * FH), burst: new Float32Array(FW * FH), active: false };
+      if (old[k]) {
+        // Keep what is on the wall where the new size overlaps the old.
+        for (let y = 0; y < Math.min(oh, FH); y++) {
+          for (let x = 0; x < Math.min(ow, FW); x++) {
+            f.fast[y * FW + x] = old[k].fast[y * ow + x];
+            f.slow[y * FW + x] = old[k].slow[y * ow + x];
+          }
+        }
+        f.active = old[k].active;
+      }
+      return f;
+    });
+    small.width = FW;
+    small.height = FH;
+    img = sctx.createImageData(FW, FH);
+    tiny.width = Math.max(1, Math.ceil(FW / 4));
+    tiny.height = Math.max(1, Math.ceil(FH / 4));
+    paintWall();
+  }
+
+  // The wall itself in the dark: almost black, a faint texture of paint.
+  function paintWall() {
+    wallBg = document.createElement("canvas");
+    wallBg.width = cv.width;
+    wallBg.height = cv.height;
+    const g = wallBg.getContext("2d");
+    const grd = g.createRadialGradient(cv.width / 2, cv.height * 0.45, 0, cv.width / 2, cv.height * 0.45, Math.max(cv.width, cv.height) * 0.75);
+    grd.addColorStop(0, "#0b0e1c");
+    grd.addColorStop(1, "#040509");
+    g.fillStyle = grd;
+    g.fillRect(0, 0, wallBg.width, wallBg.height);
+    let s = 11;
+    const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < (wallBg.width * wallBg.height) / 700; i++) {
+      g.fillStyle = `rgba(210,230,220,${0.012 + rnd() * 0.03})`;
+      g.fillRect(rnd() * wallBg.width, rnd() * wallBg.height, DPR, DPR);
+    }
+  }
+
+  // Charge (UV) or empty (IR) the cells around a point. amount is 0..1 for this stamp.
+  function stamp(cx, cy, r, amount, tool, mat) {
+    const fx = cx / Q;
+    const fy = cy / Q;
+    const fr = r / Q;
+    const x0 = Math.max(0, Math.floor(fx - fr * 1.6));
+    const x1 = Math.min(FW - 1, Math.ceil(fx + fr * 1.6));
+    const y0 = Math.max(0, Math.floor(fy - fr * 1.6));
+    const y1 = Math.min(FH - 1, Math.ceil(fy + fr * 1.6));
+    const inv = 1 / (2 * (fr * 0.62) * (fr * 0.62));
+    if (tool === "uv") {
+      const m = MATS[mat];
+      const f = fields[mat];
+      f.active = true;
+      for (let y = y0; y <= y1; y++) {
+        for (let x = x0; x <= x1; x++) {
+          const d2 = (x - fx) * (x - fx) + (y - fy) * (y - fy);
+          const p = Math.exp(-d2 * inv) * amount;
+          if (p < 0.002) continue;
+          const i = y * FW + x;
+          const c = f.fast[i] + f.slow[i];
+          const add = p * Math.max(0, 1 - c);
+          f.fast[i] += add * m.split;
+          f.slow[i] += add * (1 - m.split);
+        }
+      }
+    } else {
+      // Infrared: the stored charge is released at once, a short bright burst, then dark.
+      for (const f of fields) {
+        if (!f.active) continue;
+        for (let y = y0; y <= y1; y++) {
+          for (let x = x0; x <= x1; x++) {
+            const d2 = (x - fx) * (x - fx) + (y - fy) * (y - fy);
+            const p = Math.min(1, Math.exp(-d2 * inv) * amount * 1.6);
+            if (p < 0.002) continue;
+            const i = y * FW + x;
+            const out = (f.slow[i] + f.fast[i] * 0.6) * p;
+            f.slow[i] *= 1 - p;
+            f.fast[i] *= 1 - 0.6 * p;
+            f.burst[i] = Math.min(2.5, f.burst[i] + out * 3.2);
+          }
+        }
+      }
+    }
+  }
+
+  /* Pointer ------------------------------------------------------------------------------------ */
+
+  const P = { down: false, x: 0, y: 0, lx: 0, ly: 0, id: null, over: false };
+
+  function along(x0, y0, x1, y1) {
+    const r = SIZES[state.size];
+    const d = Math.hypot(x1 - x0, y1 - y0);
+    const step = Math.max(1, r / 3);
+    const n = Math.max(1, Math.ceil(d / step));
+    for (let k = 1; k <= n; k++) {
+      const t = k / n;
+      stamp(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, r, state.tool === "uv" ? 0.3 : 0.25, state.tool, state.mat);
+    }
+  }
+
+  cv.addEventListener("pointerdown", (ev) => {
+    if (ev.button !== undefined && ev.button !== 0) return;
+    ev.preventDefault();
+    try {
+      cv.setPointerCapture(ev.pointerId);
+    } catch (e) {}
+    P.down = true;
+    P.id = ev.pointerId;
+    P.x = P.lx = ev.clientX;
+    P.y = P.ly = ev.clientY;
+    stamp(P.x, P.y, SIZES[state.size], 0.35, state.tool, state.mat);
+    if (!state.drawn) {
+      state.drawn = true;
+      $("hint").classList.add("is-gone");
+    }
+  });
+  cv.addEventListener("pointermove", (ev) => {
+    P.over = true;
+    P.x = ev.clientX;
+    P.y = ev.clientY;
+    if (P.down && ev.pointerId === P.id) {
+      along(P.lx, P.ly, P.x, P.y);
+      P.lx = P.x;
+      P.ly = P.y;
+    }
+  });
+  const up = (ev) => {
+    if (ev.pointerId !== P.id) return;
+    P.down = false;
+    P.id = null;
+  };
+  cv.addEventListener("pointerup", up);
+  cv.addEventListener("pointercancel", up);
+  cv.addEventListener("pointerleave", (ev) => {
+    if (ev.pointerType === "mouse") P.over = false;
+  });
+
+  /* Loop ---------------------------------------------------------------------------------------- */
+
+  const now = () => performance.now() / 1000;
+  let last = now();
+  let flashAt = -1;
+
+  function frame() {
+    const t = now();
+    const dt = Math.min(0.05, t - last);
+    last = t;
+
+    // Holding the light still keeps charging (or emptying) the spot under it.
+    if (P.down) stamp(P.x, P.y, SIZES[state.size], 1 - Math.exp(-dt / 0.25), state.tool, state.mat);
+
+    const data = img.data;
+    data.fill(0);
+    for (let k = 0; k < MATS.length; k++) {
+      const f = fields[k];
+      if (!f.active) continue;
+      const m = MATS[k];
+      const kf = Math.exp(-dt / m.fast);
+      const ks = Math.exp(-dt / m.slow);
+      const kb = Math.exp(-dt / 0.18);
+      const fast = f.fast;
+      const slow = f.slow;
+      const burst = f.burst;
+      let any = false;
+      const [cr, cg, cb] = m.rgb;
+      for (let i = 0, j = 0; i < fast.length; i++, j += 4) {
+        const a = (fast[i] *= kf);
+        const b = (slow[i] *= ks);
+        const c = burst[i] > 0 ? (burst[i] *= kb) : 0;
+        const v = a + b + c;
+        if (v < 0.003) {
+          if (v > 0) {
+            fast[i] = 0;
+            slow[i] = 0;
+            burst[i] = 0;
+          }
+          continue;
+        }
+        any = true;
+        const tone = (1 - Math.exp(-2.6 * v)) * m.gain;
+        const hot = v > 0.55 ? Math.min(1, (v - 0.55) * 1.4) * 0.75 : 0; // fresh strokes burn white
+        data[j] += (cr + (255 - cr) * hot) * tone;
+        data[j + 1] += (cg + (255 - cg) * hot) * tone;
+        data[j + 2] += (cb + (255 - cb) * hot) * tone;
+        data[j + 3] = 255;
+      }
+      f.active = any;
+    }
+    sctx.putImageData(img, 0, 0);
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.drawImage(wallBg, 0, 0);
+    ctx.globalCompositeOperation = "lighter";
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(small, 0, 0, FW * Q * DPR, FH * Q * DPR);
+    // A soft halo around everything that glows.
+    tctx.clearRect(0, 0, tiny.width, tiny.height);
+    tctx.drawImage(small, 0, 0, tiny.width, tiny.height);
+    ctx.globalAlpha = 0.6;
+    ctx.drawImage(tiny, 0, 0, tiny.width * 4 * Q * DPR, tiny.height * 4 * Q * DPR);
+    ctx.globalAlpha = 1;
+
+    // The light itself.
+    if (P.down || (P.over && matchMedia("(hover: hover)").matches)) {
+      const r = SIZES[state.size] * DPR;
+      const x = P.x * DPR;
+      const y = P.y * DPR;
+      if (state.tool === "uv") {
+        const a = P.down ? 0.45 : 0.12;
+        const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 1.8);
+        grd.addColorStop(0, `rgba(190,170,255,${a})`);
+        grd.addColorStop(0.5, `rgba(143,107,255,${a * 0.5})`);
+        grd.addColorStop(1, "rgba(143,107,255,0)");
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(x, y, r * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = state.tool === "uv" ? "rgba(200,184,255,0.55)" : "rgba(220,70,95,0.75)";
+      ctx.lineWidth = DPR;
+      ctx.setLineDash(state.tool === "ir" ? [4 * DPR, 4 * DPR] : []);
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // The camera-flash look of "Flash the wall".
+    if (flashAt > 0) {
+      const p = (t - flashAt) / 0.3;
+      if (p < 1) {
+        ctx.globalCompositeOperation = "lighter";
+        ctx.fillStyle = `rgba(200,190,255,${(1 - p) * (reduced ? 0.15 : 0.5)})`;
+        ctx.fillRect(0, 0, cv.width, cv.height);
+      } else flashAt = -1;
+    }
+    ctx.globalCompositeOperation = "source-over";
+    requestAnimationFrame(frame);
+  }
+
+  /* Controls ------------------------------------------------------------------------------------- */
+
+  const matsEl = $("mats");
+  matsEl.innerHTML =
+    `<span class="group__k" data-l="zh">材料</span><span class="group__k" data-l="en">Phosphor</span>` +
+    MATS.map((m, k) => `<button class="pill swatch" type="button" data-mat="${k}" aria-pressed="${k === 0}" style="--c:${m.css}"><i></i><span data-l="zh">${m.name.zh}</span><span data-l="en">${m.name.en}</span></button>`).join("");
+
+  function caption() {
+    const m = MATS[state.mat];
+    const el = $("caption");
+    if (state.tool === "ir") {
+      el.innerHTML = Play.t({
+        zh: "红外光不会让材料发光，但能把存着的能量一下子放出来：先闪一下，然后就暗了。",
+        en: "Infrared doesn't make the phosphor glow; it releases the stored charge all at once: a flash, then dark.",
+      });
+    } else {
+      el.innerHTML = `<b>${m.formula}</b> · ${m.note[Play.lang]}`;
+    }
+  }
+
+  function press(selector, attr, value) {
+    document.querySelectorAll(selector).forEach((b) => b.setAttribute("aria-pressed", String(b.getAttribute(attr) === String(value))));
+  }
+
+  document.addEventListener("click", (ev) => {
+    const b = ev.target.closest("button");
+    if (!b) return;
+    if (ev.detail > 0) b.blur();
+    if (b.dataset.tool) {
+      state.tool = b.dataset.tool;
+      press("[data-tool]", "data-tool", state.tool);
+    } else if (b.dataset.mat !== undefined) {
+      state.mat = Number(b.dataset.mat);
+      state.tool = "uv";
+      press("[data-mat]", "data-mat", state.mat);
+      press("[data-tool]", "data-tool", "uv");
+    } else if (b.dataset.size !== undefined) {
+      state.size = Number(b.dataset.size);
+      press("[data-size]", "data-size", state.size);
+    } else if (b.id === "flash") {
+      const f = fields[state.mat];
+      const m = MATS[state.mat];
+      f.active = true;
+      for (let y = 0; y < FH; y++) {
+        for (let x = 0; x < FW; x++) {
+          const dx = x / FW - 0.5;
+          const dy = y / FH - 0.45;
+          const p = 0.95 - 0.5 * (dx * dx + dy * dy);
+          const i = y * FW + x;
+          const add = p * Math.max(0, 1 - f.fast[i] - f.slow[i]);
+          f.fast[i] += add * m.split;
+          f.slow[i] += add * (1 - m.split);
+        }
+      }
+      flashAt = now();
+      $("hint").classList.add("is-gone");
+    } else if (b.id === "clear") {
+      for (const f of fields) {
+        f.fast.fill(0);
+        f.slow.fill(0);
+        f.burst.fill(0);
+        f.active = false;
+      }
+    } else if (b.id === "save") {
+      cv.toBlob((blob) => {
+        if (!blob) return;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "glow-wall.png";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      }, "image/png");
+    }
+    caption();
+  });
+
+  Play.onLang(caption);
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layout, 120);
+  });
+
+  /* Go -------------------------------------------------------------------------------------------- */
+
+  layout();
+  caption();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
