@@ -2811,6 +2811,10 @@ a.gb-nick:hover {
   --accent: var(--warm);
 }
 
+.play--lights-off {
+  --accent: var(--uv);
+}
+
 .play__shot {
   position: relative;
   display: block;

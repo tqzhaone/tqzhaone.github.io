@@ -834,6 +834,14 @@ const playCard = (o) => `            <a class="play play--${o.key}" href="/playg
 function playgroundPage() {
   const cards = [
     {
+      key: "lights-off",
+      kicker: bi("Canvas · Game", "Canvas · 小游戏"),
+      en: "Lights Off",
+      zh: "关灯之后",
+      textEn: "A small game about what I work on. Under the lamp the whole tissue glows; switch it off and the background dies away, while the afterglow on the tumors keeps shining. Pick your moment and tap them.",
+      textZh: "和我的研究方向有关的一个小游戏：灯亮时整块组织都在发光，关灯后背景很快熄灭，肿瘤上的余辉还亮着，看准时机点中它们。",
+    },
+    {
       key: "pelican",
       kicker: "3D · WebGL",
       en: "Pelican on a bicycle",
@@ -869,7 +877,7 @@ ${cards.map(playCard).join("\n")}
     titleEn: `Playground | ${AUTHOR}`,
     titleZh: `趣味 | ${AUTHOR}`,
     ogTitle: `${AUTHOR} · Playground`,
-    description: "Small things Tianqi Zhao made for fun: a pelican on a bicycle in 3D, and the Eiffel Tower at night.",
+    description: "Small things Tianqi Zhao made for fun: an afterglow imaging game, a pelican on a bicycle in 3D, and the Eiffel Tower at night.",
     url: `${ORIGIN}/playground/`,
     image: `${ORIGIN}/assets/img/play/pelican.webp`,
     current: "playground",
