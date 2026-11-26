@@ -1,9 +1,12 @@
 name: Deploy site
 
 # Publishes site/ to the gh-pages branch, which GitHub Pages serves.
-# One build step first: tools/build-site.js writes the News, Blog and Photos pages from their content
-# (site/news/news.json, site/blog/<post>/index.md, site/photos/photos.json). It needs only Node, which
-# the runner already has. Everything else in site/ goes online as it is.
+# Two build steps first, both needing only Node, which the runner already has:
+#   tools/citations.js fetches each paper's citation count (OpenAlex, else Crossref) for the
+#   Publications page; if that fails the site still goes up, keeping the last counts or none.
+#   tools/build-site.js writes the News, Blog, Photos, Publications and Playground pages from their
+#   content (site/news/news.json, site/blog/<post>/index.md, site/photos/photos.json, ...).
+# Everything else in site/ goes online as it is. It also runs once a day, to refresh the counts.
 
 on:
   push:
@@ -13,6 +16,8 @@ on:
       - "site/**"
       - "tools/**"
       - ".github/workflows/deploy.yml"
+  schedule:
+    - cron: "17 19 * * *" # every day at 03:17 Beijing time: fresh citation counts
   workflow_dispatch:
 
 permissions:
@@ -29,7 +34,14 @@ jobs:
       - name: Check out
         uses: actions/checkout@v7
 
-      - name: Build the News, Blog and Photos pages
+      - name: Fetch citation counts
+        run: node tools/citations.js
+        continue-on-error: true
+        env:
+          # optional; without it the counts come from Crossref (see tools/citations.js)
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}
+
+      - name: Build the News, Blog, Photos, Publications and Playground pages
         run: node tools/build-site.js
 
       - name: Publish site/ to gh-pages

@@ -83,6 +83,7 @@
           <source srcset="assets/img/hero/mountains.avif" type="image/avif">
           <img src="assets/img/hero/mountains.webp" width="2172" height="724" alt="" fetchpriority="high">
         </picture>
+        <canvas class="chamber__sky" aria-hidden="true"></canvas>
         <canvas class="chamber__canvas" aria-hidden="true"></canvas>
         <div class="chamber__content">
           <h1 class="name" id="name">Tianqi Zhao</h1>
@@ -92,6 +93,7 @@
             <span class="hint__mouse"><span data-l="en">Move your pointer across the picture to excite it.</span><span data-l="zh" lang="zh-CN">在画面上移动鼠标，给材料“充能”。</span></span>
             <span class="hint__touch"><span data-l="en">Drag a finger across the picture to excite it.</span><span data-l="zh" lang="zh-CN">用手指划过画面，给材料“充能”。</span></span>
           </p>
+          <p class="skynote" data-skynote hidden></p>
         </div>
         <div class="readout" aria-hidden="true">
           <span class="readout__label"><span data-l="en">Emission, log scale</span><span data-l="zh" lang="zh-CN">发光强度（对数）</span></span>
@@ -364,6 +366,7 @@
 
     <script src="assets/js/nav.js" defer></script>
     <script src="assets/js/site.js" defer></script>
+    <script src="assets/js/sky.js" defer></script>
     <script src="assets/js/weather.js" defer></script>
     <script src="assets/js/guestbook.js" defer></script>
     <script src="assets/js/visits.js" defer></script>

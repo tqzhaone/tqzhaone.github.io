@@ -793,9 +793,37 @@ ${body}
 // tools/build.py writes the list (from the BibTeX file) and the BibTeX data next to the page.
 function publicationsPage() {
   const dir = path.join(SITE, "publications");
-  const list = fs.readFileSync(path.join(dir, "papers.html"), "utf8");
   const bib = fs.readFileSync(path.join(dir, "bibtex.json"), "utf8").trim();
   const orcid = '<a href="https://orcid.org/0000-0002-2230-7690">ORCID</a>';
+
+  // Citation counts, fetched at deploy time by tools/citations.js: one under each paper that has been
+  // cited, and the total in the lead. Without citations.json the page simply shows none.
+  let cites = null;
+  try {
+    cites = JSON.parse(fs.readFileSync(path.join(dir, "citations.json"), "utf8"));
+  } catch (error) {
+    cites = null;
+  }
+  let total = 0;
+  let counted = 0;
+  let list = fs.readFileSync(path.join(dir, "papers.html"), "utf8");
+  if (cites && cites.counts) {
+    list = list.replace(/<li class="pub"[\s\S]*?<\/li>/g, (li) => {
+      const m = li.match(/<h3 class="pub__title"><a href="https:\/\/doi\.org\/([^"]+)"/);
+      const n = m ? cites.counts[m[1].toLowerCase()] : undefined;
+      if (typeof n !== "number") return li;
+      total += n;
+      counted += 1;
+      if (n < 1) return li;
+      const badge = `<span class="pub__cited">${bi(`Cited by ${n}`, `被引 ${n} 次`)}</span>`;
+      return li.replace(/(\n\s*)<\/div>(\s*)<\/li>$/, `$1  ${badge}$1</div>$2</li>`);
+    });
+  }
+  // Name the services the numbers came from ("previous" means kept from an earlier day's run).
+  const used = new Set(Object.values((cites && cites.sources) || {}));
+  const via = ["OpenAlex", "Crossref"].filter((name) => used.has(name)).join(" / ") || "OpenAlex / Crossref";
+  const citedEn = counted ? `, cited ${total} times in all (${via}, updated ${cites.updated})` : "";
+  const citedZh = counted ? `，共被引 ${total} 次（${via}，${cites.updated} 更新）` : "";
   const main = `      <section class="section page pubspage pubs" aria-labelledby="page-title" data-pubs>
         <div class="backdrop backdrop--ribbon-pubs" aria-hidden="true"><img src="/assets/img/bg/ribbon-pubs.webp" srcset="/assets/img/bg/ribbon-pubs.webp 1x, /assets/img/bg/ribbon-pubs@2x.webp 2x" width="420" height="2300" alt="" loading="lazy" decoding="async"></div>
         <div class="wrap">
@@ -803,8 +831,8 @@ ${pageHead({
   id: "page-title",
   en: "Publications",
   zh: "论文",
-  leadEn: `Journal articles, newest first. The full record is on ${orcid}.`,
-  leadZh: `期刊论文，按时间从新到旧排列。完整记录见 ${orcid}。`,
+  leadEn: `Journal articles, newest first${citedEn}. The full record is on ${orcid}.`,
+  leadZh: `期刊论文，按时间从新到旧排列${citedZh}。完整记录见 ${orcid}。`,
 })}
 ${list.replace(/\s+$/, "")}
         </div>

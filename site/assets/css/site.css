@@ -1006,6 +1006,27 @@ h4 {
   mix-blend-mode: screen;
 }
 
+/* The weather where the visitor is, or in Nanjing (sky.js): rain, snow, stars, haze, drawn under the
+   afterglow. The photograph darkens or greys with it, and a storm's lightning brightens it for a moment. */
+.chamber__sky {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.chamber__photo img {
+  transition: filter 1.6s ease;
+}
+
+.chamber.is-flash .chamber__photo img {
+  filter: brightness(1.35) contrast(1.05) !important;
+  transition: none;
+}
+
 .chamber__content {
   position: relative;
   max-width: 100%;
@@ -1073,6 +1094,30 @@ html[data-lang="zh"] .lede {
 }
 
 .hint__touch {
+  display: none;
+}
+
+/* Under the hint: why the picture is raining, snowing or dark (sky.js). */
+.skynote {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 0;
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.skynote::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6fd8ff;
+  box-shadow: 0 0 12px 2px rgba(111, 216, 255, 0.7);
+}
+
+.skynote[hidden] {
   display: none;
 }
 
@@ -1851,7 +1896,28 @@ html[data-lang="zh"] .theme__title {
 .pub__actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
+}
+
+/* How many times the paper has been cited (publications page; tools/citations.js). */
+.pub__cited {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 4px;
+  color: var(--haze);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pub__cited::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--phosphor);
+  box-shadow: 0 0 8px var(--phosphor);
 }
 
 .chip {
