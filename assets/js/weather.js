@@ -198,6 +198,10 @@
       `<div class="wx__foot"><button class="wx__switch" type="button" data-wx-switch>${switchLabel}</button>` +
       `<a class="wx__credit" href="https://open-meteo.com/" target="_blank" rel="noopener">${zh() ? "天气数据：Open-Meteo" : "Weather data: Open-Meteo"}</a></div>`;
     box.hidden = false;
+
+    // The opening screen follows the same sky (sky.js).
+    window.__siteWeather = { code: c.weather_code, isDay: c.is_day !== 0, here: state.here };
+    document.dispatchEvent(new CustomEvent("site:weather", { detail: window.__siteWeather }));
   }
 
   const round = (v) => Math.round(v * 100) / 100;
