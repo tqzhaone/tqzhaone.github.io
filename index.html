@@ -21,6 +21,10 @@
     <link rel="preload" href="assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
     <link rel="stylesheet" href="assets/css/site.css">
     <script>
+      // Playground and Beyond the lab used to be sections here; old links to them go to their pages.
+      if (location.hash === "#playground" || location.hash === "#life") {
+        location.replace((location.hash === "#life" ? "/life/" : "/playground/") + location.search);
+      }
       // Pick the language before the first paint: ?lang= wins, then the visitor's last choice, then English.
       (function () {
         var lang = "en";
@@ -57,8 +61,14 @@
             </div>
           </div>
           <a href="#contact" data-nav="contact"><span data-l="en">Contact</span><span data-l="zh" lang="zh-CN">联系</span></a>
-          <a href="#playground" data-nav="playground"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></a>
           <a href="#guestbook" data-nav="guestbook"><span data-l="en">Guestbook</span><span data-l="zh" lang="zh-CN">留言板</span></a>
+          <div class="nav__group" data-navgroup>
+            <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-more"><span data-l="en">More</span><span data-l="zh" lang="zh-CN">更多</span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
+            <div class="nav__menu nav__menu--two" id="nav-more">
+              <a href="/playground/"><span class="nav__item"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></span><span class="nav__hint"><span data-l="en">A pelican on a bicycle, the Eiffel Tower at night</span><span data-l="zh" lang="zh-CN">鹈鹕骑车、埃菲尔铁塔之夜</span></span></a>
+              <a href="/life/"><span class="nav__item"><span data-l="en">Beyond the lab</span><span data-l="zh" lang="zh-CN">实验室之外</span></span><span class="nav__hint"><span data-l="en">A photo from the road</span><span data-l="zh" lang="zh-CN">318 国道上的一张照片</span></span></a>
+            </div>
+          </div>
       </nav>
       <div class="lang" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
@@ -361,23 +371,6 @@
         </div>
       </section>
 
-      <section class="section life" id="life" aria-labelledby="life-title">
-        <div class="wrap life__grid">
-          <div class="life__text">
-            <h2 class="section-title" id="life-title"><span data-l="en">Beyond the lab</span><span data-l="zh" lang="zh-CN">实验室之外</span></h2>
-            <blockquote class="life__quote">
-              <p lang="zh-CN">今日走过了所有的弯路，<br>从此人生尽是坦途。</p>
-              <p class="life__gloss" data-l="en">Today I walked every winding road; from here on, life&#8217;s road runs smooth.</p>
-            </blockquote>
-            <p class="life__source"><span data-l="en">A roadside sign on G318</span><span data-l="zh" lang="zh-CN">318 国道路边的标语</span></p>
-          </div>
-          <figure class="life__photo">
-            <img src="assets/img/life/g318.webp" srcset="assets/img/life/g318.webp 1x, assets/img/life/g318@2x.webp 2x" width="760" height="507" alt="Tianqi Zhao on the Sichuan–Tibet Highway (G318) at Litang, beside a roadside sign, with snow-capped mountains behind" loading="lazy" decoding="async">
-            <figcaption><span data-l="en">On the Sichuan–Tibet Highway (G318), Litang</span><span data-l="zh" lang="zh-CN">川藏公路 318 国道，理塘</span></figcaption>
-          </figure>
-        </div>
-      </section>
-
       <section class="section contact" id="contact" aria-labelledby="contact-title">
         <div class="backdrop backdrop--ribbon-contact" aria-hidden="true"><img src="assets/img/bg/ribbon-contact.webp" srcset="assets/img/bg/ribbon-contact.webp 1x, assets/img/bg/ribbon-contact@2x.webp 2x" width="1000" height="700" alt="" loading="lazy" decoding="async"></div>
         <div class="wrap">
@@ -393,36 +386,6 @@
           </a>
           <address class="address" data-l="en">School of Chemistry and Molecular Engineering<br>Nanjing Tech University, Nanjing, China</address>
           <address class="address" data-l="zh" lang="zh-CN">南京工业大学 化学与分子工程学院<br>中国 南京</address>
-        </div>
-      </section>
-
-      <section class="section playground" id="playground" aria-labelledby="playground-title">
-        <div class="wrap">
-          <h2 class="section-title" id="playground-title"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></h2>
-          <p class="playground__lead" data-l="en">Small things I made for fun. Each one is a single web page that runs in the browser — nothing to install.</p>
-          <p class="playground__lead" data-l="zh" lang="zh-CN">做着玩的几个小作品。每个都是单独的一张网页，浏览器里直接跑，不用装任何东西。</p>
-          <div class="plays">
-            <a class="play play--pelican" href="playground/pelican/">
-              <span class="play__shot"><img src="assets/img/play/pelican.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker">3D · WebGL</p>
-                <h3 class="play__title"><span data-l="en">Pelican on a bicycle</span><span data-l="zh" lang="zh-CN">鹈鹕骑车</span></h3>
-                <p class="play__text" data-l="en">A pelican in a red helmet and striped scarf pedals down a country road with a basket of fish — the classic “pelican on a bicycle” test for AI, built out in 3D. Ring the bell, or switch to dusk.</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">戴红头盔、围条纹围巾的鹈鹕沿着乡间小路蹬车，车筐里装着鱼 ——「鹈鹕骑自行车」这道考 AI 的老题，做成了 3D。可以按铃，也能切到黄昏。</p>
-                <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>
-            <a class="play play--eiffel" href="playground/eiffel/">
-              <span class="play__shot"><img src="assets/img/play/eiffel.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker"><span data-l="en">Canvas · Animation</span><span data-l="zh" lang="zh-CN">Canvas · 动画</span></p>
-                <h3 class="play__title"><span data-l="en">The Eiffel Tower at night</span><span data-l="zh" lang="zh-CN">埃菲尔铁塔之夜</span></h3>
-                <p class="play__text" data-l="en">The tower draws itself from the ground up, the gold lighting comes on over the Seine, and then the whole lattice starts to sparkle.</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">铁塔从地面一层层自己长上去，塞纳河上的金色灯光依次亮起，然后整座铁塔开始闪烁。</p>
-                <p class="play__cue"><span data-l="en">Open</span><span data-l="zh" lang="zh-CN">打开</span><span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>
-          </div>
         </div>
       </section>
 
