@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-title-en="Guess the temperature · Tianqi Zhao" data-title-zh="猜温度 · Tianqi Zhao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>猜温度 · Guess the temperature</title>
+<meta name="description" content="Ratiometric luminescence thermometry as a game: read the temperature from the shape of a Cr³⁺ emission spectrum.">
+<meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tqzhaone.github.io/playground/thermometer/">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tqzhaone.github.io/playground/thermometer/">
+<meta property="og:title" content="猜温度 · Guess the temperature">
+<meta property="og:description" content="Read the temperature from the shape of an emission spectrum.">
+<meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/thermometer.webp">
+<link rel="stylesheet" href="/assets/css/play.css">
+<script src="/assets/js/play.js"></script>
+<style>
+  /*
+   * Guess the temperature (猜温度). Ratiometric luminescence thermometry as a game. A Cr³⁺ emitter
+   * has a sharp line (²E → ⁴A₂, ~697 nm) and a broad band (⁴T₂ → ⁴A₂, ~745 nm). The ⁴T₂ level is
+   * populated from ²E thermally, so the band-to-line ratio follows a Boltzmann law,
+   * R = A·exp(−ΔE / kT), and reading R reads T. Five spectra, five guesses.
+   */
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 20px;
+    margin: 0 0 16px;
+  }
+
+  .round {
+    color: var(--haze);
+    font-size: 14px;
+  }
+
+  .round b {
+    color: var(--moon);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+  }
+
+  .chart {
+    display: grid;
+    gap: 10px;
+  }
+
+  .chart canvas {
+    display: block;
+    width: 100%;
+    height: 340px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin: 0;
+    color: var(--haze);
+    font-size: 12.5px;
+  }
+
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .legend i {
+    width: 18px;
+    height: 0;
+    border-top: 2px solid var(--c);
+  }
+
+  .legend i.is-dashed {
+    border-top-style: dashed;
+  }
+
+  .control {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+  }
+
+  .readout {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+    color: var(--moon);
+    font-size: 56px;
+    font-weight: 500;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .readout small {
+    color: var(--haze);
+    font-size: 22px;
+    font-weight: 400;
+  }
+
+  .temp {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .step {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--moon);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .step:hover {
+    border-color: var(--moon-soft);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 28px;
+    margin: 0;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #2348ff, #00c8ff 30%, #36f27a 55%, #ffe34d 78%, #ff4530);
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #2348ff, #00c8ff 30%, #36f27a 55%, #ffe34d 78%, #ff4530);
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+    margin-top: -7px;
+    border: 3px solid #0a0c1e;
+    border-radius: 50%;
+    background: var(--moon);
+    box-shadow: 0 0 0 1px var(--moon);
+    -webkit-appearance: none;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: 3px solid #0a0c1e;
+    border-radius: 50%;
+    background: var(--moon);
+    box-shadow: 0 0 0 1px var(--moon);
+  }
+
+  .scale {
+    display: flex;
+    justify-content: space-between;
+    margin: -6px 46px 0;
+    color: var(--dim);
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result {
+    min-height: 3.2em;
+    margin: 0;
+    color: var(--moon-soft);
+    font-size: 14px;
+  }
+
+  .result b {
+    color: var(--moon);
+    font-weight: 500;
+  }
+
+  .result .is-good {
+    color: var(--phosphor);
+  }
+
+  .result .is-bad {
+    color: var(--nir);
+  }
+
+  .below {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 18px;
+  }
+
+  .below h2 {
+    margin: 0 0 8px;
+    color: var(--moon);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .below p {
+    margin: 0 0 10px;
+    font-size: 14px;
+  }
+
+  #plot2 {
+    display: block;
+    width: 100%;
+    height: 220px;
+  }
+
+  .formula {
+    margin: 10px 0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(4, 5, 14, 0.6);
+    color: var(--moon);
+    font-family: var(--serif);
+    font-size: 18px;
+    text-align: center;
+  }
+
+  @media (max-width: 860px) {
+    .layout,
+    .below {
+      grid-template-columns: 1fr;
+    }
+
+    .chart canvas {
+      height: 260px;
+    }
+
+    .readout {
+      font-size: 44px;
+    }
+  }
+</style>
+</head>
+<body class="is-doc">
+<a class="backhome glass" href="/playground/"><span aria-hidden="true">←</span><span data-l="zh">趣味</span><span data-l="en">Playground</span></a>
+<div class="hud glass">
+  <span class="hud__item"><span class="hud__k" data-l="zh">得分</span><span class="hud__k" data-l="en">Score</span><span class="hud__v" id="score">0</span></span>
+  <span class="hud__item"><span class="hud__k" data-l="zh">最高</span><span class="hud__k" data-l="en">Best</span><span class="hud__v" id="best">0</span></span>
+  <button class="pill" type="button" data-langswitch><span data-l="zh">EN</span><span data-l="en">中文</span></button>
+</div>
+
+<main class="column">
+  <header class="pagetitle">
+    <h1><span data-l="zh">猜温度</span><span data-l="en">Guess the temperature</span></h1>
+    <p data-l="zh">Cr³⁺ 的发光里有一条很窄的锐线和一个很宽的宽带，温度越高，宽带相对锐线越强。两者之比就是一支温度计。看光谱，猜温度，一局五轮。</p>
+    <p data-l="en">Cr³⁺ emits a sharp line and a broad band, and the hotter it gets, the stronger the band becomes against the line. Their ratio is a thermometer. Read the spectrum, guess the temperature: five rounds a game.</p>
+  </header>
+
+  <div class="top">
+    <p class="round" id="round"></p>
+    <div class="segmented" role="group" aria-label="难度 / Mode">
+      <button class="pill" type="button" data-mode="easy" aria-pressed="true"><span data-l="zh">简单：拖动时有对比曲线</span><span data-l="en">Easy: a curve follows your guess</span></button>
+      <button class="pill" type="button" data-mode="hard" aria-pressed="false"><span data-l="zh">困难：只有两条参考线</span><span data-l="en">Hard: two reference curves only</span></button>
+    </div>
+  </div>
+
+  <section class="layout">
+    <div class="chart panel">
+      <canvas id="plot" aria-label="发射光谱 / Emission spectrum"></canvas>
+      <p class="legend" id="legend"></p>
+    </div>
+    <div class="control panel">
+      <p class="readout"><span id="guessVal">60</span><small>°C</small></p>
+      <div class="temp">
+        <button class="step" type="button" id="minus" aria-label="−1 °C">−</button>
+        <input type="range" id="guess" min="0" max="150" step="1" value="60" aria-label="你猜的温度 / Your guess (°C)">
+        <button class="step" type="button" id="plus" aria-label="+1 °C">+</button>
+      </div>
+      <div class="scale"><span>0</span><span>50</span><span>100</span><span>150 °C</span></div>
+      <button class="btn btn--primary" type="button" id="submit"><span data-l="zh">就是这个温度</span><span data-l="en">That's my guess</span></button>
+      <p class="result" id="result" aria-live="polite"></p>
+      <button class="btn" type="button" id="next" hidden><span data-l="zh">下一轮</span><span data-l="en">Next round</span></button>
+    </div>
+  </section>
+
+  <section class="below">
+    <div class="panel">
+      <h2><span data-l="zh">为什么比值能测温</span><span data-l="en">Why a ratio reads temperature</span></h2>
+      <p data-l="zh">发宽带的能级 ⁴T₂ 比发锐线的 ²E 高出一点点（ΔE）。温度越高，越多的电子被热激发到 ⁴T₂，宽带就越强。两者之比服从玻尔兹曼分布：</p>
+      <p data-l="en">The level behind the broad band (⁴T₂) sits a little above the one behind the sharp line (²E), by ΔE. The hotter it is, the more electrons are thermally lifted into ⁴T₂, and the stronger the band. The ratio follows a Boltzmann law:</p>
+      <p class="formula">R = I<sub>band</sub> / I<sub>line</sub> = A · exp(−ΔE / kT)</p>
+      <p data-l="zh">用比值而不用单一强度，是因为比值不受激发光强弱、探测距离和材料浓度的影响。这里的参数是示意用的。</p>
+      <p data-l="en">A ratio, not a single intensity, because it doesn't care how strong the excitation is, how far the detector sits or how much material there is. The numbers here are for illustration.</p>
+    </div>
+    <div class="panel">
+      <h2><span data-l="zh">玻尔兹曼图</span><span data-l="en">Boltzmann plot</span></h2>
+      <p data-l="zh">ln R 对 1/T 是一条直线，斜率就是 −ΔE/k。实心点是每一轮的真实温度，空心点是你的猜测，两点之间的横向距离就是误差。</p>
+      <p data-l="en">ln R against 1/T is a straight line with slope −ΔE/k. Filled dots are each round's true temperature, hollow ones your guesses: the gap between them is your error.</p>
+      <canvas id="plot2" aria-label="玻尔兹曼图 / Boltzmann plot"></canvas>
+    </div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="card glass" role="dialog" aria-modal="true" aria-labelledby="cardTitle"><div id="cardBody"></div></div>
+</div>
+
+<noscript><p style="text-align:center">这个页面需要 JavaScript。 / This page needs JavaScript.</p></noscript>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const ui = { plot: $("plot"), plot2: $("plot2"), legend: $("legend"), guess: $("guess"), guessVal: $("guessVal"), submit: $("submit"), next: $("next"), result: $("result"), round: $("round"), score: $("score"), best: $("best"), overlay: $("overlay"), cardBody: $("cardBody") };
+
+  /* The physics (illustrative numbers) -------------------------------------------------------- */
+
+  const K = 0.695; // Boltzmann constant, cm⁻¹ per K
+  const DE = 1100; // gap between ²E and ⁴T₂, cm⁻¹
+  const A = 0.3 * Math.exp(DE / (K * 298.15)); // so that R = 0.30 at 25 °C
+  const ratio = (tc) => A * Math.exp(-DE / (K * (tc + 273.15)));
+  const L0 = 640;
+  const L1 = 820;
+  const LAMBDA = Array.from({ length: 361 }, (_, i) => L0 + i * 0.5);
+
+  function spectrum(tc, noise, seed) {
+    const w = 3.0 + 0.018 * (tc - 25); // the sharp line broadens a little when hot
+    const c = 742 + 0.03 * (tc - 25);
+    const R = ratio(tc);
+    let s = seed || 1;
+    const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    const gauss = () => Math.sqrt(-2 * Math.log(rnd() + 1e-12)) * Math.cos(2 * Math.PI * rnd());
+    const y = LAMBDA.map((l) => {
+      const d = l - 697;
+      const lor = 1 / (1 + (2 * d / w) ** 2);
+      const gau = Math.exp(-4 * Math.LN2 * (d / w) ** 2);
+      const line = 0.6 * gau + 0.4 * lor;
+      const band = R * Math.exp(-4 * Math.LN2 * ((l - c) / 72) ** 2);
+      return line + band;
+    });
+    const max = Math.max(...y);
+    return y.map((v) => v / max + (noise ? noise * gauss() : 0));
+  }
+
+  /* Game ------------------------------------------------------------------------------------------ */
+
+  const ROUNDS = 5;
+  const NOISE = [0.01, 0.015, 0.02, 0.026, 0.032];
+  const G = { mode: Play.store.get("tz-thermo-mode", "easy") === "hard" ? "hard" : "easy", round: 0, temps: [], guesses: [], ratios: [], score: 0, answered: false, spec: null };
+  const bestKey = () => `tz-thermo-best-${G.mode}`;
+
+  function newGame() {
+    G.round = 0;
+    G.score = 0;
+    G.guesses = [];
+    G.ratios = [];
+    // Five temperatures spread over 20–120 °C, in a random order.
+    const bins = [0, 1, 2, 3, 4].map((k) => Math.round(20 + k * 20 + Math.random() * 20));
+    for (let i = bins.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [bins[i], bins[j]] = [bins[j], bins[i]];
+    }
+    G.temps = bins;
+    startRound();
+    drawBoltzmann();
+  }
+
+  function startRound() {
+    G.answered = false;
+    const t = G.temps[G.round];
+    G.spec = spectrum(t, NOISE[G.round], 1000 + Math.floor(Math.random() * 1e6));
+    ui.submit.hidden = false;
+    ui.submit.disabled = false;
+    ui.next.hidden = true;
+    ui.result.textContent = "";
+    hud();
+    draw();
+  }
+
+  function submit() {
+    if (G.answered) return;
+    G.answered = true;
+    const g = Number(ui.guess.value);
+    const t = G.temps[G.round];
+    const err = Math.abs(g - t);
+    const pts = Math.max(0, Math.round(100 - 6 * err));
+    G.score += pts;
+    G.guesses.push(g);
+    G.ratios.push(ratio(t));
+    const good = err <= 5;
+    ui.result.innerHTML = Play.t({
+      zh: `实际是 <b>${t} °C</b>，你猜 ${g} °C，<span class="${good ? "is-good" : err > 12 ? "is-bad" : ""}">差 ${err} °C</span>，得 ${pts} 分。`,
+      en: `It was <b>${t} °C</b>; you said ${g} °C, <span class="${good ? "is-good" : err > 12 ? "is-bad" : ""}">${err} °C off</span>: ${pts} points.`,
+    });
+    ui.submit.hidden = true;
+    ui.next.hidden = false;
+    nextLabel(G.round === ROUNDS - 1 ? "total" : "next");
+    ui.next.focus({ preventScroll: true });
+    hud();
+    draw();
+    drawBoltzmann();
+  }
+
+  function next() {
+    if (G.round < ROUNDS - 1) {
+      G.round += 1;
+      startRound();
+      ui.guess.focus({ preventScroll: true });
+    } else {
+      finish();
+    }
+  }
+
+  function finish() {
+    const best = Number(Play.store.get(bestKey(), 0));
+    const isBest = G.score > best;
+    if (isBest) Play.store.set(bestKey(), G.score);
+    showCard({ isBest });
+    hud();
+  }
+
+  function title(s) {
+    if (s >= 450) return Play.t({ zh: "人形测温仪", en: "A human thermometer" });
+    if (s >= 350) return Play.t({ zh: "光谱老手", en: "Old hand at spectra" });
+    if (s >= 200) return Play.t({ zh: "还不错", en: "Not bad" });
+    return Play.t({ zh: "再练练", en: "Keep practising" });
+  }
+
+  let card = null;
+  function showCard(data) {
+    card = data;
+    const errs = G.guesses.map((g, i) => Math.abs(g - G.temps[i]));
+    const mean = errs.length ? (errs.reduce((a, b) => a + b, 0) / errs.length).toFixed(1) : "–";
+    const best = Number(Play.store.get(bestKey(), 0));
+    ui.cardBody.innerHTML = `<h2 id="cardTitle">${title(G.score)}</h2>
+      <div class="stats">
+        <div><span>${Play.t({ zh: "总分", en: "Total" })}</span><b>${G.score}</b></div>
+        <div><span>${Play.t({ zh: "平均误差", en: "Mean error" })}</span><b>${mean} °C</b></div>
+        <div><span>${Play.t({ zh: "最高", en: "Best" })}</span><b class="${data.isBest ? "is-new" : ""}">${best}</b></div>
+      </div>
+      ${data.isBest ? `<p class="is-new">${Play.t({ zh: "新纪录", en: "New best" })}</p>` : ""}
+      <div class="actions"><button class="btn btn--primary" type="button" data-act="again">${Play.t({ zh: "再来一局", en: "Play again" })}</button><button class="btn" type="button" data-act="close">${Play.t({ zh: "看看玻尔兹曼图", en: "Look at the plot" })}</button></div>`;
+    ui.overlay.hidden = false;
+    ui.cardBody.querySelector(".btn--primary").focus({ preventScroll: true });
+  }
+
+  ui.cardBody.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-act]");
+    if (!b) return;
+    ui.overlay.hidden = true;
+    card = null;
+    if (b.dataset.act === "again") newGame();
+    else {
+      nextLabel("again");
+      G.round = ROUNDS;
+      $("plot2").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+
+  const NEXT = {
+    next: { zh: "下一轮", en: "Next round" },
+    total: { zh: "看总分", en: "See the total" },
+    again: { zh: "再来一局", en: "Play again" },
+  };
+  function nextLabel(kind) {
+    ui.next.querySelector('[data-l="zh"]').textContent = NEXT[kind].zh;
+    ui.next.querySelector('[data-l="en"]').textContent = NEXT[kind].en;
+  }
+
+  function hud() {
+    const r = Math.min(G.round + 1, ROUNDS);
+    ui.round.innerHTML = Play.t({ zh: `第 <b>${r}</b> / ${ROUNDS} 轮`, en: `Round <b>${r}</b> of ${ROUNDS}` });
+    ui.score.textContent = String(G.score);
+    ui.best.textContent = String(Math.max(Number(Play.store.get(bestKey(), 0)), 0));
+    ui.guessVal.textContent = ui.guess.value;
+    const v = Number(ui.guess.value) / 150;
+    ui.guessVal.style.color = Play.rgba(Play.lut(0.22 + 0.78 * v), 1);
+    ui.legend.innerHTML = [
+      `<span><i style="--c:#ff5a76"></i>${Play.t({ zh: "测到的光谱", en: "Measured spectrum" })}</span>`,
+      G.mode === "easy" ? `<span><i class="is-dashed" style="--c:#74f7be"></i>${Play.t({ zh: "你猜的温度下的光谱", en: "Spectrum at your guess" })}</span>` : `<span><i class="is-dashed" style="--c:#9aa3bf"></i>${Play.t({ zh: "参考：20 °C 和 120 °C", en: "References: 20 °C and 120 °C" })}</span>`,
+      G.answered && G.mode === "hard" ? `<span><i class="is-dashed" style="--c:#74f7be"></i>${Play.t({ zh: "你猜的温度", en: "Your guess" })}</span>` : "",
+    ].join("");
+  }
+
+  /* Charts ---------------------------------------------------------------------------------------- */
+
+  function setup(canvas) {
+    const DPR = Math.min(2, window.devicePixelRatio || 1);
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (canvas.width !== Math.round(w * DPR) || canvas.height !== Math.round(h * DPR)) {
+      canvas.width = Math.round(w * DPR);
+      canvas.height = Math.round(h * DPR);
+    }
+    const g = canvas.getContext("2d");
+    g.setTransform(DPR, 0, 0, DPR, 0, 0);
+    g.clearRect(0, 0, w, h);
+    return { g, w, h };
+  }
+
+  const FONT = '11.5px "Fira Sans", "PingFang SC", "Microsoft YaHei", sans-serif';
+
+  function draw() {
+    const { g, w, h } = setup(ui.plot);
+    const pad = { l: 46, r: 12, t: 14, b: 38 };
+    const X = (l) => pad.l + ((l - L0) / (L1 - L0)) * (w - pad.l - pad.r);
+    const Y = (v) => pad.t + (1 - v / 1.1) * (h - pad.t - pad.b);
+    g.font = FONT;
+    g.strokeStyle = "rgba(236,239,247,0.10)";
+    g.fillStyle = "#7d86a5";
+    g.lineWidth = 1;
+    g.textAlign = "center";
+    g.textBaseline = "top";
+    for (let l = 660; l <= 800; l += 20) {
+      g.beginPath();
+      g.moveTo(X(l) + 0.5, pad.t);
+      g.lineTo(X(l) + 0.5, h - pad.b);
+      g.stroke();
+      g.fillText(String(l), X(l), h - pad.b + 6);
+    }
+    g.fillText(Play.t({ zh: "波长 (nm)", en: "Wavelength (nm)" }), (pad.l + w - pad.r) / 2, h - 16);
+    g.textAlign = "right";
+    g.textBaseline = "middle";
+    for (const v of [0, 0.5, 1]) {
+      g.beginPath();
+      g.moveTo(pad.l, Y(v) + 0.5);
+      g.lineTo(w - pad.r, Y(v) + 0.5);
+      g.stroke();
+      g.fillText(v.toFixed(1), pad.l - 8, Y(v));
+    }
+    g.save();
+    g.translate(13, (pad.t + h - pad.b) / 2);
+    g.rotate(-Math.PI / 2);
+    g.textAlign = "center";
+    g.fillText(Play.t({ zh: "归一化强度", en: "Normalised intensity" }), 0, 0);
+    g.restore();
+
+    const curve = (ys, color, dash, width, fill) => {
+      g.beginPath();
+      ys.forEach((v, i) => {
+        const x = X(LAMBDA[i]);
+        const y = Y(Math.max(-0.05, Math.min(1.12, v)));
+        if (i === 0) g.moveTo(x, y);
+        else g.lineTo(x, y);
+      });
+      if (fill) {
+        const path = new Path2D();
+        ys.forEach((v, i) => {
+          const x = X(LAMBDA[i]);
+          const y = Y(Math.max(0, Math.min(1.12, v)));
+          if (i === 0) path.moveTo(x, y);
+          else path.lineTo(x, y);
+        });
+        path.lineTo(X(L1), Y(0));
+        path.lineTo(X(L0), Y(0));
+        path.closePath();
+        const grd = g.createLinearGradient(0, Y(1), 0, Y(0));
+        grd.addColorStop(0, "rgba(255,90,118,0.28)");
+        grd.addColorStop(1, "rgba(255,90,118,0.02)");
+        g.fillStyle = grd;
+        g.fill(path);
+      }
+      g.setLineDash(dash || []);
+      g.strokeStyle = color;
+      g.lineWidth = width;
+      g.stroke();
+      g.setLineDash([]);
+    };
+
+    if (G.mode === "hard") {
+      curve(spectrum(20, 0), "rgba(154,163,191,0.75)", [3, 4], 1.3);
+      curve(spectrum(120, 0), "rgba(154,163,191,0.75)", [3, 4], 1.3);
+      g.fillStyle = "#9aa3bf";
+      g.textAlign = "left";
+      g.textBaseline = "bottom";
+      const r20 = spectrum(20, 0);
+      const r120 = spectrum(120, 0);
+      g.fillText("20 °C", X(770), Y(r20[Math.round((770 - L0) * 2)]) - 4);
+      g.fillText("120 °C", X(772), Y(r120[Math.round((772 - L0) * 2)]) - 4);
+    }
+    if (G.spec) curve(G.spec, "#ff5a76", null, 1.8, true);
+    if (G.mode === "easy" || G.answered) {
+      curve(spectrum(Number(ui.guess.value), 0), "#74f7be", [6, 5], 1.6);
+    }
+  }
+
+  function drawBoltzmann() {
+    const { g, w, h } = setup(ui.plot2);
+    const pad = { l: 46, r: 12, t: 12, b: 36 };
+    const x0 = 1000 / (130 + 273.15);
+    const x1 = 1000 / (10 + 273.15);
+    const lnR = (tc) => Math.log(ratio(tc));
+    const y0 = lnR(10) - 0.15;
+    const y1 = lnR(130) + 0.15;
+    const X = (x) => pad.l + ((x - x0) / (x1 - x0)) * (w - pad.l - pad.r);
+    const Y = (y) => pad.t + (1 - (y - y0) / (y1 - y0)) * (h - pad.t - pad.b);
+    g.font = FONT;
+    g.strokeStyle = "rgba(236,239,247,0.10)";
+    g.fillStyle = "#7d86a5";
+    g.lineWidth = 1;
+    g.textAlign = "center";
+    g.textBaseline = "top";
+    for (let x = 2.6; x <= 3.5; x += 0.2) {
+      g.beginPath();
+      g.moveTo(X(x) + 0.5, pad.t);
+      g.lineTo(X(x) + 0.5, h - pad.b);
+      g.stroke();
+      g.fillText(x.toFixed(1), X(x), h - pad.b + 6);
+    }
+    g.fillText("1000 / T (K⁻¹)", (pad.l + w - pad.r) / 2, h - 15);
+    g.textAlign = "right";
+    g.textBaseline = "middle";
+    for (let y = Math.ceil(y0 * 2) / 2; y <= y1; y += 0.5) {
+      g.beginPath();
+      g.moveTo(pad.l, Y(y) + 0.5);
+      g.lineTo(w - pad.r, Y(y) + 0.5);
+      g.stroke();
+      g.fillText(y.toFixed(1), pad.l - 8, Y(y));
+    }
+    g.save();
+    g.translate(13, (pad.t + h - pad.b) / 2);
+    g.rotate(-Math.PI / 2);
+    g.textAlign = "center";
+    g.fillText("ln R", 0, 0);
+    g.restore();
+    // The line.
+    g.strokeStyle = "rgba(255,90,118,0.85)";
+    g.lineWidth = 1.6;
+    g.beginPath();
+    g.moveTo(X(x0), Y(lnR(130)));
+    g.lineTo(X(x1), Y(lnR(10)));
+    g.stroke();
+    // The rounds: the true point, and the guess at the same ratio.
+    G.guesses.forEach((guess, i) => {
+      const t = G.temps[i];
+      const y = Y(Math.log(G.ratios[i]));
+      const xt = X(1000 / (t + 273.15));
+      const xg = X(1000 / (guess + 273.15));
+      g.strokeStyle = "rgba(116,247,190,0.5)";
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(xt, y);
+      g.lineTo(xg, y);
+      g.stroke();
+      g.fillStyle = "#ff5a76";
+      g.beginPath();
+      g.arc(xt, y, 4.5, 0, Math.PI * 2);
+      g.fill();
+      g.strokeStyle = "#74f7be";
+      g.lineWidth = 1.8;
+      g.beginPath();
+      g.arc(xg, y, 4.5, 0, Math.PI * 2);
+      g.stroke();
+    });
+  }
+
+  /* Controls -------------------------------------------------------------------------------------- */
+
+  ui.guess.addEventListener("input", () => {
+    hud();
+    if (G.mode === "easy" && !G.answered) draw();
+  });
+  $("minus").addEventListener("click", () => {
+    ui.guess.value = String(Math.max(0, Number(ui.guess.value) - 1));
+    ui.guess.dispatchEvent(new Event("input"));
+  });
+  $("plus").addEventListener("click", () => {
+    ui.guess.value = String(Math.min(150, Number(ui.guess.value) + 1));
+    ui.guess.dispatchEvent(new Event("input"));
+  });
+  ui.guess.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") submit();
+  });
+  ui.submit.addEventListener("click", submit);
+  ui.next.addEventListener("click", () => {
+    if (G.round >= ROUNDS) newGame();
+    else next();
+  });
+
+  document.querySelectorAll("[data-mode]").forEach((b) =>
+    b.addEventListener("click", () => {
+      if (b.dataset.mode === G.mode) return;
+      G.mode = b.dataset.mode;
+      Play.store.set("tz-thermo-mode", G.mode);
+      document.querySelectorAll("[data-mode]").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+      newGame();
+    })
+  );
+  document.querySelectorAll("[data-mode]").forEach((o) => o.setAttribute("aria-pressed", String(o.dataset.mode === G.mode)));
+
+  Play.onLang(() => {
+    hud();
+    draw();
+    drawBoltzmann();
+    if (G.answered && G.guesses.length) {
+      // Re-say the last result in the new language.
+      const i = G.guesses.length - 1;
+      const g = G.guesses[i];
+      const t = G.temps[i];
+      const err = Math.abs(g - t);
+      const pts = Math.max(0, Math.round(100 - 6 * err));
+      ui.result.innerHTML = Play.t({
+        zh: `实际是 <b>${t} °C</b>，你猜 ${g} °C，差 ${err} °C，得 ${pts} 分。`,
+        en: `It was <b>${t} °C</b>; you said ${g} °C, ${err} °C off: ${pts} points.`,
+      });
+    }
+    if (card) showCard(card);
+  });
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      draw();
+      drawBoltzmann();
+    }, 100);
+  });
+
+  newGame();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
+    draw();
+    drawBoltzmann();
+  });
+})();
+</script>
+</body>
+</html>

@@ -820,60 +820,176 @@ ${list.replace(/\s+$/, "")}
 
 /* Playground ------------------------------------------------------------------------------------- */
 
-const playCard = (o) => `            <a class="play play--${o.key}" href="/playground/${o.key}/">
-              <span class="play__shot"><img src="/assets/img/play/${o.key}.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
-              <div class="play__body">
-                <p class="play__kicker">${o.kicker}</p>
-                <h2 class="play__title">${bi(o.en, o.zh)}</h2>
-                <p class="play__text" data-l="en">${o.textEn}</p>
-                <p class="play__text" data-l="zh" lang="zh-CN">${o.textZh}</p>
-                <p class="play__cue">${bi("Open", "打开")}<span class="play__arrow" aria-hidden="true">→</span></p>
-              </div>
-            </a>`;
+const playCard = (o) => `              <a class="play play--${o.key}" href="/playground/${o.key}/">
+                <span class="play__shot"><img src="/assets/img/play/${o.key}.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+                <div class="play__body">
+                  <p class="play__kicker">${o.kicker}</p>
+                  <h3 class="play__title">${bi(o.en, o.zh)}</h3>
+                  <p class="play__text" data-l="en">${o.textEn}</p>
+                  <p class="play__text" data-l="zh" lang="zh-CN">${o.textZh}</p>
+                  <p class="play__cue">${bi("Open", "打开")}<span class="play__arrow" aria-hidden="true">→</span></p>
+                </div>
+              </a>`;
+
+// The Playground page, in groups. Each card is a page of its own under site/playground/<key>/, with a
+// picture in site/assets/img/play/<key>.webp (1120 × 700).
+const GAME = bi("Game", "小游戏");
+const PLAY_GROUPS = [
+  {
+    id: "lab",
+    en: "From the lab",
+    zh: "和研究有关",
+    leadEn: "Afterglow, phosphors and luminescence thermometry, made into things to play with.",
+    leadZh: "余辉、发光材料和荧光测温，做成可以动手玩的小东西。",
+    cards: [
+      {
+        key: "lights-off",
+        kicker: `Canvas · ${GAME}`,
+        en: "Lights Off",
+        zh: "关灯之后",
+        textEn: "Under the lamp the whole tissue glows; switch it off and the background dies away, while the afterglow on the tumors keeps shining. Pick your moment and tap them.",
+        textZh: "灯亮时整块组织都在发光，关灯后背景很快熄灭，肿瘤上的余辉还亮着，看准时机点中它们。",
+      },
+      {
+        key: "secret",
+        kicker: bi("Canvas · Interactive", "Canvas · 互动"),
+        en: "Afterglow secret",
+        zh: "余辉密信",
+        textEn: "A line printed in two phosphors: under the lamp you read the decoy, after lights-off only the real line glows. Write one and send it as a link.",
+        textZh: "一句话用两种材料印在一起：灯亮时读到的是伪装，关灯后只剩真话。写好以后可以生成链接发给别人。",
+      },
+      {
+        key: "glow-wall",
+        kicker: bi("Canvas · Interactive", "Canvas · 互动"),
+        en: "Glow wall",
+        zh: "夜光涂鸦墙",
+        textEn: "Draw with ultraviolet light on a phosphor wall: four persistent phosphors, each with its own colour and lifetime. Infrared wipes the stored charge.",
+        textZh: "用紫外光在夜光墙上画画，四种长余辉材料各有颜色和余辉时长；红外光能把存着的能量一下子放掉。",
+      },
+      {
+        key: "thermometer",
+        kicker: bi("Chart · Game", "图表 · 小游戏"),
+        en: "Guess the temperature",
+        zh: "猜温度",
+        textEn: "Read a Cr³⁺ emission spectrum: the ratio of the broad band to the sharp line is a thermometer. Five rounds, with a Boltzmann plot.",
+        textZh: "看 Cr³⁺ 的发射光谱猜温度：宽带和锐线的比值就是一支温度计。一局五轮，附玻尔兹曼图。",
+      },
+    ],
+  },
+  {
+    id: "games",
+    en: "Classic games",
+    zh: "经典小游戏",
+    leadEn: "Familiar games in afterglow colours.",
+    leadZh: "熟悉的玩法，换成了余辉的配色。",
+    cards: [
+      {
+        key: "snake",
+        kicker: `Canvas · ${GAME}`,
+        en: "Snake",
+        zh: "贪吃蛇",
+        textEn: "Hot at the head and cooling along the body; the path behind it glows and fades, and a bonus orb cools down the colour table the longer you leave it.",
+        textZh: "蛇头最热，往后一路冷却；走过的格子亮一下再暗下去；不时出现的奖励光球会慢慢冷却，越早吃到分越高。",
+      },
+      {
+        key: "tetris",
+        kicker: `Canvas · ${GAME}`,
+        en: "Tetris",
+        zh: "俄罗斯方块",
+        textEn: "The falling piece is lit violet; once it lands it glows red-hot and cools towards blue, so the stack shows when each block arrived.",
+        textZh: "下落的方块被紫光照亮，落定后开始发余辉，从红色慢慢冷却成蓝色，越早落下的越冷。",
+      },
+      {
+        key: "2048",
+        kicker: `HTML · ${GAME}`,
+        en: "2048",
+        zh: "2048",
+        textEn: "Merge equal tiles to reach 2048. The bigger a tile, the brighter it glows, from deep violet up through blue, green and yellow to red.",
+        textZh: "合并相同的方块，凑出 2048。方块越大越亮，颜色从深紫经过蓝、绿、黄一路走到红。",
+      },
+      {
+        key: "minesweeper",
+        kicker: `HTML · ${GAME}`,
+        en: "Minesweeper",
+        zh: "扫雷",
+        textEn: "Three levels, and the first click is always safe. The numbers glow in the radiance colours: the more mines around, the hotter.",
+        textZh: "三种难度，第一下不会踩雷。数字按辐射色标上色，周围的雷越多，颜色越热。",
+      },
+    ],
+  },
+  {
+    id: "tools",
+    en: "Tools",
+    zh: "实用工具",
+    leadEn: "For writing papers and working with data. Everything runs in your browser.",
+    leadZh: "写论文、处理数据时用得上，全部在浏览器里运行。",
+    cards: [
+      {
+        key: "decay-fit",
+        kicker: bi("Tool", "工具"),
+        en: "Afterglow decay fitting",
+        zh: "余辉寿命拟合",
+        textEn: "Paste a decay curve and fit one to three exponentials: lifetimes with errors, the average lifetime and the residuals. Nothing is uploaded.",
+        textZh: "粘贴衰减曲线，单、双、三指数拟合，给出各个寿命、误差、平均寿命和残差图。数据不会上传。",
+      },
+      {
+        key: "cite",
+        kicker: bi("Tool", "工具"),
+        en: "DOI to reference",
+        zh: "DOI 转参考文献",
+        textEn: "Paste DOIs and get references in GB/T 7714, APA, ACS, BibTeX or RIS, from Crossref.",
+        textZh: "粘贴 DOI，一键生成 GB/T 7714、APA、ACS、BibTeX 或 RIS 格式的参考文献。",
+      },
+    ],
+  },
+  {
+    id: "art",
+    en: "Simulations and animations",
+    zh: "模拟与动画",
+    leadEn: "Things to watch: a simulation and two animations.",
+    leadZh: "看着就好玩的：一个模拟，两个动画。",
+    cards: [
+      {
+        key: "life",
+        kicker: bi("Canvas · Simulation", "Canvas · 模拟"),
+        en: "Game of Life",
+        zh: "生命游戏",
+        textEn: "Conway's Game of Life where dying cells keep glowing, so gliders and spaceships leave trails. Draw your own, or pick a classic pattern.",
+        textZh: "康威的生命游戏，死去的格子会留一会儿余辉，滑翔机和飞船走过的路都看得见。可以自己画，也有经典图案。",
+      },
+      {
+        key: "pelican",
+        kicker: "3D · WebGL",
+        en: "Pelican on a bicycle",
+        zh: "鹈鹕骑车",
+        textEn: "A pelican in a red helmet and striped scarf pedals down a country road with a basket of fish — the classic “pelican on a bicycle” test for AI, built out in 3D. Ring the bell, or switch to dusk.",
+        textZh: "戴红头盔、围条纹围巾的鹈鹕沿着乡间小路蹬车，车筐里装着鱼 ——「鹈鹕骑自行车」这道考 AI 的老题，做成了 3D。可以按铃，也能切到黄昏。",
+      },
+      {
+        key: "eiffel",
+        kicker: bi("Canvas · Animation", "Canvas · 动画"),
+        en: "The Eiffel Tower at night",
+        zh: "埃菲尔铁塔之夜",
+        textEn: "The tower draws itself from the ground up, the gold lighting comes on over the Seine, and then the whole lattice starts to sparkle.",
+        textZh: "铁塔从地面一层层自己长上去，塞纳河上的金色灯光依次亮起，然后整座铁塔开始闪烁。",
+      },
+    ],
+  },
+];
 
 function playgroundPage() {
-  const cards = [
-    {
-      key: "lights-off",
-      kicker: bi("Canvas · Game", "Canvas · 小游戏"),
-      en: "Lights Off",
-      zh: "关灯之后",
-      textEn: "A small game about what I work on. Under the lamp the whole tissue glows; switch it off and the background dies away, while the afterglow on the tumors keeps shining. Pick your moment and tap them.",
-      textZh: "和我的研究方向有关的一个小游戏：灯亮时整块组织都在发光，关灯后背景很快熄灭，肿瘤上的余辉还亮着，看准时机点中它们。",
-    },
-    {
-      key: "snake",
-      kicker: bi("Canvas · Game", "Canvas · 小游戏"),
-      en: "Snake",
-      zh: "贪吃蛇",
-      textEn: "The classic, in afterglow colours: the snake is hot at the head and cools along its body, the path behind it glows and fades, and a bonus orb cools down the colour table the longer you leave it.",
-      textZh: "经典玩法，换成了余辉的配色：蛇头最热，往后一路冷却；走过的格子亮一下再暗下去；不时出现的奖励光球会慢慢冷却，越早吃到分越高。",
-    },
-    {
-      key: "2048",
-      kicker: bi("HTML · Game", "HTML · 小游戏"),
-      en: "2048",
-      zh: "2048",
-      textEn: "Merge equal tiles to reach 2048. The bigger a tile, the brighter it glows, from deep violet up through blue, green and yellow to red. Swipe on a phone; undo one move if you slip.",
-      textZh: "合并相同的方块，凑出 2048。方块越大越亮，颜色从深紫经过蓝、绿、黄一路走到红。手机上滑动操作，手滑了可以撤销一步。",
-    },
-    {
-      key: "pelican",
-      kicker: "3D · WebGL",
-      en: "Pelican on a bicycle",
-      zh: "鹈鹕骑车",
-      textEn: "A pelican in a red helmet and striped scarf pedals down a country road with a basket of fish — the classic “pelican on a bicycle” test for AI, built out in 3D. Ring the bell, or switch to dusk.",
-      textZh: "戴红头盔、围条纹围巾的鹈鹕沿着乡间小路蹬车，车筐里装着鱼 ——「鹈鹕骑自行车」这道考 AI 的老题，做成了 3D。可以按铃，也能切到黄昏。",
-    },
-    {
-      key: "eiffel",
-      kicker: bi("Canvas · Animation", "Canvas · 动画"),
-      en: "The Eiffel Tower at night",
-      zh: "埃菲尔铁塔之夜",
-      textEn: "The tower draws itself from the ground up, the gold lighting comes on over the Seine, and then the whole lattice starts to sparkle.",
-      textZh: "铁塔从地面一层层自己长上去，塞纳河上的金色灯光依次亮起，然后整座铁塔开始闪烁。",
-    },
-  ];
+  const groups = PLAY_GROUPS.map(
+    (g) => `          <section class="playgroup" aria-labelledby="pg-${g.id}">
+            <div class="playgroup__head">
+              <h2 class="playgroup__title" id="pg-${g.id}">${bi(g.en, g.zh)}</h2>
+              <p class="playgroup__lead" data-l="en">${g.leadEn}</p>
+              <p class="playgroup__lead" data-l="zh" lang="zh-CN">${g.leadZh}</p>
+            </div>
+            <div class="plays">
+${g.cards.map(playCard).join("\n")}
+            </div>
+          </section>`
+  ).join("\n");
   const main = `      <section class="section page playpage" aria-labelledby="page-title">
 ${headRibbon("play")}
         <div class="wrap">
@@ -881,21 +997,19 @@ ${pageHead({
   id: "page-title",
   en: "Playground",
   zh: "趣味",
-  leadEn: "Small things I made for fun. Each one is a single web page that runs in the browser — nothing to install.",
-  leadZh: "做着玩的几个小作品。每个都是单独的一张网页，浏览器里直接跑，不用装任何东西。",
+  leadEn: "Small things I made: toys from my research, classic games and a couple of tools. Each one is a single web page that runs in the browser — nothing to install.",
+  leadZh: "做着玩的小作品：和研究有关的小玩意、经典小游戏，还有两个实用工具。每个都是单独的一张网页，浏览器里直接跑，不用装任何东西。",
 })}
-          <div class="plays">
-${cards.map(playCard).join("\n")}
-          </div>
+${groups}
         </div>
       </section>`;
   return page({
     titleEn: `Playground | ${AUTHOR}`,
     titleZh: `趣味 | ${AUTHOR}`,
     ogTitle: `${AUTHOR} · Playground`,
-    description: "Small things Tianqi Zhao made for fun: an afterglow imaging game, Snake, 2048, a pelican on a bicycle in 3D, and the Eiffel Tower at night.",
+    description: "Small things Tianqi Zhao made: afterglow toys from the lab, classic games in afterglow colours, a decay-fitting tool, a DOI-to-reference tool, and two animations.",
     url: `${ORIGIN}/playground/`,
-    image: `${ORIGIN}/assets/img/play/pelican.webp`,
+    image: `${ORIGIN}/assets/img/play/lights-off.webp`,
     current: "playground",
     bodyClass: "list-page",
     main,

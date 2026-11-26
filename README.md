@@ -20,6 +20,14 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 「趣味」页面和作品 | 导航栏最右边的「趣味」是 `/playground/` 页面，由 `tools/build-site.js` 的 `playgroundPage()` 在部署时生成，每个作品一张卡片。作品本身是独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”；缩略图在 `site/assets/img/play/<名字>.webp`（1120 × 700，显示时裁成 16:9）。加新作品：新建一个文件夹放网页，放一张同名缩略图，再在 `playgroundPage()` 的 `cards` 里加一项（标题和中英文说明）。 |
 | 小游戏「关灯之后」 | `site/playground/lights-off/index.html`，单独的一张网页，不依赖其他文件（只借用网站的字体和图标）。玩法：按住「激发」（或空格键）照亮组织，松开关灯，背景光很快熄灭，肿瘤上的余辉还亮着，趁它没暗下去点中它。难度在 `params()` 里按关卡调（肿瘤数、背景亮点数、余辉和背景的寿命、每关激发次数、亮点大小）；最高分存在访客自己的浏览器里。卡片缩略图是 `site/assets/img/play/lights-off.webp`。 |
 | 贪吃蛇和 2048 | `site/playground/snake/index.html` 和 `site/playground/2048/index.html`，各是单独的一张网页，配色都用首页的辐射色标。贪吃蛇：方向键或 WASD 转向，空格暂停，手机上滑动或用棋盘下方的方向键；速度在 `step()` 里随吃到的个数加快，奖励光球每吃 5 个出现一次。2048：方向键、WASD 或滑动，U 撤销一步；进行中的棋盘和最高分存在访客自己的浏览器里，下次打开接着玩。卡片缩略图是 `site/assets/img/play/snake.webp` 和 `2048.webp`。 |
+| 「趣味」页的分组 | `tools/build-site.js` 里的 `PLAY_GROUPS`：分成「和研究有关」「经典小游戏」「实用工具」「模拟与动画」四组，每组一个标题、一句说明和几张卡片。加一个作品：在对应的组里加一项（`key` 就是网址里的名字），把页面放进 `site/playground/<key>/index.html`，缩略图放进 `site/assets/img/play/<key>.webp`（1120 × 700），再在 `site/sitemap.xml` 里加一行。卡片标题用的宋体是裁剪过的，新标题里有新字时，告诉我重新生成字体文件。 |
+| 新作品共用的样式和脚本 | `site/assets/css/play.css` 和 `site/assets/js/play.js`：余辉密信、夜光涂鸦墙、猜温度、俄罗斯方块、扫雷、生命游戏、余辉寿命拟合、DOI 转参考文献这八个页面共用的字体、颜色、按钮、对话框、语言切换和首页的辐射色标。关灯之后、贪吃蛇、2048 三个页面是自带样式的独立文件。 |
+| 余辉密信 | `site/playground/secret/`。两句话用两种「材料」的点阵印在一起：伪装在灯下更亮，真话是长余辉。分享链接把两句话放在网址的 `#` 后面（不会发到服务器），拿到链接的人都能解出来。 |
+| 夜光涂鸦墙 | `site/playground/glow-wall/`。四种材料的颜色和余辉时长在页面脚本开头的 `MATS` 里（真实材料能亮几小时，这里按比例缩短成几秒）；红外光会把存着的能量一下子放掉。 |
+| 猜温度 | `site/playground/thermometer/`。Cr³⁺ 锐线（约 697 nm）和宽带（约 745 nm）的强度比按玻尔兹曼分布随温度变化，参数（ΔE = 1100 cm⁻¹，25 °C 时比值 0.30）在脚本开头，是示意用的。 |
+| 俄罗斯方块、扫雷、生命游戏 | `site/playground/tetris/`、`minesweeper/`、`life/`。俄罗斯方块用标准规则（7 块一袋、SRS 旋转和踢墙、保留、影子、落地延迟，每 10 行升一级）；落定的方块按落下的时间从红冷却到蓝。扫雷第一下不会踩雷，手机上长按插旗。生命游戏的格子在边缘首尾相接，图案用 RLE 写在脚本里。最高分都存在访客自己的浏览器里。 |
+| 余辉寿命拟合 | `site/playground/decay-fit/`。模型 y = y₀ + Σ Aᵢ·exp(−t/τᵢ)，寿命用 Levenberg–Marquardt 法、振幅和背景用线性最小二乘（变量投影法），从多个初始值出发取最好的结果；误差来自协方差矩阵。我用 SciPy 的 curve_fit 对比过，数值和误差一致。数据不会上传。 |
+| DOI 转参考文献 | `site/playground/cite/`。从 Crossref 取文献信息（访客的浏览器直接请求 api.crossref.org），生成 GB/T 7714—2015、APA 7、ACS、BibTeX、RIS。「用我的论文试试」里的 DOI 列表在脚本开头的 `MY_DOIS`，发了新论文可以加进去。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
 | 各区块的背景图 | `site/assets/img/bg/ribbon-*.webp`：一条贯穿全页的余辉光带。首屏是激发的那一刻，往下每个区块各画一段，颜色按首屏色标从红、琥珀、绿、蓝走到紫，亮度一段比一段暗，像余辉衰减；每张都有普通和 `@2x` 高清两个版本。图是黑底发光，网页用滤色（screen）叠到底色上，黑色部分不显示，所以换图时也要用黑底。`grain.png` 是铺在深色底上的细颗粒。位置、亮度和每个区块的底色光晕在 `site.css` 的 Backgrounds 一段。新闻、博客、照片、趣味四个页面的标题右上方也各有一段（`ribbon-news`、`ribbon-blog`、`ribbon-photos`、`ribbon-play`），颜色跟各页的底色光晕一致，位置在 `pages.css` 的 `.backdrop--pagehead`。 |

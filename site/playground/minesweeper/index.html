@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-title-en="Minesweeper · Tianqi Zhao" data-title-zh="扫雷 · Tianqi Zhao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>扫雷 · Minesweeper</title>
+<meta name="description" content="Minesweeper in afterglow colours: the more mines around a cell, the hotter its number glows.">
+<meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tqzhaone.github.io/playground/minesweeper/">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tqzhaone.github.io/playground/minesweeper/">
+<meta property="og:title" content="扫雷 · Minesweeper">
+<meta property="og:description" content="Minesweeper in afterglow colours.">
+<meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/minesweeper.webp">
+<link rel="stylesheet" href="/assets/css/play.css">
+<script src="/assets/js/play.js"></script>
+<style>
+  /*
+   * Minesweeper (扫雷) in the colours of the home page's radiance table: the more mines around a
+   * cell, the hotter its number. Newly opened cells flash and settle, spreading outwards.
+   */
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 18px;
+    margin: 0 auto 14px;
+  }
+
+  .counters {
+    display: flex;
+    gap: 8px;
+  }
+
+  .counter {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(4, 5, 14, 0.6);
+    font-size: 12.5px;
+  }
+
+  .counter span {
+    color: var(--dim);
+  }
+
+  .counter b {
+    min-width: 2.2em;
+    color: var(--moon);
+    font-size: 20px;
+    font-weight: 500;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .boardwrap {
+    display: grid;
+    justify-content: center;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--cell));
+    grid-auto-rows: var(--cell);
+    gap: 3px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #0c0f26, #080a1a);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  .c {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--cell);
+    height: var(--cell);
+    padding: 0;
+    border: 0;
+    border-radius: 22%;
+    background: linear-gradient(180deg, #232850, #191d3c);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+    color: var(--moon);
+    font-size: calc(var(--cell) * 0.56);
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+  }
+
+  .c:hover:not(.is-open) {
+    background: linear-gradient(180deg, #2b3162, #20254a);
+  }
+
+  .c:focus-visible {
+    outline: 2px solid var(--uv);
+    outline-offset: 1px;
+    z-index: 2;
+  }
+
+  .c.is-open {
+    background: rgba(255, 255, 255, 0.025);
+    box-shadow: inset 0 0 0 1px rgba(236, 239, 247, 0.04);
+    cursor: default;
+  }
+
+  .c.is-open[data-n]:not([data-n="0"]) {
+    cursor: pointer;
+  }
+
+  .n1 { color: #5b8cff; }
+  .n2 { color: #00c8ff; }
+  .n3 { color: #36f27a; }
+  .n4 { color: #ffe34d; }
+  .n5 { color: #ff9f43; }
+  .n6 { color: #ff4530; }
+  .n7 { color: #ff5a76; }
+  .n8 { color: #f4f2ff; }
+
+  .c.is-open[class*=" n"] {
+    text-shadow: 0 0 6px currentColor;
+  }
+
+  /* Newly opened: a flash that settles, timed outwards from where you clicked. */
+  .c.is-fresh {
+    animation: open 0.9s ease-out both;
+  }
+
+  @keyframes open {
+    0% { background: rgba(200, 184, 255, 0.4); text-shadow: 0 0 18px currentColor; }
+    100% { background: rgba(255, 255, 255, 0.025); text-shadow: 0 0 6px currentColor; }
+  }
+
+  /* A flag: a small pennant on a pole. */
+  .c.is-flag::before {
+    content: "";
+    position: absolute;
+    left: 34%;
+    top: 22%;
+    width: 2px;
+    height: 56%;
+    border-radius: 1px;
+    background: var(--moon-soft);
+  }
+
+  .c.is-flag::after {
+    content: "";
+    position: absolute;
+    left: calc(34% + 2px);
+    top: 22%;
+    width: 0;
+    height: 0;
+    border-top: calc(var(--cell) * 0.15) solid transparent;
+    border-bottom: calc(var(--cell) * 0.15) solid transparent;
+    border-left: calc(var(--cell) * 0.32) solid var(--phosphor);
+    filter: drop-shadow(0 0 4px rgba(116, 247, 190, 0.8));
+  }
+
+  /* A mine: a glowing core with a halo. */
+  .c.is-mine {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .c.is-mine::before {
+    content: "";
+    width: 44%;
+    height: 44%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #fff2d8, #ff9f43 45%, #ff4530 80%);
+    box-shadow: 0 0 10px 2px rgba(255, 69, 48, 0.7);
+  }
+
+  .c.is-mine.is-late::before {
+    animation: mine 0.5s ease-out both;
+  }
+
+  @keyframes mine {
+    from { transform: scale(0.2); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .c.is-boom {
+    background: rgba(255, 69, 48, 0.35);
+    box-shadow: 0 0 22px 4px rgba(255, 69, 48, 0.55);
+  }
+
+  .c.is-wrong::after {
+    content: "×";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: auto;
+    height: auto;
+    border: 0;
+    color: var(--nir);
+    font-size: calc(var(--cell) * 0.7);
+    filter: none;
+  }
+
+  .board.is-won .c.is-flag::after {
+    animation: won 1.2s ease-out both;
+  }
+
+  @keyframes won {
+    0% { filter: drop-shadow(0 0 14px #fff); }
+    100% { filter: drop-shadow(0 0 4px rgba(116, 247, 190, 0.8)); }
+  }
+
+  .help {
+    max-width: 62ch;
+    margin: 18px auto 0;
+    color: var(--dim);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  @media (max-width: 560px) {
+    .bar {
+      justify-content: center;
+    }
+
+    .board {
+      gap: 2px;
+      padding: 6px;
+      border-radius: 14px;
+    }
+  }
+</style>
+</head>
+<body class="is-doc">
+<a class="backhome glass" href="/playground/"><span aria-hidden="true">←</span><span data-l="zh">趣味</span><span data-l="en">Playground</span></a>
+<div class="hud hud--plain glass"><button class="pill" type="button" data-langswitch><span data-l="zh">EN</span><span data-l="en">中文</span></button></div>
+
+<main class="column">
+  <header class="pagetitle">
+    <h1><span data-l="zh">扫雷</span><span data-l="en">Minesweeper</span></h1>
+    <p data-l="zh">数字的颜色沿首页的辐射色标：周围的雷越多，颜色越热。</p>
+    <p data-l="en">The numbers take the home page's radiance colours: the more mines around a cell, the hotter it glows.</p>
+  </header>
+
+  <div class="bar">
+    <div class="segmented" role="group" aria-label="难度 / Level">
+      <button class="pill" type="button" data-level="0" aria-pressed="true"><span data-l="zh">初级</span><span data-l="en">Beginner</span></button>
+      <button class="pill" type="button" data-level="1" aria-pressed="false"><span data-l="zh">中级</span><span data-l="en">Intermediate</span></button>
+      <button class="pill" type="button" data-level="2" aria-pressed="false"><span data-l="zh">高级</span><span data-l="en">Expert</span></button>
+    </div>
+    <div class="counters">
+      <span class="counter"><span data-l="zh">剩余</span><span data-l="en">Mines</span><b id="left">10</b></span>
+      <span class="counter"><span data-l="zh">用时</span><span data-l="en">Time</span><b id="time">0</b></span>
+    </div>
+    <div class="segmented">
+      <button class="pill" type="button" id="flagMode" aria-pressed="false"><span data-l="zh">插旗模式</span><span data-l="en">Flag mode</span></button>
+      <button class="pill" type="button" id="restart"><span data-l="zh">新局</span><span data-l="en">New game</span></button>
+    </div>
+  </div>
+
+  <div class="boardwrap"><div class="board" id="board" role="group" aria-label="雷区 / Minefield"></div></div>
+
+  <p class="help"><span data-l="zh">点一下翻开，右键插旗；手机上长按插旗，或者打开「插旗模式」。在数字上点一下，如果周围的旗数等于这个数字，会把其余的格子一起翻开。方向键可以移动，回车翻开，F 插旗。</span><span data-l="en">Click to open, right-click to flag; on a phone, long-press to flag or turn on Flag mode. Click a number whose flags are all placed to open the rest around it. Arrow keys move, Enter opens, F flags.</span></p>
+  <p class="help" id="bests"></p>
+</main>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="card glass" role="dialog" aria-modal="true" aria-labelledby="cardTitle"><div id="cardBody"></div></div>
+</div>
+
+<p class="sr-only" aria-live="polite" id="live"></p>
+<noscript><p style="text-align:center">这个小游戏需要 JavaScript。 / This game needs JavaScript.</p></noscript>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const boardEl = $("board");
+  const ui = { left: $("left"), time: $("time"), overlay: $("overlay"), cardBody: $("cardBody"), live: $("live"), flagMode: $("flagMode"), bests: $("bests") };
+  const LEVELS = [
+    { cols: 9, rows: 9, mines: 10, name: { zh: "初级", en: "Beginner" } },
+    { cols: 16, rows: 16, mines: 40, name: { zh: "中级", en: "Intermediate" } },
+    { cols: 30, rows: 16, mines: 99, name: { zh: "高级", en: "Expert" } },
+  ];
+  const coarse = matchMedia("(pointer: coarse)").matches;
+
+  const G = { level: Number(Play.store.get("tz-mines-level", 0)) || 0, cols: 9, rows: 9, mines: 10, cells: [], placed: false, over: false, won: false, opened: 0, flags: 0, t0: 0, elapsed: 0, timer: 0, flagMode: false, focus: 0 };
+  if (G.level < 0 || G.level > 2) G.level = 0;
+
+  const bestKey = (lv) => `tz-mines-best-${lv}`;
+
+  /* Board ------------------------------------------------------------------------------------- */
+
+  function newGame() {
+    const L = LEVELS[G.level];
+    // The expert board stands upright on a narrow screen.
+    const narrow = document.querySelector(".column").clientWidth - 24 < L.cols * 22 + 30;
+    G.cols = narrow && L.cols > L.rows ? L.rows : L.cols;
+    G.rows = narrow && L.cols > L.rows ? L.cols : L.rows;
+    G.mines = L.mines;
+    G.cells = Array.from({ length: G.cols * G.rows }, () => ({ mine: false, n: 0, open: false, flag: false }));
+    G.placed = false;
+    G.over = false;
+    G.won = false;
+    G.opened = 0;
+    G.flags = 0;
+    G.elapsed = 0;
+    G.focus = 0;
+    clearInterval(G.timer);
+    ui.time.textContent = "0";
+    boardEl.classList.remove("is-won");
+    sizeBoard();
+    boardEl.innerHTML = G.cells.map((_, i) => `<button class="c" type="button" data-i="${i}" tabindex="${i === 0 ? 0 : -1}"></button>`).join("");
+    G.cells.forEach((_, i) => label(i));
+    counters();
+    bests();
+    hideCard();
+  }
+
+  function sizeBoard() {
+    const avail = document.querySelector(".column").clientWidth - 2 * 12 - 2;
+    const gap = innerWidth <= 560 ? 2 : 3;
+    const pad = innerWidth <= 560 ? 12 : 20;
+    const cell = Math.max(20, Math.min(38, Math.floor((avail - pad - gap * (G.cols - 1)) / G.cols)));
+    boardEl.style.setProperty("--cols", G.cols);
+    boardEl.style.setProperty("--cell", `${cell}px`);
+  }
+
+  function neighbours(i) {
+    const x = i % G.cols;
+    const y = Math.floor(i / G.cols);
+    const out = [];
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (!dx && !dy) continue;
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx >= 0 && ny >= 0 && nx < G.cols && ny < G.rows) out.push(ny * G.cols + nx);
+      }
+    }
+    return out;
+  }
+
+  // Mines go down after the first click, never on it or next to it.
+  function place(first) {
+    const banned = new Set([first, ...neighbours(first)]);
+    const spots = [];
+    for (let i = 0; i < G.cells.length; i++) if (!banned.has(i)) spots.push(i);
+    for (let k = 0; k < G.mines; k++) {
+      const j = k + Math.floor(Math.random() * (spots.length - k));
+      [spots[k], spots[j]] = [spots[j], spots[k]];
+      G.cells[spots[k]].mine = true;
+    }
+    G.cells.forEach((c, i) => {
+      c.n = neighbours(i).filter((j) => G.cells[j].mine).length;
+    });
+    G.placed = true;
+    G.t0 = performance.now();
+    G.timer = setInterval(() => {
+      ui.time.textContent = String(Math.min(999, Math.floor((performance.now() - G.t0) / 1000)));
+    }, 250);
+  }
+
+  const btn = (i) => boardEl.children[i];
+
+  function label(i) {
+    const c = G.cells[i];
+    const x = (i % G.cols) + 1;
+    const y = Math.floor(i / G.cols) + 1;
+    const pos = Play.t({ zh: `第 ${y} 行第 ${x} 列`, en: `Row ${y}, column ${x}` });
+    let st;
+    if (c.open && c.mine) st = Play.t({ zh: "雷", en: "mine" });
+    else if (c.open) st = c.n ? Play.t({ zh: `周围 ${c.n} 个雷`, en: `${c.n} mine${c.n > 1 ? "s" : ""} around` }) : Play.t({ zh: "空", en: "empty" });
+    else if (c.flag) st = Play.t({ zh: "插了旗", en: "flagged" });
+    else st = Play.t({ zh: "未翻开", en: "hidden" });
+    btn(i).setAttribute("aria-label", Play.lang === "zh" ? `${pos}：${st}` : `${pos}: ${st}`);
+  }
+
+  /* Moves ------------------------------------------------------------------------------------- */
+
+  function open(i) {
+    if (G.over) return;
+    const c = G.cells[i];
+    if (c.flag) return;
+    if (!G.placed) place(i);
+    if (c.open) return chord(i);
+    if (c.mine) return lose(i);
+    // Open this cell and spread through the empty ones, breadth first, so the flash ripples out.
+    const queue = [[i, 0]];
+    const seen = new Set([i]);
+    while (queue.length) {
+      const [j, d] = queue.shift();
+      const cj = G.cells[j];
+      if (cj.open || cj.flag) continue;
+      cj.open = true;
+      G.opened += 1;
+      show(j, Math.min(d * 22, 700));
+      if (cj.n === 0) {
+        for (const k of neighbours(j)) {
+          if (!seen.has(k) && !G.cells[k].mine) {
+            seen.add(k);
+            queue.push([k, d + 1]);
+          }
+        }
+      }
+    }
+    check();
+  }
+
+  // On an opened number with all its flags placed, open everything else around it.
+  function chord(i) {
+    const c = G.cells[i];
+    if (!c.open || !c.n) return;
+    const around = neighbours(i);
+    const flags = around.filter((j) => G.cells[j].flag).length;
+    if (flags !== c.n) {
+      // Not ready: a little nudge to the hidden neighbours.
+      around.forEach((j) => {
+        if (!G.cells[j].open && !G.cells[j].flag) {
+          const b = btn(j);
+          b.animate([{ background: "rgba(143,107,255,0.45)" }, { background: "" }], { duration: 260 });
+        }
+      });
+      return;
+    }
+    for (const j of around) {
+      if (G.over) return;
+      const cj = G.cells[j];
+      if (!cj.open && !cj.flag) open(j);
+    }
+  }
+
+  function flag(i) {
+    if (G.over) return;
+    const c = G.cells[i];
+    if (c.open) return;
+    c.flag = !c.flag;
+    G.flags += c.flag ? 1 : -1;
+    btn(i).classList.toggle("is-flag", c.flag);
+    label(i);
+    counters();
+  }
+
+  function show(i, delay) {
+    const c = G.cells[i];
+    const b = btn(i);
+    b.classList.add("is-open");
+    b.dataset.n = String(c.n);
+    if (c.n) {
+      b.classList.add(`n${c.n}`);
+      b.textContent = String(c.n);
+    }
+    b.style.animationDelay = `${delay}ms`;
+    b.classList.remove("is-fresh");
+    void b.offsetWidth;
+    b.classList.add("is-fresh");
+    label(i);
+  }
+
+  function check() {
+    if (G.opened !== G.cells.length - G.mines) return;
+    G.over = true;
+    G.won = true;
+    clearInterval(G.timer);
+    const secs = (performance.now() - G.t0) / 1000;
+    G.cells.forEach((c, i) => {
+      if (c.mine && !c.flag) {
+        c.flag = true;
+        btn(i).classList.add("is-flag");
+      }
+    });
+    G.flags = G.mines;
+    counters();
+    boardEl.classList.add("is-won");
+    const prev = Number(Play.store.get(bestKey(G.level), 0));
+    const isBest = !prev || secs < prev;
+    if (isBest) Play.store.set(bestKey(G.level), secs.toFixed(1));
+    ui.live.textContent = Play.t({ zh: `扫完了，用时 ${secs.toFixed(1)} 秒`, en: `Cleared in ${secs.toFixed(1)} s` });
+    setTimeout(() => card("won", { secs, isBest }), 700);
+    bests();
+  }
+
+  function lose(i) {
+    G.over = true;
+    clearInterval(G.timer);
+    const b = btn(i);
+    b.classList.add("is-mine", "is-boom", "is-open");
+    G.cells[i].open = true;
+    label(i);
+    // The other mines light up one after another, nearest first.
+    const x0 = i % G.cols;
+    const y0 = Math.floor(i / G.cols);
+    const rest = [];
+    G.cells.forEach((c, j) => {
+      if (j === i) return;
+      if (c.mine && !c.flag) rest.push(j);
+      else if (!c.mine && c.flag) btn(j).classList.add("is-wrong");
+    });
+    rest.sort((a, b2) => Math.hypot((a % G.cols) - x0, Math.floor(a / G.cols) - y0) - Math.hypot((b2 % G.cols) - x0, Math.floor(b2 / G.cols) - y0));
+    rest.forEach((j, k) => {
+      const bj = btn(j);
+      bj.style.animationDelay = "0ms";
+      setTimeout(() => bj.classList.add("is-mine", "is-late", "is-open"), Math.min(1400, 30 + k * 18));
+    });
+    ui.live.textContent = Play.t({ zh: "踩到雷了", en: "You hit a mine" });
+    setTimeout(() => card("lost", {}), 1100);
+  }
+
+  function counters() {
+    ui.left.textContent = String(G.mines - G.flags);
+  }
+
+  function bests() {
+    const parts = LEVELS.map((L, k) => {
+      const b = Play.store.get(bestKey(k), "");
+      return b ? `${L.name[Play.lang]} ${b} s` : "";
+    }).filter(Boolean);
+    ui.bests.textContent = parts.length ? Play.t({ zh: `最快纪录：${parts.join(" · ")}`, en: `Best times: ${parts.join(" · ")}` }) : "";
+  }
+
+  /* Dialog ------------------------------------------------------------------------------------- */
+
+  let shown = null;
+  function card(kind, data) {
+    shown = { kind, data };
+    const best = Play.store.get(bestKey(G.level), "");
+    let html;
+    if (kind === "won") {
+      html = `<h2 id="cardTitle">${Play.t({ zh: "扫完了", en: "Cleared" })}</h2>
+        <div class="stats">
+          <div><span>${Play.t({ zh: "用时", en: "Time" })}</span><b>${data.secs.toFixed(1)} s</b></div>
+          <div><span>${Play.t({ zh: "最快", en: "Best" })}</span><b class="${data.isBest ? "is-new" : ""}">${best} s</b></div>
+        </div>
+        ${data.isBest ? `<p class="is-new">${Play.t({ zh: "新纪录", en: "New best" })}</p>` : ""}`;
+    } else {
+      html = `<h2 id="cardTitle">${Play.t({ zh: "踩到雷了", en: "Boom" })}</h2>
+        <p>${Play.t({ zh: `翻开了 ${G.opened} / ${G.cells.length - G.mines} 个安全格。`, en: `You opened ${G.opened} of ${G.cells.length - G.mines} safe cells.` })}</p>`;
+    }
+    html += `<div class="actions"><button class="btn btn--primary" type="button" data-act="new">${Play.t({ zh: "再来一局", en: "Play again" })}</button><button class="btn" type="button" data-act="look">${Play.t({ zh: "看看棋盘", en: "Look at the board" })}</button></div>`;
+    ui.cardBody.innerHTML = html;
+    ui.overlay.hidden = false;
+    ui.cardBody.querySelector(".btn--primary").focus({ preventScroll: true });
+  }
+
+  function hideCard() {
+    shown = null;
+    ui.overlay.hidden = true;
+  }
+
+  ui.cardBody.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-act]");
+    if (!b) return;
+    if (b.dataset.act === "new") newGame();
+    else hideCard();
+  });
+  ui.overlay.addEventListener("click", (ev) => {
+    if (ev.target === ui.overlay) hideCard();
+  });
+
+  /* Input ------------------------------------------------------------------------------------- */
+
+  let press = null;
+  boardEl.addEventListener("pointerdown", (ev) => {
+    const b = ev.target.closest(".c");
+    if (!b) return;
+    const i = Number(b.dataset.i);
+    if (ev.button === 2) return;
+    press = { i, t: performance.now(), long: false, id: ev.pointerId, x: ev.clientX, y: ev.clientY };
+    if (ev.pointerType !== "mouse") {
+      press.timer = setTimeout(() => {
+        if (!press || press.i !== i) return;
+        press.long = true;
+        if (navigator.vibrate) navigator.vibrate(12);
+        if (G.cells[i].open) chord(i);
+        else flag(i);
+      }, 380);
+    }
+  });
+  boardEl.addEventListener("pointermove", (ev) => {
+    if (press && Math.hypot(ev.clientX - press.x, ev.clientY - press.y) > 12) {
+      clearTimeout(press.timer);
+      press = null;
+    }
+  });
+  boardEl.addEventListener("pointerup", (ev) => {
+    if (!press) return;
+    clearTimeout(press.timer);
+    const b = ev.target.closest(".c");
+    const p = press;
+    press = null;
+    if (!b || Number(b.dataset.i) !== p.i || p.long || ev.button === 2) return;
+    focusCell(p.i, false);
+    if (G.flagMode && !G.cells[p.i].open) flag(p.i);
+    else open(p.i);
+  });
+  boardEl.addEventListener("pointercancel", () => {
+    if (press) clearTimeout(press.timer);
+    press = null;
+  });
+  boardEl.addEventListener("contextmenu", (ev) => {
+    const b = ev.target.closest(".c");
+    ev.preventDefault();
+    if (!b) return;
+    const i = Number(b.dataset.i);
+    if (press && press.long) return;
+    if (G.cells[i].open) chord(i);
+    else flag(i);
+  });
+
+  function focusCell(i, move = true) {
+    const old = btn(G.focus);
+    if (old) old.tabIndex = -1;
+    G.focus = i;
+    const b = btn(i);
+    b.tabIndex = 0;
+    if (move) b.focus();
+  }
+
+  boardEl.addEventListener("keydown", (ev) => {
+    const b = ev.target.closest(".c");
+    if (!b) return;
+    const i = Number(b.dataset.i);
+    const x = i % G.cols;
+    const y = Math.floor(i / G.cols);
+    const go = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[ev.key];
+    if (go) {
+      ev.preventDefault();
+      const nx = Math.max(0, Math.min(G.cols - 1, x + go[0]));
+      const ny = Math.max(0, Math.min(G.rows - 1, y + go[1]));
+      focusCell(ny * G.cols + nx);
+    } else if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      open(i);
+    } else if (ev.key === "f" || ev.key === "F") {
+      ev.preventDefault();
+      flag(i);
+    }
+  });
+
+  document.querySelectorAll("[data-level]").forEach((b) =>
+    b.addEventListener("click", () => {
+      G.level = Number(b.dataset.level);
+      Play.store.set("tz-mines-level", G.level);
+      document.querySelectorAll("[data-level]").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+      newGame();
+    })
+  );
+  document.querySelectorAll("[data-level]").forEach((o) => o.setAttribute("aria-pressed", String(Number(o.dataset.level) === G.level)));
+  $("restart").addEventListener("click", newGame);
+  ui.flagMode.addEventListener("click", () => {
+    G.flagMode = !G.flagMode;
+    ui.flagMode.setAttribute("aria-pressed", String(G.flagMode));
+  });
+
+  Play.onLang(() => {
+    G.cells.forEach((_, i) => label(i));
+    bests();
+    if (shown) card(shown.kind, shown.data);
+  });
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(sizeBoard, 120);
+  });
+
+  newGame();
+})();
+</script>
+</body>
+</html>

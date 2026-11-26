@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-title-en="Afterglow decay fitting · Tianqi Zhao" data-title-zh="余辉寿命拟合 · Tianqi Zhao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>余辉寿命拟合 · Decay fitting</title>
+<meta name="description" content="Paste a luminescence or afterglow decay curve and fit it with one, two or three exponentials in the browser: lifetimes with errors, average lifetime, residuals. Nothing is uploaded.">
+<meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tqzhaone.github.io/playground/decay-fit/">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tqzhaone.github.io/playground/decay-fit/">
+<meta property="og:title" content="余辉寿命拟合 · Decay fitting">
+<meta property="og:description" content="Fit a decay curve with one, two or three exponentials in the browser.">
+<meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/decay-fit.webp">
+<link rel="stylesheet" href="/assets/css/play.css">
+<script src="/assets/js/play.js"></script>
+<style>
+  /*
+   * Afterglow decay fitting (余辉寿命拟合). Paste two columns (time, intensity), choose one, two or
+   * three exponentials, and the page fits y = y0 + Σ Aᵢ·exp(−t/τᵢ) by least squares: the lifetimes
+   * by Levenberg–Marquardt, the amplitudes and background exactly for each set of lifetimes
+   * (variable projection), from several starting points. Errors come from the covariance matrix.
+   * Everything runs in the browser.
+   */
+  .tool {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .side {
+    display: grid;
+    gap: 16px;
+  }
+
+  .tool h2 {
+    margin: 0 0 10px;
+    color: var(--moon);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .opt {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 14px;
+  }
+
+  .opt:last-child {
+    margin-bottom: 0;
+  }
+
+  .opt__k {
+    color: var(--haze);
+    font-size: 13px;
+  }
+
+  .range {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+    color: var(--dim);
+    font-size: 13px;
+  }
+
+  .range .input {
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+
+  #data {
+    min-height: 220px;
+  }
+
+  .filebtn {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .filebtn input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .charts {
+    display: grid;
+    gap: 6px;
+  }
+
+  .charts__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .formula {
+    margin: 0;
+    color: var(--moon);
+    font-family: var(--serif);
+    font-size: 17px;
+  }
+
+  #plot {
+    display: block;
+    width: 100%;
+    height: 340px;
+  }
+
+  #resid {
+    display: block;
+    width: 100%;
+    height: 110px;
+  }
+
+  .params {
+    width: 100%;
+    margin: 14px 0 0;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .params th,
+  .params td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+  }
+
+  .params th {
+    color: var(--dim);
+    font-size: 12.5px;
+    font-weight: 400;
+  }
+
+  .params td:first-child {
+    color: var(--moon);
+    font-family: var(--serif);
+    font-size: 16px;
+  }
+
+  .params .sw {
+    display: inline-block;
+    width: 18px;
+    margin-right: 8px;
+    border-top: 2px dashed var(--c);
+    vertical-align: middle;
+  }
+
+  .summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin: 14px 0 0;
+    font-size: 13.5px;
+  }
+
+  .summary span {
+    color: var(--dim);
+  }
+
+  .summary b {
+    color: var(--moon);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .msg {
+    min-height: 1.4em;
+    margin: 10px 0 0;
+    font-size: 13.5px;
+  }
+
+  .msg.is-error {
+    color: var(--nir);
+  }
+
+  .msg.is-warn {
+    color: var(--warm);
+  }
+
+  .exports {
+    margin-top: 14px;
+  }
+
+  .about {
+    margin-top: 18px;
+    font-size: 14px;
+  }
+
+  .about h2 {
+    margin: 0 0 8px;
+    color: var(--moon);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .about p {
+    margin: 0 0 10px;
+    max-width: 78ch;
+  }
+
+  @media (max-width: 900px) {
+    .tool {
+      grid-template-columns: 1fr;
+    }
+
+    #plot {
+      height: 260px;
+    }
+  }
+</style>
+</head>
+<body class="is-doc">
+<a class="backhome glass" href="/playground/"><span aria-hidden="true">←</span><span data-l="zh">趣味</span><span data-l="en">Playground</span></a>
+<div class="hud hud--plain glass"><button class="pill" type="button" data-langswitch><span data-l="zh">EN</span><span data-l="en">中文</span></button></div>
+
+<main class="column">
+  <header class="pagetitle">
+    <h1><span data-l="zh">余辉寿命拟合</span><span data-l="en">Afterglow decay fitting</span></h1>
+    <p data-l="zh">把衰减曲线粘贴进来，选单指数、双指数或三指数，网页直接给出各个寿命、误差、平均寿命和残差图。数据只在你的浏览器里计算，不会上传。</p>
+    <p data-l="en">Paste a decay curve, pick one, two or three exponentials, and get the lifetimes with errors, the average lifetime and the residuals. The numbers never leave your browser.</p>
+  </header>
+
+  <div class="tool">
+    <div class="side">
+      <section class="panel">
+        <h2><span data-l="zh">数据</span><span data-l="en">Data</span></h2>
+        <textarea class="textarea" id="data" spellcheck="false" aria-label="数据 / Data"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="pill" type="button" id="example"><span data-l="zh">示例数据</span><span data-l="en">Example data</span></button>
+          <span class="pill filebtn"><span data-l="zh">读取文件</span><span data-l="en">Open a file</span><input type="file" id="file" accept=".csv,.txt,.dat,.tsv,.asc,text/plain,text/csv" aria-label="读取文件 / Open a file"></span>
+          <button class="pill" type="button" id="clear"><span data-l="zh">清空</span><span data-l="en">Clear</span></button>
+        </div>
+        <p class="note" style="margin:10px 0 0"><span data-l="zh">两列：时间和强度，用空格、逗号或制表符分隔都可以，表头会自动跳过。从 Excel 或 Origin 里选中两列复制，直接粘贴就行。</span><span data-l="en">Two columns, time and intensity, separated by spaces, commas or tabs; a header line is skipped. Copy two columns from Excel or Origin and paste them straight in.</span></p>
+      </section>
+
+      <section class="panel">
+        <h2><span data-l="zh">拟合设置</span><span data-l="en">Fit settings</span></h2>
+        <div class="opt">
+          <span class="opt__k"><span data-l="zh">模型</span><span data-l="en">Model</span></span>
+          <div class="segmented" role="group">
+            <button class="pill" type="button" data-k="1" aria-pressed="false"><span data-l="zh">单指数</span><span data-l="en">1 exp</span></button>
+            <button class="pill" type="button" data-k="2" aria-pressed="true"><span data-l="zh">双指数</span><span data-l="en">2 exp</span></button>
+            <button class="pill" type="button" data-k="3" aria-pressed="false"><span data-l="zh">三指数</span><span data-l="en">3 exp</span></button>
+          </div>
+        </div>
+        <div class="opt">
+          <span class="opt__k"><span data-l="zh">背景 y₀</span><span data-l="en">Background y₀</span></span>
+          <div class="segmented" role="group">
+            <button class="pill" type="button" data-base="fit" aria-pressed="true"><span data-l="zh">一起拟合</span><span data-l="en">Fit it</span></button>
+            <button class="pill" type="button" data-base="zero" aria-pressed="false"><span data-l="zh">固定为 0</span><span data-l="en">Fix at 0</span></button>
+          </div>
+        </div>
+        <div class="opt">
+          <span class="opt__k"><span data-l="zh">权重</span><span data-l="en">Weights</span></span>
+          <div class="segmented" role="group">
+            <button class="pill" type="button" data-w="equal" aria-pressed="true"><span data-l="zh">等权</span><span data-l="en">Equal</span></button>
+            <button class="pill" type="button" data-w="poisson" aria-pressed="false"><span data-l="zh">泊松（1/y，计数数据）</span><span data-l="en">Poisson (1/y, counts)</span></button>
+          </div>
+        </div>
+        <div class="opt">
+          <span class="opt__k"><span data-l="zh">拟合范围（留空即全部；时间从起点算起）</span><span data-l="en">Fit range (blank for all; time counts from the start)</span></span>
+          <div class="range">
+            <input class="input" id="from" inputmode="decimal" placeholder="—" aria-label="从 / From">
+            <span>→</span>
+            <input class="input" id="to" inputmode="decimal" placeholder="—" aria-label="到 / To">
+            <select class="select" id="unit" aria-label="时间单位 / Time unit" style="width:auto;padding:7px 28px 7px 10px;font-size:14px">
+              <option value="s">s</option><option value="ms">ms</option><option value="μs">μs</option><option value="ns">ns</option><option value="min">min</option>
+            </select>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel charts">
+      <div class="charts__top">
+        <p class="formula" id="formula"></p>
+        <div class="segmented" role="group" aria-label="纵轴 / Y axis">
+          <button class="pill" type="button" data-scale="log" aria-pressed="true"><span data-l="zh">对数纵轴</span><span data-l="en">Log y</span></button>
+          <button class="pill" type="button" data-scale="lin" aria-pressed="false"><span data-l="zh">线性纵轴</span><span data-l="en">Linear y</span></button>
+        </div>
+      </div>
+      <canvas id="plot" aria-label="数据和拟合曲线 / Data and fit"></canvas>
+      <canvas id="resid" aria-label="残差 / Residuals"></canvas>
+      <p class="msg" id="msg" role="status"></p>
+      <table class="params" id="params" hidden></table>
+      <div class="summary" id="summary"></div>
+      <div class="row exports">
+        <button class="btn btn--small" type="button" id="copy" disabled><span data-l="zh">复制结果</span><span data-l="en">Copy results</span></button>
+        <button class="btn btn--small" type="button" id="csv" disabled><span data-l="zh">下载拟合曲线 CSV</span><span data-l="en">Download fit as CSV</span></button>
+        <button class="btn btn--small" type="button" id="png" disabled><span data-l="zh">下载图片</span><span data-l="en">Download image</span></button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel about">
+    <h2><span data-l="zh">怎么算的</span><span data-l="en">How it works</span></h2>
+    <p data-l="zh">模型是 y = y₀ + Σ Aᵢ·exp(−t/τᵢ)。寿命 τᵢ 用 Levenberg–Marquardt 法迭代，每组寿命下的振幅 Aᵢ 和背景 y₀ 直接用线性最小二乘解出来（变量投影法），并从多个初始值出发，取残差最小的结果。误差是协方差矩阵对角元的平方根（一倍标准差）。</p>
+    <p data-l="en">The model is y = y₀ + Σ Aᵢ·exp(−t/τᵢ). The lifetimes τᵢ are found by Levenberg–Marquardt; for each set of lifetimes the amplitudes Aᵢ and the background y₀ are solved exactly by linear least squares (variable projection), and the fit starts from several initial guesses and keeps the best. Errors are the square roots of the covariance matrix's diagonal (one standard deviation).</p>
+    <p data-l="zh">平均寿命用强度加权：τ<sub>avg</sub> = Σ Aᵢτᵢ² / Σ Aᵢτᵢ；「占比」是每个分量对积分强度的贡献 Aᵢτᵢ / Σ Aⱼτⱼ。长余辉的衰减往往不是严格的指数形式，多指数拟合给出的是描述曲线的有效寿命。</p>
+    <p data-l="en">The average lifetime is intensity-weighted: τ<sub>avg</sub> = Σ Aᵢτᵢ² / Σ Aᵢτᵢ; each component's share is its part of the integrated intensity, Aᵢτᵢ / Σ Aⱼτⱼ. Persistent-luminescence decays are often not truly exponential: a multi-exponential fit gives effective lifetimes that describe the curve.</p>
+  </section>
+</main>
+
+<noscript><p style="text-align:center">这个工具需要 JavaScript。 / This tool needs JavaScript.</p></noscript>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const ui = { data: $("data"), file: $("file"), from: $("from"), to: $("to"), unit: $("unit"), plot: $("plot"), resid: $("resid"), msg: $("msg"), params: $("params"), summary: $("summary"), formula: $("formula"), copy: $("copy"), csv: $("csv"), png: $("png") };
+  const S = { k: 2, base: true, weights: "equal", scale: "log", fit: null, data: null };
+  const COMP = ["#ffe34d", "#00c8ff", "#8f6bff"];
+
+  /* Parsing ----------------------------------------------------------------------------------- */
+
+  function parse(text) {
+    const pts = [];
+    for (const raw of text.split(/\r?\n/)) {
+      const line = raw.replace(/[，；]/g, ",").replace(/　/g, " ").trim();
+      if (!line || line.startsWith("#") || line.startsWith("%")) continue;
+      const nums = line.split(/[\s,;]+/).filter(Boolean).map(Number);
+      if (nums.length < 2 || !Number.isFinite(nums[0]) || !Number.isFinite(nums[1])) continue;
+      pts.push([nums[0], nums[1]]);
+    }
+    pts.sort((a, b) => a[0] - b[0]);
+    return pts;
+  }
+
+  /* Small linear algebra ------------------------------------------------------------------------ */
+
+  // Solve A x = b (A is m×m, row-major) by Gaussian elimination with partial pivoting.
+  function solve(A, b, m) {
+    const M = A.slice();
+    const x = b.slice();
+    for (let c = 0; c < m; c++) {
+      let p = c;
+      for (let r = c + 1; r < m; r++) if (Math.abs(M[r * m + c]) > Math.abs(M[p * m + c])) p = r;
+      if (Math.abs(M[p * m + c]) < 1e-300) return null;
+      if (p !== c) {
+        for (let k = 0; k < m; k++) [M[c * m + k], M[p * m + k]] = [M[p * m + k], M[c * m + k]];
+        [x[c], x[p]] = [x[p], x[c]];
+      }
+      for (let r = c + 1; r < m; r++) {
+        const f = M[r * m + c] / M[c * m + c];
+        if (!f) continue;
+        for (let k = c; k < m; k++) M[r * m + k] -= f * M[c * m + k];
+        x[r] -= f * x[c];
+      }
+    }
+    for (let c = m - 1; c >= 0; c--) {
+      let s = x[c];
+      for (let k = c + 1; k < m; k++) s -= M[c * m + k] * x[k];
+      x[c] = s / M[c * m + c];
+    }
+    return x;
+  }
+
+  function invert(A, m) {
+    const out = new Float64Array(m * m);
+    for (let j = 0; j < m; j++) {
+      const e = new Float64Array(m);
+      e[j] = 1;
+      const col = solve(A, e, m);
+      if (!col) return null;
+      for (let i = 0; i < m; i++) out[i * m + j] = col[i];
+    }
+    return out;
+  }
+
+  /* Fitting --------------------------------------------------------------------------------------- */
+
+  // For fixed lifetimes, the best amplitudes (and background) by weighted linear least squares.
+  function linear(t, y, w, taus, base) {
+    const k = taus.length;
+    const m = k + (base ? 1 : 0);
+    const n = t.length;
+    const ATA = new Float64Array(m * m);
+    const ATy = new Float64Array(m);
+    const row = new Float64Array(m);
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < k; j++) row[j] = Math.exp(-t[i] / taus[j]);
+      if (base) row[k] = 1;
+      const wi = w[i];
+      for (let a = 0; a < m; a++) {
+        ATy[a] += wi * row[a] * y[i];
+        for (let b = a; b < m; b++) ATA[a * m + b] += wi * row[a] * row[b];
+      }
+    }
+    for (let a = 0; a < m; a++) for (let b = 0; b < a; b++) ATA[a * m + b] = ATA[b * m + a];
+    // A whisper of ridge keeps nearly equal lifetimes from blowing up.
+    let tr = 0;
+    for (let a = 0; a < m; a++) tr += ATA[a * m + a];
+    for (let a = 0; a < m; a++) ATA[a * m + a] += 1e-12 * (tr / m);
+    const c = solve(ATA, ATy, m);
+    if (!c) return null;
+    const r = new Float64Array(n);
+    let chi2 = 0;
+    for (let i = 0; i < n; i++) {
+      let f = base ? c[k] : 0;
+      for (let j = 0; j < k; j++) f += c[j] * Math.exp(-t[i] / taus[j]);
+      const ri = Math.sqrt(w[i]) * (y[i] - f);
+      r[i] = ri;
+      chi2 += ri * ri;
+    }
+    return { c, r, chi2 };
+  }
+
+  // Levenberg–Marquardt on the log-lifetimes; the amplitudes ride along exactly.
+  function lm(t, y, w, theta0, base, lo, hi) {
+    const k = theta0.length;
+    let theta = theta0.slice();
+    const clamp = (v) => Math.min(hi, Math.max(lo, v));
+    let cur = linear(t, y, w, theta.map(Math.exp), base);
+    if (!cur) return null;
+    let lambda = 1e-2;
+    for (let iter = 0; iter < 200; iter++) {
+      const n = t.length;
+      const J = [];
+      for (let j = 0; j < k; j++) {
+        const h = 1e-6 + 1e-6 * Math.abs(theta[j]);
+        const th = theta.slice();
+        th[j] += h;
+        const s = linear(t, y, w, th.map(Math.exp), base);
+        if (!s) return { theta, ...cur };
+        const col = new Float64Array(n);
+        for (let i = 0; i < n; i++) col[i] = (s.r[i] - cur.r[i]) / h;
+        J.push(col);
+      }
+      const H = new Float64Array(k * k);
+      const g = new Float64Array(k);
+      for (let a = 0; a < k; a++) {
+        for (let i = 0; i < n; i++) g[a] += J[a][i] * cur.r[i];
+        for (let b = 0; b < k; b++) {
+          let s = 0;
+          for (let i = 0; i < n; i++) s += J[a][i] * J[b][i];
+          H[a * k + b] = s;
+        }
+      }
+      let improved = false;
+      while (lambda < 1e12) {
+        const Hd = H.slice();
+        for (let a = 0; a < k; a++) Hd[a * k + a] += lambda * (H[a * k + a] || 1e-12);
+        const d = solve(Hd, Array.from(g, (v) => -v), k);
+        if (!d) {
+          lambda *= 10;
+          continue;
+        }
+        const th = theta.map((v, j) => clamp(v + d[j]));
+        const trial = linear(t, y, w, th.map(Math.exp), base);
+        if (trial && trial.chi2 < cur.chi2) {
+          const rel = (cur.chi2 - trial.chi2) / Math.max(cur.chi2, 1e-300);
+          theta = th;
+          cur = trial;
+          lambda = Math.max(lambda / 3, 1e-12);
+          improved = true;
+          if (rel < 1e-12) return { theta, ...cur };
+          break;
+        }
+        lambda *= 4;
+      }
+      if (!improved) break;
+    }
+    return { theta, ...cur };
+  }
+
+  function combos(vals, k) {
+    if (k === 1) return vals.map((v) => [v]);
+    const out = [];
+    const rec = (start, acc) => {
+      if (acc.length === k) return out.push(acc.slice());
+      for (let i = start; i < vals.length; i++) {
+        acc.push(vals[i]);
+        rec(i + 1, acc);
+        acc.pop();
+      }
+    };
+    rec(0, []);
+    return out;
+  }
+
+  function fit(t, y, k, base, weighting) {
+    const n = t.length;
+    const w = new Float64Array(n);
+    for (let i = 0; i < n; i++) w[i] = weighting === "poisson" ? 1 / Math.max(Math.abs(y[i]), 1) : 1;
+    const span = t[n - 1] - t[0];
+    let dtMin = Infinity;
+    for (let i = 1; i < n; i++) if (t[i] > t[i - 1]) dtMin = Math.min(dtMin, t[i] - t[i - 1]);
+    if (!Number.isFinite(dtMin)) dtMin = span / n;
+    const lo = Math.log(dtMin / 20);
+    const hi = Math.log(span * 100);
+    // Starting points spread over the time scale of the data.
+    const nGrid = k === 1 ? 8 : k === 2 ? 7 : 6;
+    const grid = Array.from({ length: nGrid }, (_, i) => Math.log(dtMin * 1.5) + (i / (nGrid - 1)) * (Math.log(span * 1.5) - Math.log(dtMin * 1.5)));
+    // With many points, look for the best start on a thinned copy first.
+    let ts = t;
+    let ys = y;
+    let wsub = w;
+    if (n > 3000) {
+      const idx = new Set();
+      for (let i = 0; i < 1500; i++) idx.add(Math.round((i / 1499) * (n - 1)));
+      for (let i = 0; i < 500; i++) idx.add(Math.min(n - 1, Math.round(Math.expm1((i / 499) * Math.log1p(n - 1)))));
+      const ii = [...idx].sort((a, b) => a - b);
+      ts = Float64Array.from(ii, (i) => t[i]);
+      ys = Float64Array.from(ii, (i) => y[i]);
+      wsub = Float64Array.from(ii, (i) => w[i]);
+    }
+    let best = null;
+    for (const start of combos(grid, k)) {
+      const r = lm(ts, ys, wsub, start, base, lo, hi);
+      if (r && (!best || r.chi2 < best.chi2)) best = r;
+    }
+    if (!best) return null;
+    const res = ts === t ? best : lm(t, y, w, best.theta, base, lo, hi);
+    if (!res) return null;
+    // Sort the components by lifetime.
+    const taus = res.theta.map(Math.exp);
+    const order = taus.map((v, i) => i).sort((a, b) => taus[a] - taus[b]);
+    const A = order.map((i) => res.c[i]);
+    const tau = order.map((i) => taus[i]);
+    const y0 = base ? res.c[k] : 0;
+    // Covariance of (A₁…A_k, τ₁…τ_k, y₀) from the full Jacobian.
+    const p = 2 * k + (base ? 1 : 0);
+    const F = new Float64Array(p * p);
+    const row = new Float64Array(p);
+    let ssRes = 0;
+    let mean = 0;
+    for (let i = 0; i < n; i++) mean += y[i];
+    mean /= n;
+    let ssTot = 0;
+    for (let i = 0; i < n; i++) {
+      let f = y0;
+      for (let j = 0; j < k; j++) {
+        const e = Math.exp(-t[i] / tau[j]);
+        row[j] = e;
+        row[k + j] = (A[j] * t[i] * e) / (tau[j] * tau[j]);
+        f += A[j] * e;
+      }
+      if (base) row[2 * k] = 1;
+      for (let a = 0; a < p; a++) for (let b = 0; b < p; b++) F[a * p + b] += w[i] * row[a] * row[b];
+      ssRes += (y[i] - f) ** 2;
+      ssTot += (y[i] - mean) ** 2;
+    }
+    const dof = Math.max(1, n - p);
+    const chi2red = res.chi2 / dof;
+    const C = invert(F, p);
+    const err = C ? Array.from({ length: p }, (_, i) => Math.sqrt(Math.max(0, C[i * p + i] * chi2red))) : Array(p).fill(NaN);
+    const sumAt = A.reduce((s, a, j) => s + a * tau[j], 0);
+    const sumAt2 = A.reduce((s, a, j) => s + a * tau[j] * tau[j], 0);
+    const sumA = A.reduce((s, a) => s + a, 0);
+    return {
+      k, base, A, tau, y0, n,
+      errA: err.slice(0, k), errTau: err.slice(k, 2 * k), errY0: base ? err[2 * k] : 0,
+      chi2: res.chi2, chi2red, r2: 1 - ssRes / ssTot,
+      tauAvg: sumAt2 / sumAt, tauAmp: sumAt / sumA,
+      share: A.map((a, j) => (a * tau[j]) / sumAt),
+      resid: Float64Array.from(t, (ti, i) => {
+        let f = y0;
+        for (let j = 0; j < k; j++) f += A[j] * Math.exp(-ti / tau[j]);
+        return Math.sqrt(w[i]) * (y[i] - f);
+      }),
+      negative: A.some((a) => a < 0),
+    };
+  }
+
+  /* Number formatting ------------------------------------------------------------------------------ */
+
+  // A value with its error: the error to two significant figures, the value to the same decimal.
+  function pm(v, e) {
+    if (!Number.isFinite(v)) return "—";
+    if (!Number.isFinite(e) || e <= 0) return sig(v, 4);
+    // Errors far below the value (noise-free test data) would need absurdly many decimals.
+    if (e < Math.abs(v) * 1e-6) return `${sig(v, 7)} ± ${sig(e, 2)}`;
+    const exp = Math.floor(Math.log10(e)) - 1;
+    const big = Math.abs(v) >= 1e5 || (Math.abs(v) < 1e-3 && v !== 0);
+    if (big) {
+      const p = Math.floor(Math.log10(Math.abs(v)));
+      const s = 10 ** p;
+      const d = Math.max(0, p - exp);
+      return `(${(v / s).toFixed(Math.min(d, 6))} ± ${(e / s).toFixed(Math.min(d, 6))})×10${sup(p)}`;
+    }
+    const d = Math.max(0, -exp);
+    return `${v.toFixed(Math.min(d, 8))} ± ${e.toFixed(Math.min(d, 8))}`;
+  }
+
+  function sig(v, n) {
+    if (!Number.isFinite(v)) return "—";
+    if (v === 0) return "0";
+    const a = Math.abs(v);
+    if (a >= 1e5 || a < 1e-3) {
+      const p = Math.floor(Math.log10(a));
+      return `${(v / 10 ** p).toPrecision(n)}×10${sup(p)}`;
+    }
+    return Number(v.toPrecision(n)).toString();
+  }
+
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = (p) => String(p).split("").map((c) => SUP[c]).join("");
+
+  /* Run ------------------------------------------------------------------------------------------- */
+
+  function T(o) {
+    return Play.t(o);
+  }
+
+  function message(text, kind) {
+    ui.msg.textContent = text || "";
+    ui.msg.className = `msg${kind ? ` is-${kind}` : ""}`;
+  }
+
+  function run() {
+    const pts = parse(ui.data.value);
+    S.fit = null;
+    S.data = null;
+    ui.params.hidden = true;
+    ui.summary.innerHTML = "";
+    [ui.copy, ui.csv, ui.png].forEach((b) => (b.disabled = true));
+    formula();
+    if (!pts.length) {
+      message(T({ zh: "把两列数据粘贴到左边，或者点「示例数据」。", en: "Paste two columns of data on the left, or try the example." }));
+      draw();
+      return;
+    }
+    const t0 = pts[0][0];
+    const from = ui.from.value.trim() === "" ? -Infinity : Number(ui.from.value);
+    const to = ui.to.value.trim() === "" ? Infinity : Number(ui.to.value);
+    if (!Number.isFinite(from) && ui.from.value.trim() !== "" || !Number.isFinite(to) && ui.to.value.trim() !== "") {
+      message(T({ zh: "拟合范围要填数字。", en: "The fit range needs numbers." }), "error");
+      return;
+    }
+    const used = pts.filter(([x]) => x - t0 >= from && x - t0 <= to);
+    S.data = { pts, t0, used: new Set(used.map((p) => p[0])) };
+    const need = 2 * S.k + (S.base ? 1 : 0) + 3;
+    if (used.length < need) {
+      message(T({ zh: `这个模型至少需要 ${need} 个点，现在范围里只有 ${used.length} 个。`, en: `This model needs at least ${need} points; the range has ${used.length}.` }), "error");
+      draw();
+      return;
+    }
+    if (used[used.length - 1][0] === used[0][0]) {
+      message(T({ zh: "时间都一样，没法拟合。", en: "All the times are the same; nothing to fit." }), "error");
+      draw();
+      return;
+    }
+    // Time counts from the first point in the range, so the amplitudes are the intensities there.
+    const ts = used[0][0];
+    const t = Float64Array.from(used, (p) => p[0] - ts);
+    const y = Float64Array.from(used, (p) => p[1]);
+    const t1 = performance.now();
+    const f = fit(t, y, S.k, S.base, S.weights);
+    if (!f) {
+      message(T({ zh: "拟合没有收敛，换个模型或者缩小拟合范围试试。", en: "The fit did not converge; try another model or a narrower range." }), "error");
+      draw();
+      return;
+    }
+    f.tStart = ts;
+    f.ms = performance.now() - t1;
+    S.fit = f;
+    const warn = [];
+    if (f.negative) warn.push(T({ zh: "有分量的振幅是负的，模型可能过多，可以试试少一个指数。", en: "A component has a negative amplitude: the model may have too many terms; try one fewer." }));
+    if (f.tau.some((v, j) => !Number.isFinite(f.errTau[j]) || f.errTau[j] > v)) warn.push(T({ zh: "有寿命的误差比它本身还大，这个分量不太可靠。", en: "A lifetime's error is larger than the lifetime itself: that component is not well determined." }));
+    message(warn.join(" "), warn.length ? "warn" : "");
+    table();
+    [ui.copy, ui.csv, ui.png].forEach((b) => (b.disabled = false));
+    draw();
+  }
+
+  function formula() {
+    const terms = Array.from({ length: S.k }, (_, j) => `A${["₁", "₂", "₃"][j]}·e<sup>−t/τ${["₁", "₂", "₃"][j]}</sup>`);
+    ui.formula.innerHTML = `y = ${S.base ? "y₀ + " : ""}${terms.join(" + ")}`;
+  }
+
+  function table() {
+    const f = S.fit;
+    const u = ui.unit.value;
+    const sub = ["₁", "₂", "₃"];
+    let rows = `<tr><th></th><th>${T({ zh: "寿命 τ", en: "Lifetime τ" })} (${u})</th><th>${T({ zh: "振幅 A", en: "Amplitude A" })}</th><th>${T({ zh: "占比", en: "Share" })}</th></tr>`;
+    f.tau.forEach((tau, j) => {
+      rows += `<tr><td><span class="sw" style="--c:${COMP[j]}"></span>${f.k > 1 ? `τ${sub[j]}` : "τ"}</td><td>${pm(tau, f.errTau[j])}</td><td>${pm(f.A[j], f.errA[j])}</td><td>${(100 * f.share[j]).toFixed(1)}%</td></tr>`;
+    });
+    if (f.base) rows += `<tr><td>y₀</td><td colspan="3">${pm(f.y0, f.errY0)}</td></tr>`;
+    ui.params.innerHTML = rows;
+    ui.params.hidden = false;
+    ui.summary.innerHTML = [
+      f.k > 1 ? `<div><span>${T({ zh: "平均寿命 τ", en: "Average lifetime τ" })}<sub>avg</sub> </span><b>${sig(f.tauAvg, 4)} ${u}</b></div>` : "",
+      `<div><span>R² </span><b>${f.r2.toFixed(5)}</b></div>`,
+      `<div><span>${T({ zh: "约化 χ²", en: "Reduced χ²" })} </span><b>${sig(f.chi2red, 4)}</b></div>`,
+      `<div><span>${T({ zh: "点数", en: "Points" })} </span><b>${f.n}</b></div>`,
+    ].join("");
+  }
+
+  /* Charts --------------------------------------------------------------------------------------- */
+
+  function setup(canvas) {
+    const DPR = Math.min(2, window.devicePixelRatio || 1);
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    canvas.width = Math.round(w * DPR);
+    canvas.height = Math.round(h * DPR);
+    const g = canvas.getContext("2d");
+    g.setTransform(DPR, 0, 0, DPR, 0, 0);
+    g.fillStyle = "#0b0d22";
+    g.fillRect(0, 0, w, h);
+    return { g, w, h };
+  }
+
+  function niceTicks(min, max, count) {
+    const span = max - min || 1;
+    const step0 = span / count;
+    const mag = 10 ** Math.floor(Math.log10(step0));
+    const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => span / s <= count + 0.5) || 10 * mag;
+    const out = [];
+    for (let v = Math.ceil(min / step) * step; v <= max + step * 1e-9; v += step) out.push(+v.toPrecision(12));
+    return out;
+  }
+
+  const FONT = '11.5px "Fira Sans", "PingFang SC", "Microsoft YaHei", sans-serif';
+
+  function fmtTick(v) {
+    const a = Math.abs(v);
+    if (a !== 0 && (a >= 1e5 || a < 1e-3)) {
+      const p = Math.floor(Math.log10(a));
+      const m = v / 10 ** p;
+      return Math.abs(m - 1) < 1e-9 ? `10${sup(p)}` : `${+m.toPrecision(3)}×10${sup(p)}`;
+    }
+    return String(+v.toPrecision(6));
+  }
+
+  function draw() {
+    const { g, w, h } = setup(ui.plot);
+    const r2 = setup(ui.resid);
+    const pad = { l: 64, r: 14, t: 14, b: 38 };
+    g.font = FONT;
+    r2.g.font = FONT;
+    if (!S.data) {
+      g.fillStyle = "#7d86a5";
+      g.textAlign = "center";
+      g.fillText(T({ zh: "数据和拟合曲线会画在这里", en: "The data and the fit will appear here" }), w / 2, h / 2);
+      return;
+    }
+    const { pts, t0 } = S.data;
+    const xs = pts.map((p) => p[0] - t0);
+    const ys = pts.map((p) => p[1]);
+    const log = S.scale === "log";
+    const pos = ys.filter((v) => v > 0);
+    let ymin = log ? Math.min(...pos) : Math.min(0, ...ys);
+    let ymax = Math.max(...ys);
+    if (log) {
+      ymin = Math.log10(ymin) - 0.1;
+      ymax = Math.log10(ymax) + 0.1;
+    } else ymax += (ymax - ymin) * 0.05;
+    const xmin = 0;
+    const xmax = Math.max(...xs) || 1;
+    const X = (x) => pad.l + ((x - xmin) / (xmax - xmin)) * (w - pad.l - pad.r);
+    const Y = (v) => {
+      const u = log ? Math.log10(v) : v;
+      return pad.t + (1 - (u - ymin) / (ymax - ymin)) * (h - pad.t - pad.b);
+    };
+    // Axes.
+    g.strokeStyle = "rgba(236,239,247,0.08)";
+    g.fillStyle = "#7d86a5";
+    g.lineWidth = 1;
+    g.textAlign = "center";
+    g.textBaseline = "top";
+    for (const v of niceTicks(xmin, xmax, 7)) {
+      g.beginPath();
+      g.moveTo(X(v) + 0.5, pad.t);
+      g.lineTo(X(v) + 0.5, h - pad.b);
+      g.stroke();
+      g.fillText(fmtTick(v), X(v), h - pad.b + 6);
+    }
+    g.fillText(`${T({ zh: "时间", en: "Time" })} (${ui.unit.value})`, (pad.l + w - pad.r) / 2, h - 16);
+    g.textAlign = "right";
+    g.textBaseline = "middle";
+    const yt = log ? Array.from({ length: Math.floor(ymax) - Math.ceil(ymin) + 1 }, (_, i) => Math.ceil(ymin) + i).map((p) => 10 ** p) : niceTicks(ymin, ymax, 5);
+    for (const v of yt) {
+      const yy = Y(v);
+      if (!(yy >= pad.t - 1 && yy <= h - pad.b + 1)) continue;
+      g.beginPath();
+      g.moveTo(pad.l, yy + 0.5);
+      g.lineTo(w - pad.r, yy + 0.5);
+      g.stroke();
+      g.fillText(fmtTick(v), pad.l - 8, yy);
+    }
+    g.save();
+    g.translate(14, (pad.t + h - pad.b) / 2);
+    g.rotate(-Math.PI / 2);
+    g.textAlign = "center";
+    g.fillText(T({ zh: "强度", en: "Intensity" }), 0, 0);
+    g.restore();
+    // Data: the points inside the fit range are bright, the rest faint.
+    g.save();
+    g.beginPath();
+    g.rect(pad.l, pad.t, w - pad.l - pad.r, h - pad.t - pad.b);
+    g.clip();
+    const step = Math.max(1, Math.floor(pts.length / 2500));
+    for (let i = 0; i < pts.length; i += step) {
+      const v = ys[i];
+      if (log && v <= 0) continue;
+      g.fillStyle = S.data.used.has(pts[i][0]) ? "rgba(255,90,118,0.85)" : "rgba(154,163,191,0.3)";
+      g.beginPath();
+      g.arc(X(xs[i]), Y(v), pts.length > 600 ? 1.3 : 2.2, 0, Math.PI * 2);
+      g.fill();
+    }
+    const f = S.fit;
+    if (f) {
+      const off = f.tStart - t0;
+      const tEnd = Math.max(...xs);
+      const curve = (fn, color, width, dash) => {
+        g.beginPath();
+        let started = false;
+        for (let i = 0; i <= 500; i++) {
+          const x = off + ((tEnd - off) * i) / 500;
+          const v = fn(x - off);
+          if (log && v <= 0) {
+            started = false;
+            continue;
+          }
+          if (!started) g.moveTo(X(x), Y(v));
+          else g.lineTo(X(x), Y(v));
+          started = true;
+        }
+        g.setLineDash(dash || []);
+        g.strokeStyle = color;
+        g.lineWidth = width;
+        g.stroke();
+        g.setLineDash([]);
+      };
+      if (f.k > 1) f.tau.forEach((tau, j) => curve((t) => f.A[j] * Math.exp(-t / tau) + (log ? Math.max(f.y0, 0) : 0), COMP[j], 1.2, [5, 4]));
+      curve((t) => f.y0 + f.A.reduce((s, a, j) => s + a * Math.exp(-t / f.tau[j]), 0), "#74f7be", 2);
+    }
+    g.restore();
+    // Residuals.
+    const rg = r2.g;
+    const rp = { l: pad.l, r: pad.r, t: 8, b: 20 };
+    rg.fillStyle = "#7d86a5";
+    rg.textAlign = "right";
+    rg.textBaseline = "middle";
+    rg.fillText(T({ zh: "残差", en: "Resid." }), rp.l - 8, r2.h / 2);
+    rg.strokeStyle = "rgba(236,239,247,0.25)";
+    rg.beginPath();
+    rg.moveTo(rp.l, r2.h / 2 + 0.5);
+    rg.lineTo(r2.w - rp.r, r2.h / 2 + 0.5);
+    rg.stroke();
+    if (f) {
+      const used = pts.filter((p) => S.data.used.has(p[0]));
+      const m = Math.max(...Array.from(f.resid, Math.abs)) || 1;
+      const RY = (v) => r2.h / 2 - (v / m) * (r2.h / 2 - rp.t);
+      rg.fillStyle = "rgba(116,247,190,0.8)";
+      const st = Math.max(1, Math.floor(used.length / 2500));
+      for (let i = 0; i < used.length; i += st) {
+        rg.beginPath();
+        rg.arc(X(used[i][0] - t0), RY(f.resid[i]), used.length > 600 ? 1.1 : 1.8, 0, Math.PI * 2);
+        rg.fill();
+      }
+    }
+  }
+
+  /* Export ---------------------------------------------------------------------------------------- */
+
+  function resultText() {
+    const f = S.fit;
+    const u = ui.unit.value;
+    const sub = ["₁", "₂", "₃"];
+    const lines = [];
+    lines.push(`${T({ zh: "模型", en: "Model" })}: y = ${f.base ? "y₀ + " : ""}${f.tau.map((_, j) => `A${sub[j]}·exp(−t/τ${sub[j]})`).join(" + ")}`);
+    f.tau.forEach((tau, j) => {
+      lines.push(`τ${f.k > 1 ? sub[j] : ""} = ${pm(tau, f.errTau[j])} ${u}    A${f.k > 1 ? sub[j] : ""} = ${pm(f.A[j], f.errA[j])}    ${T({ zh: "占比", en: "share" })} ${(100 * f.share[j]).toFixed(1)}%`);
+    });
+    if (f.base) lines.push(`y₀ = ${pm(f.y0, f.errY0)}`);
+    if (f.k > 1) lines.push(`${T({ zh: "平均寿命", en: "Average lifetime" })} τavg = ΣAτ²/ΣAτ = ${sig(f.tauAvg, 4)} ${u}`);
+    lines.push(`R² = ${f.r2.toFixed(5)}, ${T({ zh: "约化 χ²", en: "reduced χ²" })} = ${sig(f.chi2red, 4)}, n = ${f.n}`);
+    lines.push(`${T({ zh: "权重", en: "Weights" })}: ${S.weights === "poisson" ? "1/y" : T({ zh: "等权", en: "equal" })}; ${T({ zh: "时间从", en: "time counted from" })} t = ${sig(f.tStart, 6)} ${u}`);
+    return lines.join("\n");
+  }
+
+  function download(name, blob) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  ui.copy.addEventListener("click", async () => {
+    if (!S.fit) return;
+    if (await Play.copy(resultText())) {
+      ui.copy.classList.add("is-done");
+      setTimeout(() => ui.copy.classList.remove("is-done"), 1800);
+    }
+  });
+
+  ui.csv.addEventListener("click", () => {
+    const f = S.fit;
+    if (!f) return;
+    const rows = [`time,intensity,fit,residual,in_fit`];
+    for (const [x, v] of S.data.pts) {
+      const t = x - f.tStart;
+      const fv = f.y0 + f.A.reduce((s, a, j) => s + a * Math.exp(-t / f.tau[j]), 0);
+      const inFit = S.data.used.has(x);
+      rows.push(`${x},${v},${inFit || t >= 0 ? fv : ""},${inFit ? v - fv : ""},${inFit ? 1 : 0}`);
+    }
+    download("decay-fit.csv", new Blob(["﻿" + rows.join("\n") + "\n# " + resultText().replace(/\n/g, "\n# ")], { type: "text/csv" }));
+  });
+
+  ui.png.addEventListener("click", () => {
+    if (!S.fit) return;
+    const a = ui.plot;
+    const b = ui.resid;
+    const out = document.createElement("canvas");
+    const textH = 26 * (S.fit.k + 3);
+    out.width = a.width;
+    out.height = a.height + b.height + textH * (a.width / a.clientWidth);
+    const g = out.getContext("2d");
+    g.fillStyle = "#0b0d22";
+    g.fillRect(0, 0, out.width, out.height);
+    g.drawImage(a, 0, 0);
+    g.drawImage(b, 0, a.height);
+    const s = a.width / a.clientWidth;
+    g.scale(s, s);
+    g.fillStyle = "#e6e9f5";
+    g.font = '14px "Fira Sans", "PingFang SC", "Microsoft YaHei", sans-serif';
+    resultText().split("\n").forEach((line, i) => g.fillText(line, 64, (a.height + b.height) / s + 22 + i * 22));
+    out.toBlob((blob) => blob && download("decay-fit.png", blob), "image/png");
+  });
+
+  /* Inputs ---------------------------------------------------------------------------------------- */
+
+  function example() {
+    // A synthetic afterglow: two components and a background, with counting noise.
+    let s = 42;
+    const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    const gauss = () => Math.sqrt(-2 * Math.log(rnd() + 1e-12)) * Math.cos(2 * Math.PI * rnd());
+    const lines = ["time(s)\tintensity(counts)"];
+    for (let t = 0; t <= 300; t += 1) {
+      const m = 15 + 900 * Math.exp(-t / 3.8) + 420 * Math.exp(-t / 41);
+      lines.push(`${t}\t${Math.max(0, Math.round(m + Math.sqrt(m) * gauss()))}`);
+    }
+    return lines.join("\n");
+  }
+
+  let timer = 0;
+  const later = () => {
+    clearTimeout(timer);
+    timer = setTimeout(run, 250);
+  };
+  ui.data.addEventListener("input", later);
+  ui.from.addEventListener("input", later);
+  ui.to.addEventListener("input", later);
+  ui.unit.addEventListener("change", () => {
+    if (S.fit) table();
+    draw();
+  });
+  $("example").addEventListener("click", () => {
+    ui.data.value = example();
+    ui.unit.value = "s";
+    run();
+  });
+  $("clear").addEventListener("click", () => {
+    ui.data.value = "";
+    ui.from.value = "";
+    ui.to.value = "";
+    run();
+  });
+  ui.file.addEventListener("change", () => {
+    const file = ui.file.files && ui.file.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      ui.data.value = String(reader.result || "");
+      run();
+    };
+    reader.readAsText(file);
+    ui.file.value = "";
+  });
+
+  const group = (attr, fn) =>
+    document.querySelectorAll(`[${attr}]`).forEach((b) =>
+      b.addEventListener("click", () => {
+        document.querySelectorAll(`[${attr}]`).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+        fn(b.getAttribute(attr));
+      })
+    );
+  group("data-k", (v) => {
+    S.k = Number(v);
+    run();
+  });
+  group("data-base", (v) => {
+    S.base = v === "fit";
+    run();
+  });
+  group("data-w", (v) => {
+    S.weights = v;
+    run();
+  });
+  group("data-scale", (v) => {
+    S.scale = v;
+    draw();
+  });
+
+  ui.data.placeholder = "0\t1302\n1\t1067\n2\t901\n…";
+
+  Play.onLang(() => {
+    if (S.fit) table();
+    if (!S.fit && !S.data) message(T({ zh: "把两列数据粘贴到左边，或者点「示例数据」。", en: "Paste two columns of data on the left, or try the example." }));
+    draw();
+  });
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(draw, 120);
+  });
+
+  formula();
+  run();
+})();
+</script>
+</body>
+</html>
