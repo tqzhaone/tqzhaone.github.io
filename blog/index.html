@@ -17,7 +17,7 @@
     <meta property="og:description" content="Long reads and notes by Tianqi Zhao: afterglow materials, the lab, and life outside it.">
     <meta property="og:image" content="https://tqzhaone.github.io/assets/img/og.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="content-version" content="da39a3ee5e6b4b0d3255bfef95601890afd80709">
+    <meta name="content-version" content="4baccb881c76c07efecfb2fc39c88a06cb6e1940">
     <link rel="preload" href="/assets/fonts/cardo-400.woff" as="font" type="font/woff" crossorigin>
     <link rel="preload" href="/assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
     <link rel="stylesheet" href="/assets/css/site.css">
@@ -80,19 +80,28 @@
             <p class="page-head__lead" data-l="zh" lang="zh-CN">长文、实验笔记，以及实验室之外的事。</p>
           </header>
           <div class="page-tools">
-            <div class="filterbar" role="group" aria-label="Tags" data-filterbar="tag" hidden>
-              <button class="chip" type="button" data-filter="" aria-pressed="true"><span data-l="en">All</span><span data-l="zh" lang="zh-CN">全部</span> <span class="chip__n">0</span></button>
-              
+            <div class="filterbar" role="group" aria-label="Tags" data-filterbar="tag">
+              <button class="chip" type="button" data-filter="" aria-pressed="true"><span data-l="en">All</span><span data-l="zh" lang="zh-CN">全部</span> <span class="chip__n">1</span></button>
+              <button class="chip" type="button" data-filter="工作记录" aria-pressed="false">工作记录 <span class="chip__n">1</span></button>
             </div>
             <div class="page-tools__actions">
               <a class="chip chip--owner" href="/admin/#blog/new" data-owner hidden><span data-l="en">Write a post</span><span data-l="zh" lang="zh-CN">写文章</span></a>
               <a class="chip" href="/blog/feed.xml">RSS</a>
             </div>
           </div>
-          <div class="page-empty">
-            <p class="page-empty__title"><span data-l="en">No posts yet.</span><span data-l="zh" lang="zh-CN">还没有文章。</span></p>
-            <p><span data-l="en">The first one is on its way.</span><span data-l="zh" lang="zh-CN">第一篇正在路上。</span></p>
-          </div>
+          <ol class="post-list" data-filter-list>
+            <li class="post-card" data-filter-values="[&quot;工作记录&quot;]">
+              <a class="post-card__link" href="/blog/2026-11-26/">
+                <span class="post-card__shot"><img src="/blog/2026-11-26/img-mwwv1rn5lg6.webp" alt="" width="710" height="206" loading="lazy" decoding="async"></span><span class="post-card__body">
+                  <span class="post-card__meta"><time datetime="2026-11-26"><span data-l="en">Nov 26, 2026</span><span data-l="zh" lang="zh-CN">2026 年 11 月 26 日</span></time><span><span data-l="en">1 min read</span><span data-l="zh" lang="zh-CN">1 分钟</span></span></span>
+                  <span class="post-card__title" lang="zh-CN">测试</span>
+                  <span class="post-card__summary" lang="zh-CN">完成论文初稿</span>
+                  <span class="post-card__tags"><span>工作记录</span></span>
+                </span>
+              </a>
+            </li>
+          </ol>
+          <p class="page-none" data-filter-none hidden><span data-l="en">No posts with this tag.</span><span data-l="zh" lang="zh-CN">这个标签下还没有文章。</span></p>
         </div>
       </section>
     </main>

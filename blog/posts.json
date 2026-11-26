@@ -1,1 +1,12 @@
-[]
+[
+ {
+  "slug": "2026-11-26",
+  "title": "测试",
+  "date": "2026-11-26",
+  "tags": [
+   "工作记录"
+  ],
+  "minutes": 1,
+  "version": "afba9214af2f17e389a020d93efd41d0bdc5b7a0"
+ }
+]
