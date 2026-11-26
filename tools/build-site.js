@@ -187,6 +187,10 @@ ${navGroup("nav-updates", "Updates", "动态", UPDATES, current, " nav__menu--tw
 ${link("/#contact", "Contact", "联系")}
 ${link("/#guestbook", "Guestbook", "留言板")}
 ${link("/playground/", "Playground", "趣味", "playground")}
+        <div class="nav__group wx" data-navgroup data-weather hidden>
+          <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-weather"><span class="wx__now"></span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
+          <div class="nav__menu wx__panel" id="nav-weather"></div>
+        </div>
       </nav>
       <div class="lang" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
@@ -263,6 +267,7 @@ ${footer()}
     <p class="sr-only" role="status" data-status></p>
     <script src="/assets/js/nav.js" defer></script>
     <script src="/assets/js/pages.js" defer></script>
+    <script src="/assets/js/weather.js" defer></script>
 ${o.scripts || ""}    <script src="/assets/js/visits.js" defer></script>
   </body>
 </html>
