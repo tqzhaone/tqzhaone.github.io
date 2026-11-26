@@ -60,6 +60,10 @@
         <a href="/#contact"><span data-l="en">Contact</span><span data-l="zh" lang="zh-CN">联系</span></a>
         <a href="/#guestbook"><span data-l="en">Guestbook</span><span data-l="zh" lang="zh-CN">留言板</span></a>
         <a href="/playground/"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></a>
+        <div class="nav__group wx" data-navgroup data-weather hidden>
+          <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-weather"><span class="wx__now"></span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
+          <div class="nav__menu wx__panel" id="nav-weather"></div>
+        </div>
       </nav>
       <div class="lang" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
@@ -120,6 +124,7 @@
     <p class="sr-only" role="status" data-status></p>
     <script src="/assets/js/nav.js" defer></script>
     <script src="/assets/js/pages.js" defer></script>
+    <script src="/assets/js/weather.js" defer></script>
     <script src="/assets/js/visits.js" defer></script>
   </body>
 </html>

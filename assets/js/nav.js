@@ -1,5 +1,5 @@
 /*
- * The "Updates" group in the top bar (News, Blog, Photos).
+ * The drop-downs in the top bar: the "Updates" group (News, Blog, Photos) and the weather.
  *
  * On a wide screen it opens on hover or click and closes on Escape, on a click elsewhere, or when
  * focus leaves it. In the phone menu the three links are simply listed under the group's name.
@@ -13,17 +13,24 @@
     const button = group.querySelector(".nav__toggle");
     if (!button) return;
     let timer = 0;
+    let hoverOpened = -1e9;
 
     const set = (open) => {
       group.classList.toggle("is-open", open);
       button.setAttribute("aria-expanded", String(open));
     };
 
-    button.addEventListener("click", () => set(!group.classList.contains("is-open")));
+    // A click just after the pointer opened the menu by hovering is the visitor reaching for it, not
+    // asking to close it again.
+    button.addEventListener("click", () => {
+      if (group.classList.contains("is-open") && performance.now() - hoverOpened < 600) return;
+      set(!group.classList.contains("is-open"));
+    });
 
     group.addEventListener("pointerenter", (event) => {
       if (!wide.matches || event.pointerType !== "mouse") return;
       clearTimeout(timer);
+      if (!group.classList.contains("is-open")) hoverOpened = performance.now();
       set(true);
     });
     group.addEventListener("pointerleave", (event) => {

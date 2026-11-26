@@ -414,6 +414,11 @@ h4 {
     padding: 4px var(--gutter) 20px;
     border-bottom: 1px solid var(--line);
     background: rgba(7, 9, 26, 0.97);
+    /* Taller than a small screen with the weather in it: the menu scrolls on its own. */
+    max-height: calc(100vh - var(--topbar));
+    max-height: calc(100dvh - var(--topbar));
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .topbar.is-open .nav {
@@ -586,6 +591,275 @@ h4 {
   color: var(--dim);
   font-size: 12.5px;
   line-height: 1.4;
+}
+
+/* Weather (weather.js): at the end of the menu, the sky where the visitor is (or in Nanjing), opening on a
+   seven-day forecast. Each day's range runs on one scale for the week, coloured like the afterglow:
+   blue when cold, through green, to red when hot. */
+.wx[hidden] {
+  display: none !important;
+}
+
+.wx .nav__toggle {
+  gap: 7px;
+  color: var(--moon);
+}
+
+.wx__now {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wx__label {
+  display: none;
+}
+
+.wx__icon,
+.wx__big,
+.wx__dicon {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wx__icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.6;
+}
+
+.wx__where,
+.wx__desc {
+  color: var(--haze);
+}
+
+.wx__temp,
+.wx__hi,
+.wx__lo,
+.wx__rain,
+.wx__deg {
+  font-variant-numeric: tabular-nums;
+}
+
+.wx .nav__menu {
+  right: -14px;
+  left: auto;
+  width: 372px;
+  margin-left: 0;
+  padding: 16px 14px 12px;
+}
+
+.wx__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 4px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.wx__big {
+  width: 42px;
+  height: 42px;
+  color: var(--moon);
+  stroke-width: 1.3;
+}
+
+.wx__headtext {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 10px;
+}
+
+.wx__place {
+  grid-column: 1 / -1;
+  color: var(--dim);
+  font-size: 12.5px;
+}
+
+.wx__deg {
+  color: var(--moon);
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.wx__more {
+  color: var(--haze);
+  font-size: 13.5px;
+}
+
+.wx__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wx__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 6px;
+  border-radius: 10px;
+}
+
+.wx__day:first-child {
+  background: rgba(236, 239, 247, 0.05);
+}
+
+.wx__dname {
+  color: var(--haze);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.wx__dicon {
+  width: 20px;
+  height: 20px;
+  color: var(--moon);
+  stroke-width: 1.5;
+}
+
+.wx__hi {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wx__track {
+  position: relative;
+  width: 6px;
+  height: 64px;
+  border-radius: 3px;
+  background: rgba(236, 239, 247, 0.07);
+}
+
+.wx__track i {
+  position: absolute;
+  right: 0;
+  left: 0;
+  min-height: 6px;
+  border-radius: 3px;
+}
+
+.wx__lo {
+  color: var(--haze);
+  font-size: 12.5px;
+}
+
+.wx__rain {
+  min-height: 15px;
+  color: #6fd8ff;
+  font-size: 11px;
+}
+
+.wx__note {
+  margin: 10px 4px 0;
+  color: var(--warm);
+  font-size: 12.5px;
+}
+
+.wx__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-top: 10px;
+  padding: 10px 4px 0;
+  border-top: 1px solid var(--line);
+}
+
+.wx__switch {
+  padding: 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--moon);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1;
+}
+
+.wx__switch:hover,
+.wx__switch:focus-visible {
+  border-color: var(--phosphor);
+  color: var(--phosphor);
+}
+
+.nav .wx .nav__menu a.wx__credit {
+  display: inline;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--dim);
+  font-size: 11.5px;
+}
+
+.nav .wx .nav__menu a.wx__credit:hover {
+  color: var(--moon);
+}
+
+/* On a mid-size screen the chip shows the sky and the temperature only. */
+@media (max-width: 1279px) {
+  .wx__desc {
+    display: none;
+  }
+}
+
+@media (max-width: 1099px) {
+  .wx__where {
+    display: none;
+  }
+}
+
+/* In the phone menu: a heading like "Updates", and the forecast always open under it. */
+@media (max-width: 980px) {
+  .wx__label {
+    display: inline;
+  }
+
+  .wx .nav__toggle .wx__icon,
+  .wx .nav__toggle .wx__where,
+  .wx .nav__toggle .wx__temp,
+  .wx .nav__toggle .wx__desc {
+    display: none;
+  }
+
+  .wx .nav__menu {
+    display: block;
+    width: auto;
+    padding: 0;
+  }
+
+  .wx__head {
+    padding: 0 0 12px;
+  }
+
+  .wx__days {
+    gap: 2px;
+  }
+
+  .wx__track {
+    height: 40px;
+  }
+
+  .wx__foot {
+    padding: 10px 0 0;
+  }
+
+  .nav .wx .nav__menu a.wx__credit {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 980px) {
