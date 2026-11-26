@@ -189,6 +189,28 @@ sup {
   top: 12px;
 }
 
+/* Line breaking. Paragraphs don't end on a lone character or word, and headings break into lines
+   of even length, where the browser supports it. A .nobr span keeps a Chinese phrase on one line,
+   so short lines such as the tagline break between phrases rather than inside one. */
+p,
+li,
+dd,
+figcaption,
+blockquote {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+.nobr {
+  white-space: nowrap;
+}
+
 /* Top bar ---------------------------------------------------------------------------------------- */
 
 .topbar {
@@ -633,13 +655,14 @@ sup {
   /* The owner's photograph of snow mountains under the sky fills the top of the chamber at its own
      3:1 shape: 58% of the screen tall, or the full width of the screen if that is taller. Under the
      snow (which ends about 62% of the way down the photo) it fades through the plain and the forest
-     into the night, and the name and the lines under it sit there, clear of the snow: see the top
+     into the page's own night blue, so the opening screen runs on into the sections below without an
+     edge, and the name and the lines under it sit there, clear of the snow: see the top
      padding of .chamber__content. The top is darkened for the menu. The excitation canvas is
      screen-blended over all of it, so the canvas's black adds nothing and only the glow shows. */
-  background-color: var(--chamber);
+  background-color: var(--night);
   background-image:
     linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 170px),
-    linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.5) 66%, rgba(0, 0, 0, 0.86) 84%, #000 97%),
+    linear-gradient(180deg, rgba(7, 9, 26, 0) 50%, rgba(7, 9, 26, 0.5) 66%, rgba(7, 9, 26, 0.86) 84%, var(--night) 97%),
     url("../img/hero/mountains.webp");
   background-repeat: no-repeat;
   background-position: 0 0, 50% 0, 50% 0;

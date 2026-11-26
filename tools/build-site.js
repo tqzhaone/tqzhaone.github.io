@@ -277,6 +277,12 @@ function pageHead(o) {
           </header>`;
 }
 
+// A stretch of the afterglow trail behind the page heading, in the page's own colours, as the home
+// page's sections have (the pictures are rendered by tools/ribbons.py in the site's source folder).
+function headRibbon(name) {
+  return `        <div class="backdrop backdrop--pagehead" aria-hidden="true"><img src="/assets/img/bg/ribbon-${name}.webp" srcset="/assets/img/bg/ribbon-${name}.webp 1x, /assets/img/bg/ribbon-${name}@2x.webp 2x" width="1100" height="360" alt="" decoding="async"></div>`;
+}
+
 function chips(o) {
   const buttons = o.items
     .map(([value, label, n]) => `<button class="chip" type="button" data-filter="${esc(value)}" aria-pressed="false">${label}${n === undefined ? "" : ` <span class="chip__n">${n}</span>`}</button>`)
@@ -545,6 +551,7 @@ ${order.map(card).join("\n")}
           </div>`;
 
   const main = `      <section class="section page blogpage" aria-labelledby="page-title">
+${headRibbon("blog")}
         <div class="wrap">
 ${pageHead({ id: "page-title", en: "Blog", zh: "博客", leadEn: "Long reads, notes from the lab, and things outside it.", leadZh: "长文、实验笔记，以及实验室之外的事。" })}
 ${chips({ key: "tag", label: "Tags", total: posts.length, items: tagItems, actions: `${ownerLink("/admin/#blog/new", "Write a post", "写文章")}\n              <a class="chip" href="/blog/feed.xml">RSS</a>` })}
@@ -669,6 +676,7 @@ ${g.items.map(one).join("\n")}
           </div>`;
 
   const main = `      <section class="section page newspage" aria-labelledby="page-title">
+${headRibbon("news")}
         <div class="wrap">
 ${pageHead({ id: "page-title", en: "News", zh: "新闻", leadEn: "Papers, talks, awards and other news.", leadZh: "论文、会议、获奖，和其他新消息。" })}
 ${chips({ key: "kind", label: "Kind", total: items.length, items: kindItems, actions: ownerLink("/admin/#news", "Add news", "发新闻") })}
@@ -752,6 +760,7 @@ ${items.map(tile).join("\n")}
           </div>`;
 
   const main = `      <section class="section page photospage" aria-labelledby="page-title">
+${headRibbon("photos")}
         <div class="wrap">
 ${pageHead({ id: "page-title", en: "Photos", zh: "照片", leadEn: "The lab, conferences, travel and everyday life.", leadZh: "实验室、会议、旅行，还有日常。" })}
 ${chips({ key: "album", label: "Albums", total: items.length, items: albumItems, actions: ownerLink("/admin/#photos", "Add photos", "传照片") })}
@@ -842,6 +851,7 @@ function playgroundPage() {
     },
   ];
   const main = `      <section class="section page playpage" aria-labelledby="page-title">
+${headRibbon("play")}
         <div class="wrap">
 ${pageHead({
   id: "page-title",

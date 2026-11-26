@@ -16,11 +16,11 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 「关于」里的那句话 | `site/index.html` 里 `class="motto"` 的一段：318 国道路边标语上的「今日走过了所有的弯路，从此人生尽是坦途。」，英文模式下多一行英译。它用的宋体是按网页上已有的字裁出来的（`site/assets/fonts/serif-sc.woff`），换成别的话时新字会显示成系统宋体，告诉我重新生成字体文件即可。以前的「实验室之外」页面 `/life/` 已经删掉，那张照片在「照片」页面里。 |
 | 颜色、字体、版式 | `site/assets/css/site.css` 开头的变量。 |
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
-| 首屏的背景照片 | `site/assets/img/hero/mountains.webp`（2172 × 724，雪山全景）。在 `site.css` 的 `.chamber` 里：照片铺满首屏，上沿和下半部分各压了一层渐变暗角，让菜单和名字看得清，也让首屏和下面的深色部分接上；余辉动画的画布用滤色（screen）叠在照片上。换照片时用横版、宽一些的图（宽 2000 像素以上更清楚）。 |
+| 首屏的背景照片 | `site/assets/img/hero/mountains.webp`（2172 × 724，雪山全景）。在 `site.css` 的 `.chamber` 里：照片按原比例铺在首屏上半部分（屏幕高度的 58%，或屏幕宽度的三分之一，取大的），雪线以下渐渐暗成网页的深蓝底色，名字和下面几行字在雪线以下，不压在雪上；上沿还压了一层暗角，让菜单看得清；余辉动画的画布用滤色（screen）叠在照片上。换照片时用横版、宽一些的图（宽 2000 像素以上更清楚）。 |
 | 「趣味」页面和作品 | 导航栏最右边的「趣味」是 `/playground/` 页面，由 `tools/build-site.js` 的 `playgroundPage()` 在部署时生成，每个作品一张卡片。作品本身是独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”；缩略图在 `site/assets/img/play/<名字>.webp`（1120 × 700，显示时裁成 16:9）。加新作品：新建一个文件夹放网页，放一张同名缩略图，再在 `playgroundPage()` 的 `cards` 里加一项（标题和中英文说明）。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
-| 各区块的背景图 | `site/assets/img/bg/ribbon-*.webp`：一条贯穿全页的余辉光带。首屏是激发的那一刻，往下每个区块各画一段，颜色按首屏色标从红、琥珀、绿、蓝走到紫，亮度一段比一段暗，像余辉衰减；每张都有普通和 `@2x` 高清两个版本。图是黑底发光，网页用滤色（screen）叠到底色上，黑色部分不显示，所以换图时也要用黑底。`grain.png` 是铺在深色底上的细颗粒。位置、亮度和每个区块的底色光晕在 `site.css` 的 Backgrounds 一段。 |
+| 各区块的背景图 | `site/assets/img/bg/ribbon-*.webp`：一条贯穿全页的余辉光带。首屏是激发的那一刻，往下每个区块各画一段，颜色按首屏色标从红、琥珀、绿、蓝走到紫，亮度一段比一段暗，像余辉衰减；每张都有普通和 `@2x` 高清两个版本。图是黑底发光，网页用滤色（screen）叠到底色上，黑色部分不显示，所以换图时也要用黑底。`grain.png` 是铺在深色底上的细颗粒。位置、亮度和每个区块的底色光晕在 `site.css` 的 Backgrounds 一段。新闻、博客、照片、趣味四个页面的标题右上方也各有一段（`ribbon-news`、`ribbon-blog`、`ribbon-photos`、`ribbon-play`），颜色跟各页的底色光晕一致，位置在 `pages.css` 的 `.backdrop--pagehead`。 |
 
 中文标题用的是精简过的思源宋体（`site/assets/fonts/serif-sc.woff`），只包含现在页面上用到的字。
 以后在标题里加了新字，新字会用系统自带的宋体显示，不影响阅读；想让字形完全统一，需要重新生成这个字体文件。
