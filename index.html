@@ -21,8 +21,9 @@
     <link rel="preload" href="assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
     <link rel="stylesheet" href="assets/css/site.css">
     <script>
-      // Playground, Beyond the lab and Publications used to be sections here; old links go to their pages.
-      var moved = { "#playground": "/playground/", "#life": "/life/", "#publications": "/publications/" }[location.hash];
+      // Playground and Publications used to be sections here; old links go to their pages. (Old links
+      // to #life, Beyond the lab, land on its motto in About, which keeps that id.)
+      var moved = { "#playground": "/playground/", "#publications": "/publications/" }[location.hash];
       if (moved) location.replace(moved + location.search);
       // Pick the language before the first paint: ?lang= wins, then the visitor's last choice, then English.
       (function () {
@@ -61,13 +62,7 @@
           </div>
           <a href="#contact" data-nav="contact"><span data-l="en">Contact</span><span data-l="zh" lang="zh-CN">联系</span></a>
           <a href="#guestbook" data-nav="guestbook"><span data-l="en">Guestbook</span><span data-l="zh" lang="zh-CN">留言板</span></a>
-          <div class="nav__group" data-navgroup>
-            <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-more"><span data-l="en">More</span><span data-l="zh" lang="zh-CN">更多</span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
-            <div class="nav__menu nav__menu--two" id="nav-more">
-              <a href="/playground/"><span class="nav__item"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></span><span class="nav__hint"><span data-l="en">A pelican on a bicycle, the Eiffel Tower at night</span><span data-l="zh" lang="zh-CN">鹈鹕骑车、埃菲尔铁塔之夜</span></span></a>
-              <a href="/life/"><span class="nav__item"><span data-l="en">Beyond the lab</span><span data-l="zh" lang="zh-CN">实验室之外</span></span><span class="nav__hint"><span data-l="en">A photo from the road</span><span data-l="zh" lang="zh-CN">318 国道上的一张照片</span></span></a>
-            </div>
-          </div>
+          <a href="/playground/"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></a>
       </nav>
       <div class="lang" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
@@ -132,6 +127,13 @@
               <dt><span data-l="en">Email</span><span data-l="zh" lang="zh-CN">邮箱</span></dt>
               <dd><a class="facts__email" href="#contact" data-email data-user="zhaotq-one" data-domain="outlook.com"><span data-email-text>zhaotq-one [at] outlook.com</span></a></dd>
             </dl>
+            <figure class="motto" id="life">
+              <blockquote class="motto__quote">
+                <p lang="zh-CN">今日走过了所有的弯路，<br>从此人生尽是坦途。</p>
+                <p class="motto__gloss" data-l="en">Today I walked every winding road; from here on, life&#8217;s road runs smooth.</p>
+              </blockquote>
+              <figcaption class="motto__source"><span data-l="en">A roadside sign on G318</span><span data-l="zh" lang="zh-CN">318 国道路边的标语</span></figcaption>
+            </figure>
           </div>
         </div>
       </section>
