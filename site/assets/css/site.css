@@ -238,12 +238,23 @@ h4 {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
   margin-right: auto;
   color: var(--moon);
   font-family: var(--serif);
   font-size: 22px;
   letter-spacing: 0.01em;
   text-decoration: none;
+}
+
+/* The ZTQ seal (the site icon), its colour drifting through the afterglow colours: see favicon.svg. */
+.brand__seal {
+  display: block;
+  flex: none;
+  width: 24px;
+  height: 24px;
 }
 
 .brand:hover {

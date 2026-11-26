@@ -179,7 +179,7 @@ function topbar(current) {
   const link = (href, en, zh, key) =>
     `        <a href="${href}"${key && key === current ? ' class="is-active" aria-current="page"' : ""}>${bi(en, zh)}</a>`;
   return `    <header class="topbar is-solid" data-topbar>
-      <a class="brand" href="/">Tianqi Zhao</a>
+      <a class="brand" href="/"><img class="brand__seal" src="/assets/img/favicon.svg" width="24" height="24" alt="">Tianqi Zhao</a>
       <nav class="nav" id="site-nav" aria-label="Sections">
 ${link("/#research", "Research", "研究")}
 ${link("/#cv", "CV", "简历")}

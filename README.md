@@ -29,6 +29,7 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 俄罗斯方块、扫雷、生命游戏 | `site/playground/tetris/`、`minesweeper/`、`life/`。俄罗斯方块用标准规则（7 块一袋、SRS 旋转和踢墙、保留、影子、落地延迟，每 10 行升一级）；落定的方块按落下的时间从红冷却到蓝。扫雷第一下不会踩雷，手机上长按插旗。生命游戏的格子在边缘首尾相接，图案用 RLE 写在脚本里。最高分都存在访客自己的浏览器里。 |
 | 余辉寿命拟合 | `site/playground/decay-fit/`。模型 y = y₀ + Σ Aᵢ·exp(−t/τᵢ)，寿命用 Levenberg–Marquardt 法、振幅和背景用线性最小二乘（变量投影法），从多个初始值出发取最好的结果；误差来自协方差矩阵。我用 SciPy 的 curve_fit 对比过，数值和误差一致。数据不会上传。 |
 | DOI 转参考文献 | `site/playground/cite/`。从 Crossref 取文献信息（访客的浏览器直接请求 api.crossref.org），生成 GB/T 7714—2015、APA 7、ACS、BibTeX、RIS。「用我的论文试试」里的 DOI 列表在脚本开头的 `MY_DOIS`，发了新论文可以加进去。 |
+| 标志（ZTQ 印章） | `site/assets/img/favicon.svg`：朱红方印，字母阴刻，左边一列 Z，右边上 T 下 Q。它既是浏览器标签页的图标，也放在每页左上角名字前面。颜色每 18 秒沿着网站的余辉色走一圈（朱红、红、金、绿、青、紫，再回到朱红），颜色和快慢在文件开头的 `@keyframes` 里改；系统设置了「减少动态效果」时停在朱红。Chrome 的标签页图标不会动，只显示朱红。手机「添加到主屏幕」的图标是 `apple-touch-icon.png`（180 × 180，深蓝底上的朱红印章），由它生成，换标志时告诉我重新生成。 |
 | 分享到社交网络时的预览图 | `site/assets/img/og.png`（1200 × 630）。 |
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
 | 各区块的背景图 | `site/assets/img/bg/ribbon-*.webp`：一条贯穿全页的余辉光带。首屏是激发的那一刻，往下每个区块各画一段，颜色按首屏色标从红、琥珀、绿、蓝走到紫，亮度一段比一段暗，像余辉衰减；每张都有普通和 `@2x` 高清两个版本。图是黑底发光，网页用滤色（screen）叠到底色上，黑色部分不显示，所以换图时也要用黑底。`grain.png` 是铺在深色底上的细颗粒。位置、亮度和每个区块的底色光晕在 `site.css` 的 Backgrounds 一段。新闻、博客、照片、趣味四个页面的标题右上方也各有一段（`ribbon-news`、`ribbon-blog`、`ribbon-photos`、`ribbon-play`），颜色跟各页的底色光晕一致，位置在 `pages.css` 的 `.backdrop--pagehead`。 |

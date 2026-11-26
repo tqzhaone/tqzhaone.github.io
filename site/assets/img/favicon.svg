@@ -1,13 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="0.16" stop-color="#ffe34d"/>
-      <stop offset="0.36" stop-color="#36f27a"/>
-      <stop offset="0.6" stop-color="#00c8ff" stop-opacity="0.75"/>
-      <stop offset="1" stop-color="#2348ff" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="64" height="64" rx="14" fill="#000"/>
-  <circle cx="32" cy="32" r="27" fill="url(#glow)"/>
+  <title>ZTQ</title>
+  <!-- A seal of the initials ZTQ (Zhao Tianqi): Z in the left column, T over Q in the right, cut out of
+       the square. Its colour drifts slowly through the site's afterglow colours and back to cinnabar;
+       with reduced motion it stays cinnabar. -->
+  <style>
+    .seal { fill: #c8372d; animation: afterglow 18s ease-in-out infinite; }
+    @keyframes afterglow {
+      0%, 100% { fill: #c8372d; }
+      16% { fill: #ff4530; }
+      32% { fill: #ffc15e; }
+      50% { fill: #74f7be; }
+      68% { fill: #00c8ff; }
+      84% { fill: #8f6bff; }
+    }
+    @media (prefers-reduced-motion: reduce) { .seal { animation: none; } }
+  </style>
+  <defs><mask id="sm" maskUnits="userSpaceOnUse" x="0" y="0" width="64.0" height="64.0"><rect width="64.0" height="64.0" fill="#fff"/><path d="M8.60 8.60 L29.50 8.60 L29.50 15.00 L15.91 49.00 L29.50 49.00 L29.50 55.40 L8.60 55.40 L8.60 49.00 L22.19 15.00 L8.60 15.00 Z" fill="#000"/><path d="M34.50 8.60 H55.40 V15.00 H34.50 Z M41.75 8.60 H48.15 V29.50 H41.75 Z" fill="#000"/><path d="M40.50 34.50 H49.40 A6.00 6.00 0 0 1 55.40 40.50 V49.40 A6.00 6.00 0 0 1 49.40 55.40 H40.50 A6.00 6.00 0 0 1 34.50 49.40 V40.50 A6.00 6.00 0 0 1 40.50 34.50 Z" fill="#000"/><path d="M42.42 40.90 H47.48 A1.52 1.52 0 0 1 49.00 42.42 V47.48 A1.52 1.52 0 0 1 47.48 49.00 H42.42 A1.52 1.52 0 0 1 40.90 47.48 V42.42 A1.52 1.52 0 0 1 42.42 40.90 Z" fill="#fff"/><path d="M44.95 49.00 H59.27 V55.40 H44.95 Z" fill="#000"/></mask></defs>
+  <rect x="2" y="2" width="60.0" height="60.0" rx="5" class="seal" mask="url(#sm)"/>
 </svg>
