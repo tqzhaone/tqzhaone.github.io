@@ -1780,6 +1780,16 @@ html[data-lang="zh"] .life__grid .section-title {
   margin-top: 26px;
 }
 
+/* The CV's line linking to the Publications page, and that page's filter row. */
+.cv__more {
+  display: inline-block;
+  margin-top: 12px;
+}
+
+.pubs__tools {
+  margin: 0 0 clamp(6px, 1.2vw, 14px);
+}
+
 .lifepage .life__grid {
   margin-top: clamp(4px, 1.6vw, 20px);
 }
