@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: "Cardo";
-  src: url("../fonts/cardo-400.woff") format("woff");
+  src: url("../fonts/cardo-400.woff2") format("woff2"), url("../fonts/cardo-400.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: "Cardo";
-  src: url("../fonts/cardo-400i.woff") format("woff");
+  src: url("../fonts/cardo-400i.woff2") format("woff2"), url("../fonts/cardo-400i.woff") format("woff");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: "Fira Sans";
-  src: url("../fonts/fira-300.woff") format("woff");
+  src: url("../fonts/fira-300.woff2") format("woff2"), url("../fonts/fira-300.woff") format("woff");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -32,7 +32,7 @@
 
 @font-face {
   font-family: "Fira Sans";
-  src: url("../fonts/fira-400.woff") format("woff");
+  src: url("../fonts/fira-400.woff2") format("woff2"), url("../fonts/fira-400.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -40,7 +40,7 @@
 
 @font-face {
   font-family: "Fira Sans";
-  src: url("../fonts/fira-400i.woff") format("woff");
+  src: url("../fonts/fira-400i.woff2") format("woff2"), url("../fonts/fira-400i.woff") format("woff");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -48,7 +48,7 @@
 
 @font-face {
   font-family: "Fira Sans";
-  src: url("../fonts/fira-500.woff") format("woff");
+  src: url("../fonts/fira-500.woff2") format("woff2"), url("../fonts/fira-500.woff") format("woff");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -57,7 +57,7 @@
 /* Chinese serif for headings: a subset of Noto Serif CJK SC holding only the characters this page uses. */
 @font-face {
   font-family: "TZ Serif SC";
-  src: url("../fonts/serif-sc.woff") format("woff");
+  src: url("../fonts/serif-sc.woff2") format("woff2"), url("../fonts/serif-sc.woff") format("woff");
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
@@ -652,24 +652,52 @@ h4 {
   overflow: hidden;
   isolation: isolate;
   touch-action: pan-y;
-  /* The owner's photograph of snow mountains under the sky fills the top of the chamber at its own
-     3:1 shape: 58% of the screen tall, or the full width of the screen if that is taller. Under the
-     snow (which ends about 62% of the way down the photo) it fades through the plain and the forest
-     into the page's own night blue, so the opening screen runs on into the sections below without an
-     edge, and the name and the lines under it sit there, clear of the snow: see the top
-     padding of .chamber__content. The top is darkened for the menu. The excitation canvas is
-     screen-blended over all of it, so the canvas's black adds nothing and only the glow shows. */
   background-color: var(--night);
+}
+
+/* The owner's photograph of snow mountains under the sky fills the top of the chamber at its own
+   3:1 shape: 58% of the screen tall, or the full width of the screen if that is taller. It is an
+   <img> in a <picture>, so browsers that read AVIF take the smaller AVIF file and the rest the WebP.
+   Over it (.chamber::before), under the snow (which ends about 62% of the way down the photo), it
+   fades through the plain and the forest into the page's own night blue, so the opening screen runs
+   on into the sections below without an edge, and the name and the lines under it sit there, clear
+   of the snow: see the top padding of .chamber__content. The top is darkened for the menu. The
+   excitation canvas is screen-blended over all of it, so the canvas's black adds nothing and only
+   the glow shows. */
+.chamber__photo {
+  position: absolute;
+  z-index: -3;
+  top: 0;
+  left: 50%;
+  height: max(58vh, 34vw);
+  height: max(58svh, 34vw);
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+}
+
+.chamber__photo img {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: 100%;
+}
+
+.chamber::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 0;
   background-image:
     linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 170px),
-    linear-gradient(180deg, rgba(7, 9, 26, 0) 50%, rgba(7, 9, 26, 0.5) 66%, rgba(7, 9, 26, 0.86) 84%, var(--night) 97%),
-    url("../img/hero/mountains.webp");
+    linear-gradient(180deg, rgba(7, 9, 26, 0) 50%, rgba(7, 9, 26, 0.5) 66%, rgba(7, 9, 26, 0.86) 84%, var(--night) 97%);
   background-repeat: no-repeat;
-  background-position: 0 0, 50% 0, 50% 0;
+  background-position: 0 0, 50% 0;
   /* The fade runs 3px past the photo, so a photo height in fractions of a pixel never leaves a
      sliver of its bottom row showing under the black. */
-  background-size: 100% 100%, 100% calc(max(58vh, 34vw) + 3px), auto max(58vh, 34vw);
-  background-size: 100% 100%, 100% calc(max(58svh, 34vw) + 3px), auto max(58svh, 34vw);
+  background-size: 100% 100%, 100% calc(max(58vh, 34vw) + 3px);
+  background-size: 100% 100%, 100% calc(max(58svh, 34vw) + 3px);
+  pointer-events: none;
 }
 
 .chamber::after {
@@ -1227,20 +1255,8 @@ html[data-lang="zh"] .statement {
   font-weight: 500;
 }
 
-.fig__note--nir {
-  fill: var(--nir);
-}
-
-.fig__note--warm {
-  fill: var(--warm);
-}
-
 .fig__note--glow {
   fill: var(--phosphor);
-}
-
-.fig__note--auto {
-  fill: #9097b0;
 }
 
 .fig__note--uv {
@@ -1370,19 +1386,6 @@ html[data-lang="zh"] .theme__title {
 
 /* Publications */
 
-.pubs__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px 32px;
-  margin-bottom: 18px;
-}
-
-.pubs__head .section-title {
-  margin: 0;
-}
-
 .filter {
   display: inline-flex;
   padding: 4px;
@@ -1419,11 +1422,6 @@ html[data-lang="zh"] .theme__title {
 .filter__n {
   font-variant-numeric: tabular-nums;
   opacity: 0.8;
-}
-
-.pubs__note {
-  margin: 0 0 clamp(40px, 5vw, 64px);
-  color: var(--haze);
 }
 
 /* Years get dimmer with age, the way an afterglow decays. */
@@ -2767,17 +2765,6 @@ a.gb-nick:hover {
 
 /* Playground --------------------------------------------------------------------------------------- */
 
-.playground {
-  --wash-a: radial-gradient(42% 44% at 8% 16%, rgba(143, 107, 255, 0.08), transparent 70%);
-  --wash-b: radial-gradient(46% 50% at 96% 88%, rgba(0, 200, 255, 0.05), transparent 70%);
-}
-
-.playground__lead {
-  max-width: 62ch;
-  margin: 0 0 clamp(28px, 3.6vw, 46px);
-  color: var(--haze);
-}
-
 /* Cards keep one width across the groups: up to four in a row, empty places stay empty. */
 .plays {
   display: grid;
@@ -3022,10 +3009,6 @@ a.gb-nick:hover {
   margin-top: 20px;
 }
 
-.pubs__note {
-  margin-bottom: clamp(22px, 3vw, 36px);
-}
-
 .year {
   padding: 22px 0;
 }
@@ -3052,10 +3035,6 @@ a.gb-nick:hover {
 
 .gb {
   gap: clamp(28px, 3.4vw, 44px) clamp(32px, 4.5vw, 72px);
-}
-
-.playground__lead {
-  margin-bottom: clamp(20px, 2.6vw, 30px);
 }
 
 .plays {

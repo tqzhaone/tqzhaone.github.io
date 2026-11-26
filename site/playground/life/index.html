@@ -191,7 +191,13 @@
 
   const S = { running: !reduced, rate: Number(Play.store.get("tz-life-speed", 12)) || 12, acc: 0, gen: 0, pop: 0 };
 
+  // While paused, once the last afterglow has faded every frame is the same, so drawing stops
+  // until a cell is drawn, a pattern loaded or the window resized (see frame()).
+  let settled = false;
+  let dirty = true;
+
   function layout(keep) {
+    dirty = true;
     DPR = Math.min(2, window.devicePixelRatio || 1);
     CELL = innerWidth < 760 ? 7 : 9;
     const nc = Math.max(20, Math.floor(innerWidth / CELL));
@@ -314,6 +320,7 @@
   function draw(dt) {
     const k = Math.exp(-dt / 0.75);
     const d = img.data;
+    let fading = false;
     for (let i = 0, j = 0; i < cur.length; i++, j += 4) {
       if (cur[i]) {
         glow[i] = 1;
@@ -325,6 +332,7 @@
       }
       let g = glow[i];
       if (g > 0.01) {
+        fading = true;
         g *= k;
         glow[i] = g;
         const c = LUTC[Math.min(LUTN - 1, Math.floor(g * (LUTN - 1)))];
@@ -340,6 +348,7 @@
       }
       d[j + 3] = 255;
     }
+    settled = !fading;
     sctx.putImageData(img, 0, 0);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = "source-over";
@@ -380,7 +389,10 @@
       }
       if (n === 4) S.acc = 0;
     }
-    draw(dt);
+    if (S.running || !settled || dirty) {
+      dirty = false;
+      draw(dt);
+    }
     for (const [k, v] of [["gen", S.gen], ["pop", S.pop]]) {
       if (shown[k] !== v) {
         shown[k] = v;
@@ -391,6 +403,10 @@
   }
 
   /* Controls -------------------------------------------------------------------------------------- */
+
+  for (const type of ["pointerdown", "pointermove", "pointerup", "click", "input", "change", "keydown", "resize"]) {
+    window.addEventListener(type, () => (dirty = true), { passive: true });
+  }
 
   function setRunning(on) {
     S.running = on;

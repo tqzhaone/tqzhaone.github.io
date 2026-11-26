@@ -16,12 +16,13 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 「关于」里的那句话 | `site/index.html` 里 `class="motto"` 的一段：318 国道路边标语上的「今日走过了所有的弯路，从此人生尽是坦途。」，英文模式下多一行英译。它用的宋体是按网页上已有的字裁出来的（`site/assets/fonts/serif-sc.woff`），换成别的话时新字会显示成系统宋体，告诉我重新生成字体文件即可。以前的「实验室之外」页面 `/life/` 已经删掉，那张照片在「照片」页面里。 |
 | 颜色、字体、版式 | `site/assets/css/site.css` 开头的变量。 |
 | 首屏的余辉动画 | `site/assets/js/site.js` 第 4 部分。 |
-| 首屏的背景照片 | `site/assets/img/hero/mountains.webp`（2172 × 724，雪山全景）。在 `site.css` 的 `.chamber` 里：照片按原比例铺在首屏上半部分（屏幕高度的 58%，或屏幕宽度的三分之一，取大的），雪线以下渐渐暗成网页的深蓝底色，名字和下面几行字在雪线以下，不压在雪上；上沿还压了一层暗角，让菜单看得清；余辉动画的画布用滤色（screen）叠在照片上。换照片时用横版、宽一些的图（宽 2000 像素以上更清楚）。 |
+| 首屏的背景照片 | `site/assets/img/hero/` 里的 `mountains.avif` 和 `mountains.webp`（2172 × 724，雪山全景，同一张照片的两种格式）：能读 AVIF 的浏览器下载 AVIF（约 125 KB，比 WebP 小三分之一多），其余的下载 WebP。照片是 `index.html` 里 `class="chamber__photo"` 的 `<picture>`，暗角和渐暗是 `site.css` 里的 `.chamber::before`。换照片要两个文件一起换，把原图发给我就行。在 `site.css` 的 `.chamber` 里：照片按原比例铺在首屏上半部分（屏幕高度的 58%，或屏幕宽度的三分之一，取大的），雪线以下渐渐暗成网页的深蓝底色，名字和下面几行字在雪线以下，不压在雪上；上沿还压了一层暗角，让菜单看得清；余辉动画的画布用滤色（screen）叠在照片上。换照片时用横版、宽一些的图（宽 2000 像素以上更清楚）。 |
 | 「趣味」页面和作品 | 导航栏最右边的「趣味」是 `/playground/` 页面，由 `tools/build-site.js` 的 `playgroundPage()` 在部署时生成，每个作品一张卡片。作品本身是独立网页，放在 `site/playground/<名字>/index.html`（现在有 `pelican` 鹈鹕骑车和 `eiffel` 埃菲尔铁塔之夜），页面右上角有“返回主页”；缩略图在 `site/assets/img/play/<名字>.webp`（1120 × 700，显示时裁成 16:9）。加新作品：新建一个文件夹放网页，放一张同名缩略图，再在 `playgroundPage()` 的 `cards` 里加一项（标题和中英文说明）。 |
 | 小游戏「关灯之后」 | `site/playground/lights-off/index.html`，单独的一张网页，不依赖其他文件（只借用网站的字体和图标）。玩法：按住「激发」（或空格键）照亮组织，松开关灯，背景光很快熄灭，肿瘤上的余辉还亮着，趁它没暗下去点中它。难度在 `params()` 里按关卡调（肿瘤数、背景亮点数、余辉和背景的寿命、每关激发次数、亮点大小）；最高分存在访客自己的浏览器里。卡片缩略图是 `site/assets/img/play/lights-off.webp`。 |
 | 贪吃蛇和 2048 | `site/playground/snake/index.html` 和 `site/playground/2048/index.html`，各是单独的一张网页，配色都用首页的辐射色标。贪吃蛇：方向键或 WASD 转向，空格暂停，手机上滑动或用棋盘下方的方向键；速度在 `step()` 里随吃到的个数加快，奖励光球每吃 5 个出现一次。2048：方向键、WASD 或滑动，U 撤销一步；进行中的棋盘和最高分存在访客自己的浏览器里，下次打开接着玩。卡片缩略图是 `site/assets/img/play/snake.webp` 和 `2048.webp`。 |
 | 「趣味」页的分组 | `tools/build-site.js` 里的 `PLAY_GROUPS`：分成「和研究有关」「经典小游戏」「实用工具」「模拟与动画」四组，每组一个标题、一句说明和几张卡片。加一个作品：在对应的组里加一项（`key` 就是网址里的名字），把页面放进 `site/playground/<key>/index.html`，缩略图放进 `site/assets/img/play/<key>.webp`（1120 × 700），再在 `site/sitemap.xml` 里加一行。卡片标题用的宋体是裁剪过的，新标题里有新字时，告诉我重新生成字体文件。 |
 | 新作品共用的样式和脚本 | `site/assets/css/play.css` 和 `site/assets/js/play.js`：余辉密信、夜光涂鸦墙、猜温度、俄罗斯方块、扫雷、生命游戏、余辉寿命拟合、DOI 转参考文献这八个页面共用的字体、颜色、按钮、对话框、语言切换和首页的辐射色标。关灯之后、贪吃蛇、2048 三个页面是自带样式的独立文件。 |
+| 动画省电 | 夜光涂鸦墙、余辉密信、关灯之后、俄罗斯方块、生命游戏在画面不变时（还没开始、已暂停、余辉已经灭了）不再逐帧重画，有点击、按键、移动鼠标或改变窗口大小就马上接着画。首屏的余辉动画滚出屏幕或切到别的标签页时会停。 |
 | 余辉密信 | `site/playground/secret/`。两句话用两种「材料」的点阵印在一起：伪装在灯下更亮，真话是长余辉。分享链接把两句话放在网址的 `#` 后面（不会发到服务器），拿到链接的人都能解出来。 |
 | 夜光涂鸦墙 | `site/playground/glow-wall/`。四种材料的颜色和余辉时长在页面脚本开头的 `MATS` 里（真实材料能亮几小时，这里按比例缩短成几秒）；红外光会把存着的能量一下子放掉。 |
 | 猜温度 | `site/playground/thermometer/`。Cr³⁺ 锐线（约 697 nm）和宽带（约 745 nm）的强度比按玻尔兹曼分布随温度变化，参数（ΔE = 1100 cm⁻¹，25 °C 时比值 0.30）在脚本开头，是示意用的。 |
@@ -32,7 +33,8 @@ Tianqi Zhao 的个人学术主页：<https://tqzhaone.github.io>
 | 照片 | `site/assets/img/portrait.webp`（360 × 450）和 `portrait@2x.webp`（720 × 900），竖版 4:5。换照片时两张都换，比例保持 4:5。 |
 | 各区块的背景图 | `site/assets/img/bg/ribbon-*.webp`：一条贯穿全页的余辉光带。首屏是激发的那一刻，往下每个区块各画一段，颜色按首屏色标从红、琥珀、绿、蓝走到紫，亮度一段比一段暗，像余辉衰减；每张都有普通和 `@2x` 高清两个版本。图是黑底发光，网页用滤色（screen）叠到底色上，黑色部分不显示，所以换图时也要用黑底。`grain.png` 是铺在深色底上的细颗粒。位置、亮度和每个区块的底色光晕在 `site.css` 的 Backgrounds 一段。新闻、博客、照片、趣味四个页面的标题右上方也各有一段（`ribbon-news`、`ribbon-blog`、`ribbon-photos`、`ribbon-play`），颜色跟各页的底色光晕一致，位置在 `pages.css` 的 `.backdrop--pagehead`。 |
 
-中文标题用的是精简过的思源宋体（`site/assets/fonts/serif-sc.woff`），只包含现在页面上用到的字。
+中文标题用的是精简过的思源宋体（`site/assets/fonts/serif-sc.woff2`），只包含现在页面上用到的字。
+每个字体文件都有两份：`.woff2` 是浏览器实际下载的，比 `.woff` 小约四分之一；`.woff` 留给不认识 WOFF2 的老浏览器。重新生成字体时两份一起换。
 以后在标题里加了新字，新字会用系统自带的宋体显示，不影响阅读；想让字形完全统一，需要重新生成这个字体文件。
 
 旧地址 `/cv/` 会自动跳到首页的简历，`/guestbook/` 会跳到留言板；以前指向首页 `#publications` 的链接会跳到论文页面。
@@ -121,7 +123,7 @@ draft: true
 ## 字体许可
 
 Cardo、Fira Sans 和 Noto Serif CJK（思源宋体）均采用 SIL Open Font License 1.1，许可文本在 `site/assets/fonts/`。
-鹈鹕页标题用的站酷快乐体（ZCOOL KuaiLe）也是 SIL OFL 1.1，只保留了标题那几个字（`zcool-kuaile-subset.woff`），许可文本是 `OFL-ZCOOLKuaiLe.txt`。
+鹈鹕页标题用的站酷快乐体（ZCOOL KuaiLe）也是 SIL OFL 1.1，只保留了标题那几个字（`zcool-kuaile-subset.woff2` 和 `.woff`），许可文本是 `OFL-ZCOOLKuaiLe.txt`。
 
 ## 第三方库
 

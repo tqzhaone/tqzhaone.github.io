@@ -219,7 +219,10 @@
   let tctx = tiny.getContext("2d");
   let wallBg = null;
 
+  let dirty = true; // the picture needs drawing again (see the loop)
+
   function layout() {
+    dirty = true;
     W = innerWidth;
     H = innerHeight;
     DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -376,6 +379,13 @@
   const now = () => performance.now() / 1000;
   let last = now();
   let flashAt = -1;
+  const hoverable = matchMedia("(hover: hover)");
+
+  // A dark, untouched wall looks the same from one frame to the next, so it is only drawn again
+  // when something happens: the pointer moves, a button is pressed, the window changes size.
+  for (const type of ["pointermove", "pointerdown", "pointerup", "pointercancel", "pointerout", "click", "input", "change", "keydown", "resize"]) {
+    window.addEventListener(type, () => (dirty = true), { passive: true });
+  }
 
   function frame() {
     const t = now();
@@ -384,6 +394,12 @@
 
     // Holding the light still keeps charging (or emptying) the spot under it.
     if (P.down) stamp(P.x, P.y, SIZES[state.size], 1 - Math.exp(-dt / 0.25), state.tool, state.mat);
+
+    if (!dirty && !P.down && flashAt < 0 && !fields.some((f) => f.active)) {
+      requestAnimationFrame(frame);
+      return;
+    }
+    dirty = false;
 
     const data = img.data;
     data.fill(0);
@@ -439,7 +455,7 @@
     ctx.globalAlpha = 1;
 
     // The light itself.
-    if (P.down || (P.over && matchMedia("(hover: hover)").matches)) {
+    if (P.down || (P.over && hoverable.matches)) {
       const r = SIZES[state.size] * DPR;
       const x = P.x * DPR;
       const y = P.y * DPR;

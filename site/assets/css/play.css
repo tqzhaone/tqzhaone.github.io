@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: "Cardo";
-  src: url("../fonts/cardo-400.woff") format("woff");
+  src: url("../fonts/cardo-400.woff2") format("woff2"), url("../fonts/cardo-400.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: "TZ Serif SC";
-  src: url("../fonts/serif-sc.woff") format("woff");
+  src: url("../fonts/serif-sc.woff2") format("woff2"), url("../fonts/serif-sc.woff") format("woff");
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
@@ -25,7 +25,7 @@
 
 @font-face {
   font-family: "Fira Sans";
-  src: url("../fonts/fira-400.woff") format("woff");
+  src: url("../fonts/fira-400.woff2") format("woff2"), url("../fonts/fira-400.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -33,7 +33,7 @@
 
 @font-face {
   font-family: "Fira Sans";
-  src: url("../fonts/fira-500.woff") format("woff");
+  src: url("../fonts/fira-500.woff2") format("woff2"), url("../fonts/fira-500.woff") format("woff");
   font-weight: 500;
   font-style: normal;
   font-display: swap;

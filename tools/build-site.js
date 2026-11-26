@@ -230,8 +230,8 @@ function page(o) {
     <meta property="og:description" content="${esc(o.description)}">
     <meta property="og:image" content="${esc(image)}">
     <meta name="twitter:card" content="summary_large_image">
-${o.head || ""}    <link rel="preload" href="/assets/fonts/cardo-400.woff" as="font" type="font/woff" crossorigin>
-    <link rel="preload" href="/assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
+${o.head || ""}    <link rel="preload" href="/assets/fonts/cardo-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/fira-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/css/site.css">
     <link rel="stylesheet" href="/assets/css/pages.css">
     <script>
