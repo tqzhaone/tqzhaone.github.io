@@ -655,6 +655,10 @@
   /* Loop ------------------------------------------------------------------------------------------ */
 
   let last = now();
+  let drawnAt = 0;
+  for (const type of ["pointerdown", "click", "keydown", "resize"]) {
+    window.addEventListener(type, () => (dirty = true), { passive: true });
+  }
 
   function frame() {
     const t = now();
@@ -683,7 +687,14 @@
     } else if (G.phase === "clearing" && t - G.clearing.t0 >= 0.26) {
       finishClear();
     }
-    draw(t);
+    // Before the first game the well is empty and still; after a game only the slow cooling of
+    // the blocks moves, which eight pictures a second show just as well.
+    const still = G.phase === "intro" || (G.phase === "over" && !G.flashes.length);
+    if (dirty || !still || (G.phase === "over" && t - drawnAt > 0.125)) {
+      dirty = false;
+      drawnAt = t;
+      draw(t);
+    }
     requestAnimationFrame(frame);
   }
 
@@ -692,7 +703,10 @@
   let DPR = 1;
   let C = 28; // cell size, CSS px
 
+  let dirty = true; // the picture needs drawing again (see frame())
+
   function layout() {
+    dirty = true;
     DPR = Math.min(2, window.devicePixelRatio || 1);
     const small = matchMedia("(max-width: 760px), (pointer: coarse)").matches;
     const sideways = matchMedia("(pointer: coarse) and (orientation: landscape) and (max-height: 540px)").matches;

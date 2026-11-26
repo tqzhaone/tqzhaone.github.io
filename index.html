@@ -16,9 +16,8 @@
     <meta property="og:description" content="Ph.D. student at Nanjing Tech University. Afterglow materials for sensing, imaging and therapy.">
     <meta property="og:image" content="https://tqzhaone.github.io/assets/img/og.png">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="preload" href="assets/img/hero/mountains.webp" as="image" type="image/webp">
-    <link rel="preload" href="assets/fonts/cardo-400.woff" as="font" type="font/woff" crossorigin>
-    <link rel="preload" href="assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
+    <link rel="preload" href="assets/fonts/cardo-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/fira-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="assets/css/site.css">
     <script>
       // Playground and Publications used to be sections here; old links go to their pages. (Old links
@@ -76,6 +75,10 @@
 
     <main id="main">
       <section class="chamber" id="top" aria-labelledby="name">
+        <picture class="chamber__photo">
+          <source srcset="assets/img/hero/mountains.avif" type="image/avif">
+          <img src="assets/img/hero/mountains.webp" width="2172" height="724" alt="" fetchpriority="high">
+        </picture>
         <canvas class="chamber__canvas" aria-hidden="true"></canvas>
         <div class="chamber__content">
           <h1 class="name" id="name">Tianqi Zhao</h1>

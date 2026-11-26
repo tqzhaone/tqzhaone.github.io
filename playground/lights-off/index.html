@@ -15,7 +15,7 @@
 <meta property="og:title" content="关灯之后 · Lights Off">
 <meta property="og:description" content="Light the tissue, switch off, and find the tumors by their afterglow.">
 <meta property="og:image" content="https://tqzhaone.github.io/assets/img/play/lights-off.webp">
-<link rel="preload" href="/assets/fonts/fira-400.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="/assets/fonts/fira-400.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   /*
    * Lights Off (关灯之后): a small game about afterglow imaging. Under the lamp the whole tissue
@@ -26,26 +26,26 @@
    */
   @font-face {
     font-family: "Cardo";
-    src: url("/assets/fonts/cardo-400.woff") format("woff");
+    src: url("/assets/fonts/cardo-400.woff2") format("woff2"), url("/assets/fonts/cardo-400.woff") format("woff");
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: "TZ Serif SC";
-    src: url("/assets/fonts/serif-sc.woff") format("woff");
+    src: url("/assets/fonts/serif-sc.woff2") format("woff2"), url("/assets/fonts/serif-sc.woff") format("woff");
     font-weight: 400 700;
     font-display: swap;
     unicode-range: U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+FF00-FFEF;
   }
   @font-face {
     font-family: "Fira Sans";
-    src: url("/assets/fonts/fira-400.woff") format("woff");
+    src: url("/assets/fonts/fira-400.woff2") format("woff2"), url("/assets/fonts/fira-400.woff") format("woff");
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: "Fira Sans";
-    src: url("/assets/fonts/fira-500.woff") format("woff");
+    src: url("/assets/fonts/fira-500.woff2") format("woff2"), url("/assets/fonts/fira-500.woff") format("woff");
     font-weight: 500;
     font-display: swap;
   }
@@ -890,6 +890,7 @@
   }
 
   function layout() {
+    dirty = true;
     W = innerWidth;
     H = innerHeight;
     DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -1165,13 +1166,28 @@
   const now = () => performance.now() / 1000;
   let last = now();
 
+  // With the lamp off, nothing glowing and no effects playing, the picture does not change, so it
+  // is drawn again only when something happens (a click, a key, the pointer, a new size).
+  let dirty = true;
+  for (const type of ["pointerdown", "pointermove", "pointerup", "click", "keydown", "keyup", "resize"]) {
+    window.addEventListener(type, () => (dirty = true), { passive: true });
+  }
+  const quiet = (t) =>
+    !S.lampOn &&
+    S.lampVis <= 0.003 &&
+    !S.fx.length &&
+    S.emitters.every((e) => (e.found ? t - e.at > 0.4 : e.c < SEE * 0.6));
+
   function frame() {
     const t = now();
     const dt = Math.min(0.05, t - last);
     last = t;
     update(t, dt);
-    draw(t);
-    drawScope(t);
+    if (dirty || !quiet(t)) {
+      dirty = false;
+      draw(t);
+      drawScope(t);
+    }
     requestAnimationFrame(frame);
   }
 
