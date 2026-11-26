@@ -612,6 +612,11 @@ sup {
   .nav__hint {
     display: none;
   }
+
+  /* The "More" menu has two links; in the phone menu they share one row. */
+  .nav__menu--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* Opening screen: the imaging chamber --------------------------------------------------------------- */
@@ -1768,6 +1773,15 @@ html[data-lang="zh"] .life__grid .section-title {
   margin: 22px 0 0;
   color: var(--dim);
   font-size: 13px;
+}
+
+.life__more {
+  display: inline-block;
+  margin-top: 26px;
+}
+
+.lifepage .life__grid {
+  margin-top: clamp(4px, 1.6vw, 20px);
 }
 
 .life__photo {

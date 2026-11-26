@@ -11,6 +11,7 @@
  *   blog/index.html, blog/<post>/index.html, blog/posts.json, blog/feed.xml
  *   news/index.html
  *   photos/index.html
+ *   playground/index.html, life/index.html (the two pages in the top bar's "More" menu)
  *   sitemap.xml (the new pages are added)
  *
  * The deploy workflow runs it before publishing site/, so the generated pages are never kept in the
@@ -155,27 +156,40 @@ const UPDATES = [
   ["photos", "/photos/", "Photos", "照片", "The lab, travel, life", "实验室、旅行与生活"],
 ];
 
+const MORE = [
+  ["playground", "/playground/", "Playground", "趣味", "A pelican on a bicycle, the Eiffel Tower at night", "鹈鹕骑车、埃菲尔铁塔之夜"],
+  ["life", "/life/", "Beyond the lab", "实验室之外", "A photo from the road", "318 国道上的一张照片"],
+];
+
+// A drop-down in the top bar (assets/js/nav.js); in the phone menu its links are listed.
+function navGroup(id, en, zh, list, current, extraClass = "") {
+  const items = list
+    .map(
+      ([key, href, itemEn, itemZh, hintEn, hintZh]) =>
+        `            <a href="${href}"${key === current ? ' class="is-active" aria-current="page"' : ""}><span class="nav__item">${bi(itemEn, itemZh)}</span><span class="nav__hint">${bi(hintEn, hintZh)}</span></a>`
+    )
+    .join("\n");
+  const here = list.some(([key]) => key === current);
+  return `        <div class="nav__group${here ? " is-current" : ""}" data-navgroup>
+          <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="${id}">${bi(en, zh)}<svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
+          <div class="nav__menu${extraClass}" id="${id}">
+${items}
+          </div>
+        </div>`;
+}
+
 function topbar(current) {
   const link = (href, en, zh) => `        <a href="${href}">${bi(en, zh)}</a>`;
-  const items = UPDATES.map(
-    ([key, href, en, zh, hintEn, hintZh]) =>
-      `            <a href="${href}"${key === current ? ' class="is-active" aria-current="page"' : ""}><span class="nav__item">${bi(en, zh)}</span><span class="nav__hint">${bi(hintEn, hintZh)}</span></a>`
-  ).join("\n");
   return `    <header class="topbar is-solid" data-topbar>
       <a class="brand" href="/">Tianqi Zhao</a>
       <nav class="nav" id="site-nav" aria-label="Sections">
 ${link("/#research", "Research", "研究")}
 ${link("/#publications", "Publications", "论文")}
 ${link("/#cv", "CV", "简历")}
-        <div class="nav__group${current ? " is-current" : ""}" data-navgroup>
-          <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-updates">${bi("Updates", "动态")}<svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
-          <div class="nav__menu" id="nav-updates">
-${items}
-          </div>
-        </div>
+${navGroup("nav-updates", "Updates", "动态", UPDATES, current)}
 ${link("/#contact", "Contact", "联系")}
-${link("/#playground", "Playground", "趣味")}
 ${link("/#guestbook", "Guestbook", "留言板")}
+${navGroup("nav-more", "More", "更多", MORE, current, " nav__menu--two")}
       </nav>
       <div class="lang" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
@@ -763,6 +777,104 @@ ${body}
   });
 }
 
+/* Playground and Beyond the lab -------------------------------------------------------------------- */
+
+const playCard = (o) => `            <a class="play play--${o.key}" href="/playground/${o.key}/">
+              <span class="play__shot"><img src="/assets/img/play/${o.key}.webp" width="1120" height="700" alt="" loading="lazy" decoding="async"></span>
+              <div class="play__body">
+                <p class="play__kicker">${o.kicker}</p>
+                <h2 class="play__title">${bi(o.en, o.zh)}</h2>
+                <p class="play__text" data-l="en">${o.textEn}</p>
+                <p class="play__text" data-l="zh" lang="zh-CN">${o.textZh}</p>
+                <p class="play__cue">${bi("Open", "打开")}<span class="play__arrow" aria-hidden="true">→</span></p>
+              </div>
+            </a>`;
+
+function playgroundPage() {
+  const cards = [
+    {
+      key: "pelican",
+      kicker: "3D · WebGL",
+      en: "Pelican on a bicycle",
+      zh: "鹈鹕骑车",
+      textEn: "A pelican in a red helmet and striped scarf pedals down a country road with a basket of fish — the classic “pelican on a bicycle” test for AI, built out in 3D. Ring the bell, or switch to dusk.",
+      textZh: "戴红头盔、围条纹围巾的鹈鹕沿着乡间小路蹬车，车筐里装着鱼 ——「鹈鹕骑自行车」这道考 AI 的老题，做成了 3D。可以按铃，也能切到黄昏。",
+    },
+    {
+      key: "eiffel",
+      kicker: bi("Canvas · Animation", "Canvas · 动画"),
+      en: "The Eiffel Tower at night",
+      zh: "埃菲尔铁塔之夜",
+      textEn: "The tower draws itself from the ground up, the gold lighting comes on over the Seine, and then the whole lattice starts to sparkle.",
+      textZh: "铁塔从地面一层层自己长上去，塞纳河上的金色灯光依次亮起，然后整座铁塔开始闪烁。",
+    },
+  ];
+  const main = `      <section class="section page playpage" aria-labelledby="page-title">
+        <div class="wrap">
+${pageHead({
+  id: "page-title",
+  en: "Playground",
+  zh: "趣味",
+  leadEn: "Small things I made for fun. Each one is a single web page that runs in the browser — nothing to install.",
+  leadZh: "做着玩的几个小作品。每个都是单独的一张网页，浏览器里直接跑，不用装任何东西。",
+})}
+          <div class="plays">
+${cards.map(playCard).join("\n")}
+          </div>
+        </div>
+      </section>`;
+  return page({
+    titleEn: `Playground | ${AUTHOR}`,
+    titleZh: `趣味 | ${AUTHOR}`,
+    ogTitle: `${AUTHOR} · Playground`,
+    description: "Small things Tianqi Zhao made for fun: a pelican on a bicycle in 3D, and the Eiffel Tower at night.",
+    url: `${ORIGIN}/playground/`,
+    image: `${ORIGIN}/assets/img/play/pelican.webp`,
+    current: "playground",
+    bodyClass: "list-page",
+    main,
+  });
+}
+
+function lifePage() {
+  const main = `      <section class="section page lifepage" aria-labelledby="page-title">
+        <div class="wrap">
+${pageHead({
+  id: "page-title",
+  en: "Beyond the lab",
+  zh: "实验室之外",
+  leadEn: "A photo from the road, and the line on the sign beside it.",
+  leadZh: "路上的一张照片，和路边标语上的一句话。",
+})}
+          <div class="life__grid">
+            <div class="life__text">
+              <blockquote class="life__quote">
+                <p lang="zh-CN">今日走过了所有的弯路，<br>从此人生尽是坦途。</p>
+                <p class="life__gloss" data-l="en">Today I walked every winding road; from here on, life&#8217;s road runs smooth.</p>
+              </blockquote>
+              <p class="life__source">${bi("A roadside sign on G318", "318 国道路边的标语")}</p>
+              <a class="textlink life__more" href="/photos/">${bi("More photos", "更多照片")}</a>
+            </div>
+            <figure class="life__photo">
+              <img src="/assets/img/life/g318.webp" srcset="/assets/img/life/g318.webp 1x, /assets/img/life/g318@2x.webp 2x" width="760" height="507" alt="Tianqi Zhao on the Sichuan–Tibet Highway (G318) at Litang, beside a roadside sign, with snow-capped mountains behind" decoding="async">
+              <figcaption>${bi("On the Sichuan–Tibet Highway (G318), Litang", "川藏公路 318 国道，理塘")}</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>`;
+  return page({
+    titleEn: `Beyond the lab | ${AUTHOR}`,
+    titleZh: `实验室之外 | ${AUTHOR}`,
+    ogTitle: `${AUTHOR} · Beyond the lab`,
+    description: "Tianqi Zhao away from the lab: a photo from the Sichuan–Tibet Highway (G318).",
+    url: `${ORIGIN}/life/`,
+    image: `${ORIGIN}/assets/img/life/g318@2x.webp`,
+    current: "life",
+    bodyClass: "list-page",
+    main,
+  });
+}
+
 /* Sitemap ----------------------------------------------------------------------------------------- */
 
 function updateSitemap(posts, news, photos) {
@@ -807,6 +919,10 @@ function build() {
 
   const photos = readPhotos();
   fs.writeFileSync(path.join(PHOTOS, "index.html"), photosPage(photos));
+
+  fs.writeFileSync(path.join(SITE, "playground", "index.html"), playgroundPage());
+  fs.mkdirSync(path.join(SITE, "life"), { recursive: true });
+  fs.writeFileSync(path.join(SITE, "life", "index.html"), lifePage());
 
   updateSitemap(posts, news, photos);
   console.log(`built: ${posts.length} blog post(s), ${news.items.length} news item(s), ${photos.items.length} photo(s)`);
