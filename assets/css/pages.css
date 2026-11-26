@@ -12,8 +12,23 @@
   display: none !important;
 }
 
+/* The footer stays at the bottom of the window when a page is short (no news yet, one photo):
+   the page's section grows to fill the space, so its background runs down to the footer. */
+.content-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
 .content-page main {
-  min-height: 72vh;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.content-page main > .section:last-child {
+  flex: 1 0 auto;
 }
 
 /* Page frame ---------------------------------------------------------------------------------------- */
@@ -40,6 +55,29 @@
 .photospage {
   --wash-a: radial-gradient(46% 38% at 8% 0%, rgba(0, 200, 255, 0.06), transparent 70%);
   --wash-b: radial-gradient(40% 44% at 100% 40%, rgba(255, 90, 118, 0.05), transparent 70%);
+}
+
+.playpage {
+  --wash-a: radial-gradient(46% 38% at 8% 0%, rgba(116, 247, 190, 0.06), transparent 70%);
+  --wash-b: radial-gradient(40% 44% at 100% 40%, rgba(255, 193, 94, 0.05), transparent 70%);
+}
+
+/* The trail behind the heading (tools/build-site.js headRibbon): in at the top right, under the
+   top bar, gone before the title. */
+.backdrop--pagehead img {
+  top: 34px;
+  right: 0;
+  width: min(78vw, 1100px);
+  opacity: 0.85;
+}
+
+@media (max-width: 860px) {
+  .backdrop--pagehead img {
+    top: 30px;
+    right: -46vw;
+    width: 150vw;
+    opacity: 0.5;
+  }
 }
 
 .page-head {
