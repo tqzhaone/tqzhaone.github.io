@@ -6,7 +6,15 @@
     <description>Long reads and notes by Tianqi Zhao.</description>
     <language>zh-CN</language>
     <atom:link href="https://tqzhaone.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sat, 28 Nov 2026 01:59:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 28 Nov 2026 13:18:03 +0000</lastBuildDate>
+    <item>
+      <title>How to Design Organic Afterglow Probes?</title>
+      <link>https://tqzhaone.github.io/blog/2026-11-28/</link>
+      <guid isPermaLink="true">https://tqzhaone.github.io/blog/2026-11-28/</guid>
+      <pubDate>Fri, 27 Nov 2026 16:00:00 +0000</pubDate>
+      <description>有机余辉探针能够在外部激发停止后持续发光，具有低背景、高信噪比等优势，在生物医学成像领域展现出广阔的应用前景。如何通过合理的分子设计实现高效、持久且可调控的余辉发光，是该领域面临的重要科学问题。本文从能量输入、能量储存、发光输出及生物响应四个维度出发，简要探讨有机余辉探针的基本设计原则，以及分子结构、能量转化与生物功能之间的内在联系，为新型有机余辉探针的开发及其在精准诊疗中的应用提供思考。</description>
+      <category>随笔</category>
+    </item>
     <item>
       <title>测试</title>
       <link>https://tqzhaone.github.io/blog/2026-11-26/</link>

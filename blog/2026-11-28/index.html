@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en" data-lang="en" data-title-en="How to Design Organic Afterglow Probes? | Tianqi Zhao" data-title-zh="How to Design Organic Afterglow Probes? | Tianqi Zhao">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>How to Design Organic Afterglow Probes? | Tianqi Zhao</title>
+    <meta name="description" content="有机余辉探针能够在外部激发停止后持续发光，具有低背景、高信噪比等优势，在生物医学成像领域展现出广阔的应用前景。如何通过合理的分子设计实现高效、持久且可调控的余辉发光，是该领域面临的重要科学问题。本文从能量输入、能量储存、发光输出及生物响应四个维度出发，简要探讨有机余辉探针的基本设计原则，以及分子结构、能量转化与生物功能之间的内在联系，为新型有机余辉探针的开发及其在精准诊疗中的应用提供思考。">
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
+    <link rel="canonical" href="https://tqzhaone.github.io/blog/2026-11-28/">
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+    <link rel="alternate" type="application/rss+xml" title="Tianqi Zhao · Blog" href="/blog/feed.xml">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tqzhaone.github.io/blog/2026-11-28/">
+    <meta property="og:title" content="How to Design Organic Afterglow Probes?">
+    <meta property="og:description" content="有机余辉探针能够在外部激发停止后持续发光，具有低背景、高信噪比等优势，在生物医学成像领域展现出广阔的应用前景。如何通过合理的分子设计实现高效、持久且可调控的余辉发光，是该领域面临的重要科学问题。本文从能量输入、能量储存、发光输出及生物响应四个维度出发，简要探讨有机余辉探针的基本设计原则，以及分子结构、能量转化与生物功能之间的内在联系，为新型有机余辉探针的开发及其在精准诊疗中的应用提供思考。">
+    <meta property="og:image" content="https://tqzhaone.github.io/blog/2026-11-28/img-mx0fo37csq9.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="article:published_time" content="2026-11-28">
+    <meta name="content-version" content="58958c472e6eefec0eea8c625f226d85065bbf27">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Design Organic Afterglow Probes?","datePublished":"2026-11-28","dateModified":"2026-11-28","author":{"@type":"Person","name":"Tianqi Zhao","url":"https://tqzhaone.github.io/"},"mainEntityOfPage":"https://tqzhaone.github.io/blog/2026-11-28/","inLanguage":"zh-CN","keywords":"随笔","description":"有机余辉探针能够在外部激发停止后持续发光，具有低背景、高信噪比等优势，在生物医学成像领域展现出广阔的应用前景。如何通过合理的分子设计实现高效、持久且可调控的余辉发光，是该领域面临的重要科学问题。本文从能量输入、能量储存、发光输出及生物响应四个维度出发，简要探讨有机余辉探针的基本设计原则，以及分子结构、能量转化与生物功能之间的内在联系，为新型有机余辉探针的开发及其在精准诊疗中的应用提供思考。","image":"https://tqzhaone.github.io/blog/2026-11-28/img-mx0fo37csq9.webp"}</script>
+    <link rel="preload" href="/assets/fonts/cardo-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/fira-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/assets/css/site.css">
+    <link rel="stylesheet" href="/assets/css/pages.css">
+    <script>
+      (function () {
+        var lang = "en";
+        try {
+          var asked = new URLSearchParams(location.search).get("lang");
+          if (asked === "zh" || asked === "en") {
+            lang = asked;
+            localStorage.setItem("site-lang", asked);
+          } else if (localStorage.getItem("site-lang") === "zh") {
+            lang = "zh";
+          }
+        } catch (e) {}
+        document.documentElement.setAttribute("data-lang", lang);
+        document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+        var t = document.documentElement.getAttribute("data-title-" + lang);
+        if (t) document.title = t;
+      })();
+    </script>
+  </head>
+  <body class="content-page post-page">
+    <a class="skip" href="#main"><span data-l="en">Skip to content</span><span data-l="zh" lang="zh-CN">跳到正文</span></a>
+    <header class="topbar is-solid" data-topbar>
+      <a class="brand" href="/"><img class="brand__seal" src="/assets/img/favicon.svg" width="24" height="24" alt="">Tianqi Zhao</a>
+      <nav class="nav" id="site-nav" aria-label="Sections">
+        <a href="/#research"><span data-l="en">Research</span><span data-l="zh" lang="zh-CN">研究</span></a>
+        <a href="/#cv"><span data-l="en">CV</span><span data-l="zh" lang="zh-CN">简历</span></a>
+        <div class="nav__group is-current" data-navgroup>
+          <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-updates"><span data-l="en">Updates</span><span data-l="zh" lang="zh-CN">动态</span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
+          <div class="nav__menu nav__menu--two" id="nav-updates">
+            <a href="/publications/"><span class="nav__item"><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></span><span class="nav__hint"><span data-l="en">Journal articles, with BibTeX</span><span data-l="zh" lang="zh-CN">期刊论文与引用格式</span></span></a>
+            <a href="/news/"><span class="nav__item"><span data-l="en">News</span><span data-l="zh" lang="zh-CN">新闻</span></span><span class="nav__hint"><span data-l="en">Papers, talks, awards</span><span data-l="zh" lang="zh-CN">论文、会议、获奖</span></span></a>
+            <a href="/blog/" class="is-active" aria-current="page"><span class="nav__item"><span data-l="en">Blog</span><span data-l="zh" lang="zh-CN">博客</span></span><span class="nav__hint"><span data-l="en">Long reads and notes</span><span data-l="zh" lang="zh-CN">长文与随笔</span></span></a>
+            <a href="/photos/"><span class="nav__item"><span data-l="en">Photos</span><span data-l="zh" lang="zh-CN">照片</span></span><span class="nav__hint"><span data-l="en">The lab, travel, life</span><span data-l="zh" lang="zh-CN">实验室、旅行与生活</span></span></a>
+          </div>
+        </div>
+        <a href="/#contact"><span data-l="en">Contact</span><span data-l="zh" lang="zh-CN">联系</span></a>
+        <a href="/#guestbook"><span data-l="en">Guestbook</span><span data-l="zh" lang="zh-CN">留言板</span></a>
+        <a href="/playground/"><span data-l="en">Playground</span><span data-l="zh" lang="zh-CN">趣味</span></a>
+        <div class="nav__group wx" data-navgroup data-weather hidden>
+          <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-weather"><span class="wx__now"></span><svg class="nav__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5"></path></svg></button>
+          <div class="nav__menu wx__panel" id="nav-weather"></div>
+        </div>
+      </nav>
+      <div class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-set-lang="en" lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-set-lang="zh" lang="zh-CN" aria-pressed="false">中文</button>
+      </div>
+      <button class="menu" type="button" aria-expanded="false" aria-controls="site-nav" data-menu>
+        <span class="menu__bars" aria-hidden="true"></span>
+        <span class="sr-only"><span data-l="en">Menu</span><span data-l="zh" lang="zh-CN">菜单</span></span>
+      </button>
+    </header>
+
+    <main id="main">
+      <article class="post" data-post="2026-11-28">
+        <div class="readbar" data-readbar aria-hidden="true"><i></i></div>
+        <header class="post__head">
+          <p class="post__crumbs"><a class="post__back" href="/blog/"><span data-l="en">Blog</span><span data-l="zh" lang="zh-CN">博客</span></a><a class="post__tag" href="/blog/?tag=%E9%9A%8F%E7%AC%94">随笔</a></p>
+          <h1 class="post__title" lang="zh-CN">How to Design Organic Afterglow Probes?</h1>
+          <p class="post__meta">
+            <time datetime="2026-11-28"><span data-l="en">Nov 28, 2026</span><span data-l="zh" lang="zh-CN">2026 年 11 月 28 日</span></time>
+            <span><span data-l="en">3 min read</span><span data-l="zh" lang="zh-CN">阅读约 3 分钟</span></span>
+            <span data-views hidden></span>
+          </p>
+          <p class="post__owner" data-owner hidden><a class="chip chip--owner" href="/admin/#blog/edit/2026-11-28"><span data-l="en">Edit this post</span><span data-l="zh" lang="zh-CN">编辑这篇</span></a></p>
+        </header>
+        <div class="post__layout has-toc">
+          <nav class="toc" aria-labelledby="toc-title">
+            <p class="toc__title" id="toc-title"><span data-l="en">Contents</span><span data-l="zh" lang="zh-CN">目录</span></p>
+            <ol class="toc__list">
+              <li class="toc__item toc__item--2"><a href="#如何设计有机余辉探针">如何设计有机余辉探针？</a></li>
+              <li class="toc__item toc__item--2"><a href="#01能量输入如何激活">01｜能量输入：如何激活？</a></li>
+              <li class="toc__item toc__item--2"><a href="#02能量储存如何让光持续">02｜能量储存：如何让光持续？</a></li>
+              <li class="toc__item toc__item--2"><a href="#03发光输出如何让光更有效">03｜发光输出：如何让光更有效？</a></li>
+              <li class="toc__item toc__item--2"><a href="#04生物响应如何让光携带信息">04｜生物响应：如何让光携带信息？</a></li>
+              <li class="toc__item toc__item--2"><a href="#05从分子设计到生物医学应用">05｜从分子设计到生物医学应用</a></li>
+              <li class="toc__item toc__item--2"><a href="#references">References</a></li>
+            </ol>
+          </nav>
+          <div class="prose" lang="zh-CN">
+<h2 id="如何设计有机余辉探针">如何设计有机余辉探针？</h2>
+<p><em>How to Design Organic Afterglow Probes?</em></p>
+<p>传统荧光成像通常需要实时光激发，而有机余辉成像能够在外部激发停止后继续采集发光信号，从而显著降低生物组织自发荧光的干扰，为高灵敏度分子成像提供新的思路。[1]<br>
+<img src="img-mx0fo37csq9.webp" width="1536" height="1024" alt="" loading="lazy" decoding="async"><br>
+近年来，随着有机发光材料和分子成像技术的发展，研究者逐渐从经验性的材料筛选走向更加理性的分子设计。[2–4]</p>
+<p>那么，如何设计一个理想的有机余辉探针？</p>
+<h2 id="01能量输入如何激活">01｜能量输入：如何激活？</h2>
+<p><strong>Energy Input</strong></p>
+<p>发光始于能量的输入。</p>
+<p>如何选择合适的激发方式，并将外部能量有效转化为可用于后续发光的能量，是余辉探针设计的首要问题。</p>
+<p>对于生物医学应用而言，激发效率、组织穿透能力和生物安全性同样值得关注。[3,5]</p>
+<h2 id="02能量储存如何让光持续">02｜能量储存：如何让光持续？</h2>
+<p><strong>Energy Storage</strong></p>
+<p>对于化学发光型有机余辉探针而言，其基本原理是通过化学反应将外部输入的能量储存在化学中间体中，随后通过中间体的分解逐渐释放能量。[2,3]</p>
+<p>储能中间体的形成效率、稳定性和分解动力学，共同影响余辉的强度与持续时间。</p>
+<p>值得注意的是，更长的余辉并不一定意味着更好的成像表现。如何平衡发光强度与持续时间，是分子设计中的重要问题。</p>
+<h2 id="03发光输出如何让光更有效">03｜发光输出：如何让光更有效？</h2>
+<p><strong>Light Emission</strong></p>
+<p>能量的释放并不意味着高效发光。</p>
+<p>如何提高化学激发效率、减少非辐射能量损失、优化能量传递过程以及调控发射波长，是提升有机余辉性能的重要途径。[3,4]</p>
+<p>特别是在生物医学成像中，发光信号还需要克服组织吸收和散射等因素的影响。</p>
+<p>因此，探针设计需要综合考虑余辉亮度、持续时间和发射波长，而非单纯追求某一项性能指标。</p>
+<h2 id="04生物响应如何让光携带信息">04｜生物响应：如何让光携带信息？</h2>
+<p><strong>Biological Responsiveness</strong></p>
+<p>一个理想的分子探针不仅需要发光，还需要让光具有明确的生物学意义。</p>
+<p>通过引入生物识别功能，使余辉信号与特定生物标志物或病理过程建立联系，可以实现从单纯的发光材料向可激活分子探针的转变。[5,6]</p>
+<p>这也是有机余辉在疾病检测、分子成像和精准诊疗中具有潜在应用价值的重要原因。</p>
+<h2 id="05从分子设计到生物医学应用">05｜从分子设计到生物医学应用</h2>
+<p><strong>From Molecular Design to Biomedical Applications</strong></p>
+<p>有机余辉探针的设计并非简单地追求更亮、更久或更长波长的发光，而是需要理解分子结构、化学反应、能量转化与生物功能之间的内在联系。</p>
+<p>我的研究主要围绕化学发光型有机余辉探针的分子设计、发光调控及其在肿瘤诊疗中的应用展开。</p>
+<p>在这一研究过程中，我始终关注一个基本问题：</p>
+<p><strong>如何通过化学分子设计，让光不仅能够持续存在，还能够准确地传递生命信息？</strong></p>
+<hr>
+<h2 id="references">References</h2>
+<p>[1] Miao, Q. et al. Molecular afterglow imaging with bright, biodegradable polymer nanoparticles. <em>Nature Biotechnology</em>, <strong>2017</strong>, 35, 1102–1110.<br>
+DOI: 10.1038/nbt.3987</p>
+<p>[2] Jiang, Y. et al. A generic approach towards afterglow luminescent nanoparticles for ultrasensitive in vivo imaging. <em>Nature Communications</em>, <strong>2019</strong>, 10, 2064.<br>
+DOI: 10.1038/s41467-019-10119-x</p>
+<p>[3] Wang, X.; Pu, K. Molecular substrates for the construction of afterglow imaging probes in disease diagnosis and treatment. <em>Chemical Society Reviews</em>, <strong>2023</strong>, 52, 4549–4566.<br>
+DOI: 10.1039/D3CS00006K</p>
+<p>[4] Zhu, J.; Zhao, L.; An, W.; Miao, Q. Recent advances and design strategies for organic afterglow agents to enhance autofluorescence-free imaging performance. <em>Chemical Society Reviews</em>, <strong>2025</strong>, 54, 1429–1452.<br>
+DOI: 10.1039/D4CS01060D</p>
+<p>[5] Xu, C.; Zhang, Y.; Liang, G.; Pu, K. Molecular afterglow imaging for biomedical applications. <em>Nature Materials</em>, <strong>2025</strong>, 24, 1694–1708.<br>
+DOI: 10.1038/s41563-025-02338-z</p>
+<p>[6] Wu, L. et al. H₂S-activatable near-infrared afterglow luminescent probes for sensitive molecular imaging in vivo. <em>Nature Communications</em>, <strong>2020</strong>, 11, 446.<br>
+DOI: 10.1038/s41467-020-14307-y</p>
+          </div>
+        </div>
+        <footer class="post__foot">
+          <div class="post__share">
+            <button class="chip" type="button" data-copy-link><span class="chip__idle"><span data-l="en">Copy link</span><span data-l="zh" lang="zh-CN">复制链接</span></span><span class="chip__done"><span data-l="en">Link copied</span><span data-l="zh" lang="zh-CN">已复制链接</span></span></button>
+            <button class="chip" type="button" data-share hidden><span data-l="en">Share</span><span data-l="zh" lang="zh-CN">分享</span></button>
+            <a class="chip" href="#comments"><span data-l="en">Comments</span><span data-l="zh" lang="zh-CN">评论</span></a>
+          </div>
+          <nav class="post-nav" aria-label="More posts">
+            <span class="post-nav__item post-nav__item--none"></span>
+            <a class="post-nav__item post-nav__item--older" href="/blog/2026-11-26/"><span class="post-nav__dir"><span data-l="en">Older</span><span data-l="zh" lang="zh-CN">下一篇</span></span><span class="post-nav__title" lang="zh-CN">测试</span></a>
+          </nav>
+        </footer>
+      </article>
+
+      <section class="section guestbook comments" id="comments" aria-labelledby="comments-title" data-guestbook data-kind="comment" data-thread="/blog/2026-11-28/" data-api="https://tqzhao-guestbook.netlify.app/.netlify/functions/twikoo">
+        <div class="backdrop backdrop--ribbon-guestbook" aria-hidden="true"><img src="/assets/img/bg/ribbon-guestbook.webp" srcset="/assets/img/bg/ribbon-guestbook.webp 1x, /assets/img/bg/ribbon-guestbook@2x.webp 2x" width="1000" height="300" alt="" loading="lazy" decoding="async"></div>
+        <div class="wrap gb">
+          <div class="gb__head">
+            <h2 class="section-title" id="comments-title"><span data-l="en">Comments</span><span data-l="zh" lang="zh-CN">评论</span></h2>
+            <p class="gb__lead" data-l="en">Thoughts on this post, or a question? Comments are public.</p>
+            <p class="gb__lead" data-l="zh" lang="zh-CN">读完有想法，或者有问题，欢迎留下评论。评论会公开显示。</p>
+          </div>
+
+          <figure class="gb__plot">
+            <div class="gb-plot is-waiting" data-gb-plot aria-hidden="true">
+              <span class="gb-plot__y"><span data-l="en">Glow</span><span data-l="zh" lang="zh-CN">亮度</span></span>
+              <div class="gb-plot__box">
+                <svg class="gb-plot__curve" viewBox="0 0 1000 1000" preserveAspectRatio="none" focusable="false">
+                  <defs><linearGradient id="gb-lut" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="0" data-gb-stops></linearGradient></defs>
+                  <path class="gb-plot__fill" data-gb-fill d=""></path>
+                  <path class="gb-plot__line" data-gb-line d=""></path>
+                </svg>
+                  <span class="gb-tick" data-s="60"><span data-l="en">1 min</span><span data-l="zh" lang="zh-CN">1 分钟</span></span>
+                  <span class="gb-tick" data-s="3600"><span data-l="en">1 h</span><span data-l="zh" lang="zh-CN">1 小时</span></span>
+                  <span class="gb-tick" data-s="86400"><span data-l="en">1 day</span><span data-l="zh" lang="zh-CN">1 天</span></span>
+                  <span class="gb-tick" data-s="2629800"><span data-l="en">1 month</span><span data-l="zh" lang="zh-CN">1 个月</span></span>
+                  <span class="gb-tick" data-s="31557600"><span data-l="en">1 year</span><span data-l="zh" lang="zh-CN">1 年</span></span>
+                <div class="gb-plot__pts" data-gb-points></div>
+                <div class="gb-tip" data-gb-tip hidden></div>
+              </div>
+            </div>
+            <figcaption><span data-l="en">Each point is a comment, placed by how long ago it was posted. Like an afterglow, it fades with time; likes make it brighter.</span><span data-l="zh" lang="zh-CN">每个点是一条评论，横轴是评论至今的时间。它会像余辉一样随时间慢慢变暗，被点赞会更亮。</span></figcaption>
+          </figure>
+
+          <form class="gb-form" data-gb-form novalidate>
+            <p class="gb-owner" data-gb-owner hidden><span data-l="en">Signed in as the site owner.</span><span data-l="zh" lang="zh-CN">已用博主身份登录。</span></p>
+            <div class="gb-replying" data-gb-replying hidden>
+              <span><span data-l="en">Replying to</span><span data-l="zh" lang="zh-CN">回复</span> <b data-gb-reply-nick></b></span>
+              <button class="gb-act" type="button" data-gb-cancel><span data-l="en">Cancel</span><span data-l="zh" lang="zh-CN">取消</span></button>
+            </div>
+            <div class="gb-field">
+              <label class="gb-label" for="gb-text"><span data-l="en">Comment</span><span data-l="zh" lang="zh-CN">评论</span></label>
+              <div class="gb-text">
+                <textarea class="gb-input" id="gb-text" name="comment" rows="4" required aria-describedby="gb-chars" data-ph-en="Share a thought, or ask a question." data-ph-zh="写下你的看法，或者提个问题。"></textarea>
+                <span class="gb-meter" aria-hidden="true"><i></i></span>
+              </div>
+            </div>
+            <div class="gb-meta">
+              <div class="gb-field">
+                <label class="gb-label" for="gb-nick"><span data-l="en">Name</span><span data-l="zh" lang="zh-CN">称呼</span></label>
+                <input class="gb-input" id="gb-nick" name="nick" type="text" autocomplete="nickname" maxlength="40" required>
+              </div>
+              <div class="gb-field">
+                <label class="gb-label" for="gb-mail"><span data-l="en">Email (optional)</span><span data-l="zh" lang="zh-CN">邮箱（选填）</span></label>
+                <input class="gb-input" id="gb-mail" name="mail" type="email" autocomplete="email" maxlength="100" aria-describedby="gb-help">
+              </div>
+              <div class="gb-field gb-field--wide">
+                <label class="gb-label" for="gb-link"><span data-l="en">Website (optional)</span><span data-l="zh" lang="zh-CN">个人主页（选填）</span></label>
+                <input class="gb-input" id="gb-link" name="link" type="url" inputmode="url" autocomplete="url" maxlength="200" placeholder="https://">
+              </div>
+              <div class="gb-hp" aria-hidden="true">
+                <label for="gb-company">Company</label>
+                <input id="gb-company" name="company" type="text" tabindex="-1" autocomplete="off">
+              </div>
+            </div>
+            <p class="gb-help" id="gb-help"><span data-l="en">Only the site owner can see your email.</span><span data-l="zh" lang="zh-CN">邮箱只有博主能看到，不会公开。</span></p>
+            <div class="gb-submit">
+              <span class="gb-chars" id="gb-chars" data-gb-chars></span>
+              <button class="gb-post" type="submit" data-gb-post><span data-l="en">Post comment</span><span data-l="zh" lang="zh-CN">发布评论</span></button>
+            </div>
+            <p class="gb-status" data-gb-status role="status"></p>
+          </form>
+
+          <div class="gb__list">
+            <p class="gb-total" data-gb-total></p>
+            <ol class="gb-list" data-gb-list aria-labelledby="comments-title" tabindex="-1"></ol>
+            <p class="gb-state" data-gb-state role="status"></p>
+            <noscript><p class="gb-state"><span data-l="en">Turn on JavaScript to read and post comments.</span><span data-l="zh" lang="zh-CN">需要开启 JavaScript 才能查看和发布评论。</span></p></noscript>
+            <button class="chip gb-more" type="button" data-gb-more hidden><span data-l="en">Show older comments</span><span data-l="zh" lang="zh-CN">查看更早的评论</span></button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer__row">
+        <span>© 2026 Tianqi Zhao</span>
+        <span class="footer__visits" data-visits data-api="https://tqzhao-guestbook.netlify.app/.netlify/functions/twikoo" hidden></span>
+        <span class="footer__links"><a href="/publications/"><span data-l="en">Publications</span><span data-l="zh" lang="zh-CN">论文</span></a><a href="/news/"><span data-l="en">News</span><span data-l="zh" lang="zh-CN">新闻</span></a><a href="/blog/"><span data-l="en">Blog</span><span data-l="zh" lang="zh-CN">博客</span></a><a href="/photos/"><span data-l="en">Photos</span><span data-l="zh" lang="zh-CN">照片</span></a><a href="/blog/feed.xml">RSS</a></span>
+      </div>
+    </footer>
+
+    <div class="lightbox" data-lightbox hidden>
+      <div class="lightbox__stage" data-lightbox-stage>
+        <img class="lightbox__img" alt="" data-lightbox-img>
+      </div>
+      <div class="lightbox__bar">
+        <p class="lightbox__cap" data-lightbox-cap></p>
+        <p class="lightbox__count" data-lightbox-count></p>
+      </div>
+      <button class="lightbox__btn lightbox__btn--prev" type="button" data-lightbox-prev><span class="sr-only"><span data-l="en">Previous</span><span data-l="zh" lang="zh-CN">上一张</span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <button class="lightbox__btn lightbox__btn--next" type="button" data-lightbox-next><span class="sr-only"><span data-l="en">Next</span><span data-l="zh" lang="zh-CN">下一张</span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+      <button class="lightbox__btn lightbox__btn--close" type="button" data-lightbox-close><span class="sr-only"><span data-l="en">Close</span><span data-l="zh" lang="zh-CN">关闭</span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </div>
+    <p class="sr-only" role="status" data-status></p>
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/pages.js" defer></script>
+    <script src="/assets/js/weather.js" defer></script>
+    <script src="/assets/js/guestbook.js" defer></script>
+    <script src="/assets/js/visits.js" defer></script>
+  </body>
+</html>
